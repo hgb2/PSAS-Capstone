@@ -122,6 +122,7 @@ Announcements: <1 minutes
     -> Slack is up: All are on
     -> Trello is up: Cort still needs to join
     -> Github is up: https://github.com/hgb2/PSAS-Capstone, clone it an put our documents in there!
+        . Is everyone a contributor? Can we all push (pulling has read permissions, but pushing has write permissions)
 
 Reminders: <1 minute
     -> Put documents up in source control if you haven't yet
@@ -155,6 +156,4 @@ Git etiquette: 5 minutes
         . Feature based
         . Bug fixing based
         . Short description oriented, we should know what a branch is for and why it exists
-
-
 
