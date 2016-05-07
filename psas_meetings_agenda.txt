@@ -132,12 +132,15 @@ Updates: 15 minutes
         . Architecture
     -> Paul
         . Requirements & specification
+            - Does the iteration plan document look useful?
     -> Tyler
         . Risk Management
     -> Chris
         . Project Schedule
+            - Talk about using excel sheet
     -> Sohail
         . Communication document
+            - put on slack and not on github so we don't spam personal information
     -> Harrison
         . Devops Update
 
