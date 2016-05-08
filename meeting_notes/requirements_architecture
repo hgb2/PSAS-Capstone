@@ -6,6 +6,9 @@ RCS
         GPIO
         solinoids
 
+    inside of RCS, the Sensor->Control mechanism should be easily swappable
+        at least don't make it hard
+
 Build & TEST:
     feed it simulated data (Controll & Sensor)
     Test harness in between RCS and Control & Sensor
