@@ -171,6 +171,11 @@ Git workflow: 10 minutes
             - Once done, git pull again! (just in case others pushed in the meantime)
         . git push master -> origin master
     -> workflow if programming on ones own
-        . Follow the pair programming guide up until pushing to master
-        . Instead of pushing to master, do a git diff
+        . Follow the pair programming guide up until mergeing with master locally
+        . Instead of mergin with master, do a git diff master..<branch_name>
+            - This produces a line diff on the two branches, highlighting changes
+        . Submit that for code review in Slack channel
+            - Code review in slack should hang around for no longer than 24 hours if we can help it
+        . If accepted for code review: re-pull master, merge with master, then push master
+        . If not accpted, rewrite and submit for code review (likely directly to the same person) until accepted
 
