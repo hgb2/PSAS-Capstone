@@ -30,10 +30,10 @@ Announcements: <1 minute (read on your own)
 General project strategy: 10 minutes
     -> Next 5 week plan
         . Planning and organizing
-            * Risk management - Grid of risks/likelyhoods, with mitigations
-            * Project Schedule - Calendar tracked events, high level drilling down to details (weekly is best)
+            - Risk management - Grid of risks/likelyhoods, with mitigations
+            - Project Schedule - Calendar tracked events, high level drilling down to details (weekly is best)
         . Aditional documents
-            * Solid initial design considerations before we start coding
+            - Solid initial design considerations before we start coding
                 - Shooting for 10 weeks of coding after this 5 weeks
                 - Need something to fit in that timeline
 
@@ -119,26 +119,30 @@ current POC in python
 Monday 05/09
 ====================
 Announcements: <1 minutes
-    -> Slack is up: All are on
-    -> Trello is up: Cort still needs to join
+    -> Slack is up: Everyone is on
+    -> Trello is up: Everyon is on
     -> Github is up: https://github.com/hgb2/PSAS-Capstone, clone it an put our documents in there!
-
-Reminders: <1 minute
-    -> Put documents up in source control if you haven't yet
+        . Is everyone a contributor?
 
 Updates: 15 minutes
     -> Cort
         . Architecture
     -> Paul
         . Requirements & specification
+            - Does the iteration plan document look useful?
     -> Tyler
         . Risk Management
     -> Chris
         . Project Schedule
+            - Talk about using excel sheet
     -> Sohail
         . Communication document
+            - Put on slack and not on github so we don't spam personal information
+        . + Work breakdown structure
     -> Harrison
         . Devops Update
+        . + make sure everyone is contributor
+        . 
 
 Timeline: <5 minutes
     -> Check out Chris' document
@@ -147,7 +151,7 @@ Timeline: <5 minutes
 
 Git etiquette: 5 minutes
     -> Keep a separate branch for documentation updates
-        . Push this branch after every update
+        . View on GitHub branches, then push to master when
     -> We will not be using git rebase
         . Use a merge with merge conflicts strategy
     -> Master will be the primary branch, we don't need secondary or development branches
@@ -156,5 +160,36 @@ Git etiquette: 5 minutes
         . Bug fixing based
         . Short description oriented, we should know what a branch is for and why it exists
 
+Git workflow: 10 minutes
+    -> Workflow if pair programming or group programming (maybe we will try mob programming)
+        . Starting with no branches except for master
+        . git checkout -b <descriptive_name> // This will create and checkout the branch
+        . Do work on that branch (commit ... commit ...)
+        . git push <branch_name> -> origin <branch_name>
+        . git checkout master
+        . git pull
+        . git merge <branch_name>
+            - Possible: manage merge conflics (edit documents)
+            - Once done, git pull again! (just in case others pushed in the meantime)
+        . git push master -> origin master
+    -> workflow if programming on ones own
+        . Follow the pair programming guide up until mergeing with master locally
+        . Instead of mergin with master, do a git diff master..<branch_name>
+            - This produces a line diff on the two branches, highlighting changes
+        . Submit that for code review in Slack channel
+            - Code review in slack should hang around for no longer than 24 hours if we can help it
+        . If accepted for code review: re-pull master, merge with master, then push master
+        . If not accpted, rewrite and submit for code review (likely directly to the same person) until accepted
+
+====================
+Monday 05/16
+====================
+
+Announcements: 1 minute
+    -> 
+
+work through git example
+work through trello example
+get room with projector
 
 
