@@ -138,8 +138,11 @@ Updates: 15 minutes
     -> Sohail
         . Communication document
             - Put on slack and not on github so we don't spam personal information
+        . + Work breakdown structure
     -> Harrison
         . Devops Update
+        . + make sure everyone is contributor
+        . 
 
 Timeline: <5 minutes
     -> Check out Chris' document
@@ -148,8 +151,7 @@ Timeline: <5 minutes
 
 Git etiquette: 5 minutes
     -> Keep a separate branch for documentation updates
-        . Push this branch after every update
-        . Make sure to merge with master and push master as well
+        . View on GitHub branches, then push to master when
     -> We will not be using git rebase
         . Use a merge with merge conflicts strategy
     -> Master will be the primary branch, we don't need secondary or development branches
@@ -178,4 +180,16 @@ Git workflow: 10 minutes
             - Code review in slack should hang around for no longer than 24 hours if we can help it
         . If accepted for code review: re-pull master, merge with master, then push master
         . If not accpted, rewrite and submit for code review (likely directly to the same person) until accepted
+
+====================
+Monday 05/16
+====================
+
+Announcements: 1 minute
+    -> 
+
+work through git example
+work through trello example
+get room with projector
+
 
