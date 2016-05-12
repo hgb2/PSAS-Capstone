@@ -3,19 +3,18 @@
 ## Overview
 
 The Reaction Control System (RCS) software can be compiled for two distinct
-target modes -- flight mode and test mode. Initialization, Control and Sensor
-software components are common to both flight and test modes.
+target modes -- flight mode and test mode. Common components to both flight and 
+test modes include Main, Control, Sensor, and Data Formatter modules.
 
 In flight mode, sensor data is retrieved from the hardware over an I2C bus
-using standard Rust libraries. The control algorithm uses sensor data to
-compute any required changes in trajectory and again uses standard Rust
+using Rust libraries. The control algorithm uses sensor data to
+compute any required changes in trajectory and again uses Rust
 libraries to assert signals on the hardware GPIO pins to control the rocket
 nozzles.
 
-In test mode, the standard Rust libraries are replaced by a controller/sensor
-interface that matches the standard library interface used in flight mode.
+In test mode, the Rust libraries are replaced by a controller/sensor
+interface that matches the library interface used in flight mode.
 The hardware is replaced by JSBSim to model sensor responses to control inputs.
-Flight data is written to files for evaluation.
 
 ![System Figure](sysfig.png)
 
@@ -48,11 +47,13 @@ The sensor module retrieves sensor data and stores it in shared memory.  The sen
 * An initialization function that receives the location of shared memory and sets up the sensor hardware
 * An update function that reads sensor data from hardware and stores it in shared memory
 
+#### Data Formatter
+The data formatter gets telemetry data from the control module, transforms it to [psas-packet format](http://psas-packet-serializer.readthedocs.org/), and writes it out to a file.
+
 
 ### _Flight Mode Components_
 #### Std Rust Libraries
-During flight mode, the system reads sensor input and dispatches control
-signals via standard libraries.
+During flight mode, the system reads sensor input and dispatches control signals via [I2C](https://github.com/rust-embedded/rust-i2cdev) and [GPIO](https://github.com/rust-embedded/rust-sysfs-gpio) Rust libraries.
 
 
 ### _Test Mode Components_
@@ -72,6 +73,3 @@ to the sensor module.
 JSBSim is commercial off the shelf (COTS) software that is used to
 simulate sensor outputs based on control inputs.
 
-#### Data Formatter
-The data formatter gets flight data from JSBSim, transforms it to a format that 
-allows post-flight analysis, and writes it out to a file.
