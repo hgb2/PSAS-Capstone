@@ -142,7 +142,7 @@ Updates: 15 minutes
     -> Harrison
         . Devops Update
         . + make sure everyone is contributor
-        . 
+        . + Critical Path Method
 
 Timeline: <5 minutes
     -> Check out Chris' document
@@ -185,11 +185,6 @@ Git workflow: 10 minutes
 Monday 05/16
 ====================
 
-Announcements: 1 minute
-    -> 
-
-work through git example
-work through trello example
-get room with projector
+- <Brian will try to post the schedule before Monday Mid day>
 
 
