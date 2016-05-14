@@ -17,15 +17,16 @@ Probability of a risk occuring on a scale from 1 to 5. <br>
 2 - Unlikely <br>
 3 - Netural <br>
 4 - Likely <br>
-5 - Very likely <br>**Total Risk Scale:**<br>
+5 - Very likely <br>
 
 
+**Total Risk Scale:**<br>
 Total risk = impact * probability. <br>
 1-5 - low <br>
 6-10 - Medium-low <br>
 11-15 - Medium <br>
 16-20 - Medium-high <br>
-21-25 - High <br>
+21-25 - High <br><br>
 
 
 
