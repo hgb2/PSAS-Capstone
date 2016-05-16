@@ -185,6 +185,24 @@ Git workflow: 10 minutes
 Monday 05/16
 ====================
 
-- <Brian will try to post the schedule before Monday Mid day>
+Updates: 30 minutes
+    -> Cort
+        . Architecture Update
+    -> Paul
+        . Requirements & specification Update
+    -> Tyler
+        . Risk Management Update
+    -> Chris
+        . Project Schedule Update
+    -> Sohail
+        . Work breakdown structure Update
+    -> Harrison
+        . Devops Update
+        . Is everyone is contributor?
+        . Critical Path Method Update
+
+Get deliverables: 30 minutes
+    -> Work breakdown structure
+    -> Schedule (likely attached to work breakdown structure)
 
 
