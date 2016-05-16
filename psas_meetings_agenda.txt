@@ -185,6 +185,12 @@ Git workflow: 10 minutes
 Monday 05/16
 ====================
 
+Announcements:
+    -> Requirements due next week
+    -> Design due week after
+        . Include actual code plan
+        . Work out our custom libraries, etc.
+
 Updates: 30 minutes
     -> Cort
         . Architecture Update
