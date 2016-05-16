@@ -2,6 +2,10 @@
 |:-|:-|
 |||
 
+|Monday   |Tuesday  |Wednesday|Thursday | Friday  |Saturday |Sunday   |
+|:--------|:--------|:--------|:--------|:--------|:--------|:--------|
+|asdf|asdf|asdf|asdf|asdf|asdf|asdf|
+
 #### Documentation:
 |Task|Resources|
 |:-|:-|
