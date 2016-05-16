@@ -2,13 +2,9 @@
 |:---|:--------|
 |asdf|asfd|
 
-|Monday   |Tuesday  |Wednesday|Thursday | Friday  |Saturday |Sunday   |
-|:--------|:--------|:--------|:--------|:--------|:--------|:--------|
-|asdf|asdf|asdf|asdf|asdf|asdf|asdf|
-
 #### Documentation:
 |Task|Resources|
-|:-|:-|
+|:---|:--------|
 |Capstone|All|
 |technical|All|
 |end-user|All|
@@ -16,7 +12,7 @@
 
 #### Learn Rust: (By start of summer)
 |Task|Resources|
-|:-|:-|
+|:---|:--------|
 |write hello world|All|
 |learn about Multirust|All|
 |learn about Types|All|
@@ -30,13 +26,13 @@
 
 ##### JSBSim
 |Task|Resources|
-|:-|:-|
+|:---|:--------|
 |Learn framework|2|
 |plug into rust libraries|2|
 
 ##### Shared memory
 |Task|Resources|
-|:-|:-|
+|:---|:--------|
 |Determin sharing mechanism|1|
 |Build structures|1|
 |Determine library API|1|
@@ -45,19 +41,19 @@
 
 ##### Sensor Interface
 |Task|Resources|
-|:-|:-|
+|:---|:--------|
 |Build Sensor interface|1|
 |Test Sensor interface|1|
 
 ##### Controller Interface
 |Task|Resources|
-|:-|:-|
+|:---|:--------|
 |Build Controller interface|1|
 |Test Controller interface|1|
 
 ##### Controller Module
 |Task|Resources|
-|:-|:-|
+|:---|:--------|
 |Learn GPIO interface|1|
 |Find rust GPIO library|1|
 |Plug into rust GPIO library|1|
@@ -67,7 +63,7 @@
 
 ##### Sensor Module
 |Task|Resources|
-|:-|:-|
+|:---|:--------|
 |Learn I2C interface|1|
 |Find rust I2C library|1|
 |Plug into rust I2C library|1|
@@ -75,7 +71,7 @@
 
 ##### Main / Core
 |Task|Resources|
-|:-|:-|
+|:---|:--------|
 |plug into Controller|1|
 |test Controller|1|
 |plug into Sensor|1|
