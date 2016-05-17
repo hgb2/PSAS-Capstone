@@ -1,82 +1,58 @@
-|Task|Resources|
-|:---|:--------|
-|asdf|asfd|
+## Learn Rust (Before summer) (All)
+* write hello world
+* learn about Multirust
+* learn about Types
+* learn about structs
+* learn about traits
+* learn about impl
+* learn about rust testing framework (Cargo)
+* learn about rust documentation (Cargo)
 
-#### Documentation:
-|Task|Resources|
-|:---|:--------|
-|Capstone|All|
-|technical|All|
-|end-user|All|
-|non-deliverable|All|
+## Common Components
+### Shared memory
+* Determine sharing mechanism
+* Build structures
 
-#### Learn Rust: (By start of summer)
-|Task|Resources|
-|:---|:--------|
-|write hello world|All|
-|learn about Multirust|All|
-|learn about Types|All|
-|learn about structs|All|
-|learn about traits|All|
-|learn about impl|All|
-|learn about rust testing framework (Cargo)|All|
-|learn about rust documentation (Cargo)|All|
+### Controller Module
+* Learn GPIO interface using library
+* Test plug-ins to GPIO library
 
-#### Flight Controller:
+### Data formatter
+* Logging 
+* Data formatter build
+* Data formatter test
 
-##### JSBSim
-|Task|Resources|
-|:---|:--------|
-|Learn framework|2|
-|plug into rust libraries|2|
+### Sensor Module
+* Learn I2C interface
+* Find rust I2C library
+* Plug into rust I2C library
+* Test plugins to I2C library
 
-##### Shared memory
-|Task|Resources|
-|:---|:--------|
-|Determin sharing mechanism|1|
-|Build structures|1|
-|Determine library API|1|
-|Test once sensor and controller are complete|1|
+### Main / Core
+* Task Resources
+* plug into Controller
+* test Controller
+* plug into Sensor
+* test Sensor
+* iterate on control theory
 
+## Test Mode
+### JSBSim
+* Learn framework
+* plug into rust libraries
 
-##### Sensor Interface
-|Task|Resources|
-|:---|:--------|
-|Build Sensor interface|1|
-|Test Sensor interface|1|
+### Sensor Interface
+* Build Sensor interface
+* Test Sensor interface
 
-##### Controller Interface
-|Task|Resources|
-|:---|:--------|
-|Build Controller interface|1|
-|Test Controller interface|1|
+### Controller Interface
+* Build Controller interface
+* Test Controller interface
 
-##### Controller Module
-|Task|Resources|
-|:---|:--------|
-|Learn GPIO interface|1|
-|Find rust GPIO library|1|
-|Plug into rust GPIO library|1|
-|Test plugins to GPIO library|1|
-|Data formatter build|1|
-|Data formatter test|1|
-
-##### Sensor Module
-|Task|Resources|
-|:---|:--------|
-|Learn I2C interface|1|
-|Find rust I2C library|1|
-|Plug into rust I2C library|1|
-|Test plugins to I2C library|1|
-
-##### Main / Core
-|Task|Resources|
-|:---|:--------|
-|plug into Controller|1|
-|test Controller|1|
-|plug into Sensor|1|
-|test Sensor|1|
-|iterate on controller theory|1-2|
+## Flight Mode
+### Rust Libraries
+1. GPIO for control
+1. I2C for sensors
 
 
 
