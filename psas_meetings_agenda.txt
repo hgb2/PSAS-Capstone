@@ -185,7 +185,7 @@ Git workflow: 10 minutes
 Monday 05/16
 ====================
 
-Announcements:
+Announcements: <1 minute
     -> Requirements due next week
     -> Design due week after
         . Include pseudocode
