@@ -198,7 +198,8 @@ Pivots: 15 minutes
 Assignments: <5 minutes
     -> Harrison
         . Devops Update
-            - Is everyone a contributor?
+            - Is everyone a contributor? yes
+        . Pivot to requirements
     -> Cort
         . Architecture Update
         . Pivot to Design document
@@ -218,6 +219,6 @@ Assignments: <5 minutes
 Get todays deliverables: 30+ minutes
     -> Work breakdown structure
         . Includes timeline
-    -> Risk management
+    -> Risk management - Done
 
 
