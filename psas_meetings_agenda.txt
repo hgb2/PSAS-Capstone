@@ -188,27 +188,36 @@ Monday 05/16
 Announcements:
     -> Requirements due next week
     -> Design due week after
-        . Include actual code plan
-        . Work out our custom libraries, etc.
+        . Include pseudocode
 
-Updates: 30 minutes
-    -> Cort
-        . Architecture Update
-    -> Paul
-        . Requirements & specification Update
-    -> Tyler
-        . Risk Management Update
-    -> Chris
-        . Project Schedule Update
-    -> Sohail
-        . Work breakdown structure Update
+Pivots: 15 minutes
+    -> Need today: Work breakdown
+    -> Need next week: Requirements
+    -> Need before finals: Design document
+
+Assignments: <5 minutes
     -> Harrison
         . Devops Update
-        . Is everyone is contributor?
-        . Critical Path Method Update
+            - Is everyone a contributor?
+    -> Cort
+        . Architecture Update
+        . Pivot to Design document
+    -> Paul
+        . Requirements & specification Update
+        . Pivot requirements
+    -> Tyler
+        . Risk Management Update * Done
+        . Pivot to helping with Design
+    -> Chris
+        . Project Schedule Update
+        . Pivot to helping with Requirements
+    -> Sohail
+        . Work breakdown structure Update
+        . Pivot to helping with design
 
-Get deliverables: 30 minutes
+Get todays deliverables: 30+ minutes
     -> Work breakdown structure
-    -> Schedule (likely attached to work breakdown structure)
+        . Includes timeline
+    -> Risk management
 
 
