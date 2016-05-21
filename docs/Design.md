@@ -3,7 +3,7 @@
 ## Overview
 
 The Reaction Control System (RCS) software can be compiled for two distinct
-target modes -- flight mode and test mode. Common components to both flight and 
+target modes -- flight mode and test mode. Common components to both flight and
 test modes include Main, Control, Sensor, and Data Formatter modules.
 
 In flight mode, sensor data is retrieved from the hardware over an I2C bus
@@ -34,7 +34,7 @@ The main module is executed at program startup and does the following:
 The control module implements the control algorithm. Sensor data is retrieved from shared memory and GPIO pins are asserted for course correction. The control module provides :
 
 * An initialization function that receives the location of shared memory and sets up the control hardware
-* An update function that uses sensor data contained in shared memory 
+* An update function that uses sensor data contained in shared memory
 to calculate course updates
 
 
@@ -51,6 +51,30 @@ The data formatter gets telemetry data from the control module, transforms it to
 ### _Flight Mode Components_
 #### Std Rust Libraries
 During flight mode, the system reads sensor input and dispatches control signals via [I2C](https://github.com/rust-embedded/rust-i2cdev) and [GPIO](https://github.com/rust-embedded/rust-sysfs-gpio) Rust libraries.
+
+```
+// Import libraries
+extern crate sysfs-gpio
+use sysfs_gpio::{Direction, Pin}
+
+// to use, must initiate a new gpio object, call init, then set_value
+struct gpio {
+  myGpio = Pin,
+}
+
+impl gpio {
+  public function init(pin: u64, dir: Direction) -> Option<()> {
+      // this pseudocode contains possible rust code to run
+      initialize myGpio with a new Pin code(myGpio = Pin::new(pin))
+      explicitely set the myGpio pin direction code(try!(input.set_direction(dir)))
+  }
+
+  public function set_value(value: u8) -> Option<()> {
+    set the value of myGpio with value code(try!(myGpio.set_value(value)))
+  }
+
+}
+```
 
 
 ### _Test Mode Components_
