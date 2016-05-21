@@ -54,7 +54,9 @@ During flight mode, the system reads sensor input and dispatches control signals
 
 ```
 // Import libraries
-extern crate sysfs-gpio
+extern crate sysfs-gpio;
+extern crate i2cdev;
+use i2cdev::*;
 use sysfs_gpio::{Direction, Pin}
 
 // to use, must initiate a new gpio object, call init, then set_value
@@ -67,13 +69,33 @@ impl gpio {
       // this pseudocode contains possible rust code to run
       initialize myGpio with a new Pin code(myGpio = Pin::new(pin))
       explicitely set the myGpio pin direction code(try!(input.set_direction(dir)))
+      return okay if try did not fail code(Ok(()))
   }
 
   public function set_value(value: u8) -> Option<()> {
     set the value of myGpio with value code(try!(myGpio.set_value(value)))
+    return okay if try did not fail code(Ok(()))
   }
 
 }
+
+struct i2c {
+  myi2c = I2CDevice,
+}
+
+impl i2c {
+  public function init(bus: u8) -> Option<()> {
+    initialize the I2CDevice code(myi2c = try!(I2CDevice::new(bus)))
+    return okay if try did not fail code(Ok(()))
+  }
+
+  public function read_value(address: u8) -> Option<u16> {
+    let x = read register value from myi2c at address code(myi2c.smbus_read_word_data(address))
+    let r = x converted to u16 code(LittleEndian::read_u16(&x))
+    return okay if try did not fail code(Ok(r))
+  }
+}
+
 ```
 
 
