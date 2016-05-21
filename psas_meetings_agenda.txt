@@ -221,4 +221,38 @@ Get todays deliverables: 30+ minutes
         . Includes timeline
     -> Risk management - Done
 
+====================
+Monday 05/23
+====================
+
+Announcements: <5 minutes
+    -> Requirements due today
+    -> Design due in a week (our pseudocode)
+
+Design: 15 minutes
+    -> Reminders
+        . Be sure to follow pseudocode guide sent out in email
+        . Know what pieces your work depends on
+
+    -> Brian
+    -> Cort
+    -> Tyler
+    -> Sohail
+    -> Harrison
+    -> Chris
+    -> Paul
+
+Git: 15-20 minutes
+    -> Last week was busy so we did not cover this
+    -> 2 options
+        . Work out of one repo
+            - advantages: faster, easier, no merge requests
+            - disadvantages: code reviews are harder
+        . Work out of forked repo's (the way open source usually works)
+            - advantages: merge requests force code reviews
+            - disadvantages: minor changes are harder, someone has to accept pull requests
+    -> Make new repo?
+    -> Work through example of working/submitting code
+        . Lone programming
+        . Pair programming
 
