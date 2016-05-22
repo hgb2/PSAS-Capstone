@@ -26,18 +26,23 @@ The main module is executed at program startup and does the following:
 PRINT startup information including whether test mode is enabled
 
 INIT struct containing to-be-determined information which will be shared between modules
-CALL InitializeSensorModule with shared memory structure
-CALL InitializeControlModule with shared memory structure
+CALL InitializeSensorModule with address of shared memory structure
+CALL InitializeControlModule with address of shared memory structure
 INIT variables/class/struct containing means of using high-precision time constructs
      to perform a fixed timestep loop
-WHILE SimulationRunning EQUAL true
+     
+WHILE Running EQUAL true
     SET TimeConstruct.CurrentTime TO CALL RustLibraryGetCurrentTime
     INCREMENT TimeConstruct.TimeSinceLastUpdate BY TimeConstruct.CurrentTime 
                                                 - TimeConstruct.PreviousTime
     SET TimeConstruct.PreviousTime TO TimeConstruct.CurrentTime;
     WHILE TimeConstruct.TimeSinceLastUpdate >= constant_time_step
-        CALL SensorModuleUpdate with data
-        CALL ControlModuleUpdate with data
+        IF CALL SensorModuleUpdate EQUAL 1 THEN
+            THROW emergency_sensor_exception
+        ENDIF
+        IF CALL ControlModuleUpdate EQUAL 1 THEN
+            THROW emergency_control_exception
+        ENDIF
         INCREMENT TimeConstruct.TimeSinceLastUpdate BY NEGATE constant_time_step;
         WHEN any exception
             PRINT information about exception
