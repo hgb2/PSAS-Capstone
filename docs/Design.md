@@ -213,3 +213,52 @@ to the sensor module.
 #### JSBSim
 JSBSim is commercial off the shelf (COTS) software that is used to
 simulate sensor outputs based on control inputs.
+
+```
+INPUT:	sim_actuator_output			
+OUTPUT:	sim_sensor_output
+
+
+///this function initializes the JSBSim Binder
+FUNCTION initialize
+     //set up data buffers
+     SET buffer_to_jsbsim				          	//data in csv format		
+     SET buffer_from_jsbsim				          	//data in csv format
+
+     //set up jsbsim
+     INIT jsbsim exec
+     INSTANTIATE fgfdmexec
+     INSTANTIATE script object
+     LOAD script into script object
+     RUN startup loop (empty)
+     PAUSE until ready to launch
+     SET rocket launch
+ENDFUNCTION
+     
+
+//this is the primary work loop
+FUNCTION LOOPDATA (data_from_simulated_actuator):
+     WHILE (testing)
+          GET actuator response from sim_actuator_output
+          PARSE actuator response into buffer_to_jsbsim	//collapse structured data into csv
+          SEND buffer_to_jsbsim to jsbsim
+
+          WHILE (script)
+	     	RUN script object’s runscript()         	//will need to know how data is to be blended
+	     	RUN fgfdmexec’s run method              	// … between script & sim actuator output
+          ENDWHILE
+
+          PUT data from jsbsim into buffer_from_jsbsim      //structure csv data
+          PARSE buffer_from_jsbsim
+          SET data into sim_sensor_input
+     ENDWHILE
+ENDFUNCTION
+
+///this function closes out the JSBSim Binder
+FUNCTION TERMINATE:
+     CLOSE buffer_to_jsbsim				
+     CLOSE jsbsim output
+     CLOSE jsbsim
+     CLOSE buffer_from_jsbsim
+ENDFUNCTION
+```
