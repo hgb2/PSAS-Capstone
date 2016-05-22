@@ -236,8 +236,8 @@ FUNCTION initialize
 ENDFUNCTION
      
 
-//this is the primary work loop
-FUNCTION LOOPDATA (data_from_simulated_actuator):
+///this is the primary work loop
+FUNCTION LOOPDATA (sim_actuator_output):
      WHILE (testing)
           GET actuator response from sim_actuator_output
           PARSE actuator response into buffer_to_jsbsim	//collapse structured data into csv
