@@ -220,7 +220,7 @@ OUTPUT:	sim_sensor_output
 
 
 ///this function initializes the JSBSim Binder
-FUNCTION initialize
+FUNCTION INITIALIZE
      //set up data buffers
      SET buffer_to_jsbsim				          	//data in csv format		
      SET buffer_from_jsbsim				          	//data in csv format
