@@ -55,12 +55,86 @@ READ wait for user input to terminate program
 ```
 
 #### Control Module
-The control module implements the control algorithm. Sensor data is retrieved from shared memory and GPIO pins are asserted for course correction. The control module provides :
+The control module implements the control algorithm. Sensor data is retrieved from shared memory and GPIO pins are asserted for course correction.
 
-* An initialization function that receives the location of shared memory and sets up the control hardware
-* An update function that uses sensor data contained in shared memory
-to calculate course updates
+```
+FUNCTION init(addr)
+    INPUTS: address of shared memory
+    OUTPUTS: Returns void
 
+    Store address of shared memory
+
+    state <- 0 // control state variable
+
+    // initialize gpio pins
+    // Use pin 53 as clockwise (CW)
+    // Use pin 54 as counter clockwise (CCW)
+    // Use pin 0 as emergency stop (ESTOP)
+    CALL libs::gpio::init(CW pin, DIR_OUT)
+    CALL libs::gpio::init(CCW pin, DIR_OUT)
+    CALL libs::gpio::init(ESTOP pin, DIR_IN)
+
+    // turn gpio pins off
+    CALL libs::gpio::set_value(CW pin, state)
+    CALL libs::gpio::set_value(CCW pin, state)
+
+    // initialize data formatter
+    CALL data_fmt::init()
+
+END FUNCTION
+
+
+FUNCTION update()
+    INPUTS: None
+    OUTPUTS: Returns 0 -- all is well
+                     1 -- Shut Down! (HW asserted the emergency stop pin)
+
+    CALL libs::gpio::read_value(ESTOP pin)
+    IF ESTOP pin is 1
+        RETURN 1
+    END IF
+
+    Retrieve GyX from shared memory
+
+    rateX <- GyX/114.3 // degrees per second
+                       // (/114.3 when sensitivity is set to 250 dps)
+    IF rateX GE 0.175
+        CALL state_update()
+        CALL libs::gpio::set_value(CW pin, state)
+    ELSE IF rateX LE -0.175
+        CALL state_update()
+        CALL libs::gpio::set_value(CCW pin, state)
+    ELSE
+        // turn off both gpio pins
+        CALL libs::gpio::set_value(CW pin, 0)
+        CALL libs::gpio::set_value(CCW pin, 0)
+    END IF
+
+    // send info to data formatter
+    CALL data_fmt::update(TBD)
+
+    RETURN 0
+END FUNCTION
+
+
+FUNCTION state_update(rateX)
+    INPUTS:  rateX -- rotational rate about the x axis
+    OUTPUTS: Returns void
+
+    kp <- 0.25           // proportional gain for duty cycle
+    a <- 2.0 * kp        // (I/(r*.1s))/Ftot equation to dc from radian error
+    u <- a*abs(rateX)
+
+    IF u GE 1.0
+        state <- 1
+    ELSE IF u LT 0.1
+        state <- 0
+    ELSE
+        Toggle the state value
+    END IF
+
+END FUNCTION
+```
 
 #### Sensor Module
 The sensor module retrieves sensor data and stores it in shared memory.  The sensor module provides:
