@@ -1,0 +1,258 @@
+====================
+Monday 05/01
+====================
+Introductions: <5 minutes
+    -> For the group and the sponsors, please give your name, experience, anything you would like to mention
+        . Theo Hill           theo0x48@gmail.com, Sponsor
+        . Jamey Sharp         jamey@minilop.net, Sponsor
+
+        . Cort Alexander      cort@pdx.edu
+        . Tyler Alway         alway@pdx.edu
+        . Harrison Bailey     hgb2@pdx.edu
+        . Brian Breniser      breniser@pdx.edu
+        . Paul Lee            pclee@pdx.edu
+        . Chris Liebert       liebert@pdx.edu
+        . Sohail Nayani       snayani@pdx.edu
+
+Announcements: <1 minute (read on your own)
+    -> PSAS meetings Tuesdays @ 7:00pm in 86-01
+        . Recommend anyone intersted to show up and introduce yourselfes
+        . Not required
+
+    -> Rust monthly meetup on meetup.org
+        . Next event is this Wednesday the 4th on traites at types @ 6pm hosted by mozilla 
+        . Not required
+
+    -> Learn rust using "the book"
+        . https://doc.rust-lang.org/book/
+        . Not required (but you have to learn rust some way, and it's pretty good)
+
+General project strategy: 10 minutes
+    -> Next 5 week plan
+        . Planning and organizing
+            - Risk management - Grid of risks/likelyhoods, with mitigations
+            - Project Schedule - Calendar tracked events, high level drilling down to details (weekly is best)
+        . Aditional documents
+            - Solid initial design considerations before we start coding
+                - Shooting for 10 weeks of coding after this 5 weeks
+                - Need something to fit in that timeline
+
+Role discussion and assignment: 5-10 minutes
+    -> Roles are:
+        . Sponsor liason / Backup lead || cort
+        . Requirements and Specification Documentor || Paul
+        . Risk management Documentor || Tyler
+        . Project schedule Documentor || Chris
+        . Communication Documentor, address, phone, preferred email, backup phone if possible, backup eamil, confirming communication channels || sohail
+        . IT/DevOps (git, backups, hosting, communication, task tracker, build tools (cargo?) ) || Harrison
+
+    -> Other possible roles for the future to consider
+        . Front end or back end lead?
+        . QA lead/team?
+
+Strategy and Tools: 5-15 minutes (Most of this is not set in stone, and discussion needs to happen around it)
+    -> ALL documents will be in source control unless a very good reason is given they should not be
+        . Means all documentation should be in text files, readable on a linux machine using terminal readers
+            - You CAN have them "compile" or "render" for better output
+                . Options are:
+                    - Plain text
+                    - Markdown (github?)
+                    - LaTeX (maybe, might use this format for final outputs if we have time)
+                    - PDF (though it's not change controlled, static files are fine)
+                        . PDF's that are generated should not be included
+    -> NOT included in source control
+        . Anything that is compiled or generated using the source material in source control already
+        . IDE files, sublime text files, etc.
+        . Possibly more
+    -> Communication
+        . Email
+        . Chat options:
+            - Slack
+            - IRC
+            - Other?
+        . Google hangouts (for remote meetings)
+        . Google docs (Try to keep this at minimum as possible)
+    -> Source hosting
+        . Github? (need sponsor input)
+    -> Task tracker
+        . Options:
+            - github (or other source hosting) issue tracker
+            - Trello (simple kanban style board)
+            - Text files? (live in source control?)
+    -> Daily update
+        . Using a communication method, send in daily (yes, daily) updates of progress
+            - Includes "I did nothing today"
+            - Justification
+                . Keeps me informed
+                . Creates history we can all use
+
+
+information from sponsors
+
+Assignments:
+    Research your documents
+    Start writing things
+    Get IT set up
+    Slack is up -> Ask questions
+    Daily updates start as soon as slack is up
+
+
+Take sensor data in, crunch, send commands
+Highly testable
+cross platform testing (kinda, linux based anyway)
+simulated vs real sensors
+
+Specific application: Reaciton control system (RCS) - cold gas jets
+    software control valves
+    8 nossels, 6 degrees of freedom
+    4 for x/y
+    4 for rotation
+    
+current POC in python
+    we get source
+    on github
+    Don't need control theory
+    P-controller???
+
+
+====================
+Monday 05/09
+====================
+Announcements: <1 minutes
+    -> Slack is up: Everyone is on
+    -> Trello is up: Everyon is on
+    -> Github is up: https://github.com/hgb2/PSAS-Capstone, clone it an put our documents in there!
+        . Is everyone a contributor?
+
+Updates: 15 minutes
+    -> Cort
+        . Architecture
+    -> Paul
+        . Requirements & specification
+            - Does the iteration plan document look useful?
+    -> Tyler
+        . Risk Management
+    -> Chris
+        . Project Schedule
+            - Talk about using excel sheet
+    -> Sohail
+        . Communication document
+            - Put on slack and not on github so we don't spam personal information
+        . + Work breakdown structure
+    -> Harrison
+        . Devops Update
+        . + make sure everyone is contributor
+        . + Critical Path Method
+
+Timeline: <5 minutes
+    -> Check out Chris' document
+        . When our initial documentation needs to be done by
+        . How far are we in gathering these documents? (live updates)
+
+Git etiquette: 5 minutes
+    -> Keep a separate branch for documentation updates
+        . View on GitHub branches, then push to master when
+    -> We will not be using git rebase
+        . Use a merge with merge conflicts strategy
+    -> Master will be the primary branch, we don't need secondary or development branches
+    -> Branching should be:
+        . Feature based
+        . Bug fixing based
+        . Short description oriented, we should know what a branch is for and why it exists
+
+Git workflow: 10 minutes
+    -> Workflow if pair programming or group programming (maybe we will try mob programming)
+        . Starting with no branches except for master
+        . git checkout -b <descriptive_name> // This will create and checkout the branch
+        . Do work on that branch (commit ... commit ...)
+        . git push <branch_name> -> origin <branch_name>
+        . git checkout master
+        . git pull
+        . git merge <branch_name>
+            - Possible: manage merge conflics (edit documents)
+            - Once done, git pull again! (just in case others pushed in the meantime)
+        . git push master -> origin master
+    -> workflow if programming on ones own
+        . Follow the pair programming guide up until mergeing with master locally
+        . Instead of mergin with master, do a git diff master..<branch_name>
+            - This produces a line diff on the two branches, highlighting changes
+        . Submit that for code review in Slack channel
+            - Code review in slack should hang around for no longer than 24 hours if we can help it
+        . If accepted for code review: re-pull master, merge with master, then push master
+        . If not accpted, rewrite and submit for code review (likely directly to the same person) until accepted
+
+====================
+Monday 05/16
+====================
+
+Announcements: <1 minute
+    -> Requirements due next week
+    -> Design due week after
+        . Include pseudocode
+
+Pivots: 15 minutes
+    -> Need today: Work breakdown
+    -> Need next week: Requirements
+    -> Need before finals: Design document
+
+Assignments: <5 minutes
+    -> Harrison
+        . Devops Update
+            - Is everyone a contributor? yes
+        . Pivot to requirements
+    -> Cort
+        . Architecture Update
+        . Pivot to Design document
+    -> Paul
+        . Requirements & specification Update
+        . Pivot requirements
+    -> Tyler
+        . Risk Management Update * Done
+        . Pivot to helping with Design
+    -> Chris
+        . Project Schedule Update
+        . Pivot to helping with Requirements
+    -> Sohail
+        . Work breakdown structure Update
+        . Pivot to helping with design
+
+Get todays deliverables: 30+ minutes
+    -> Work breakdown structure
+        . Includes timeline
+    -> Risk management - Done
+
+====================
+Monday 05/23
+====================
+
+Announcements: <5 minutes
+    -> Requirements due today
+    -> Design due in a week (our pseudocode)
+
+Design: 15 minutes
+    -> Reminders
+        . Be sure to follow pseudocode guide sent out in email
+        . Know what pieces your work depends on
+
+    -> Brian
+    -> Cort
+    -> Tyler
+    -> Sohail
+    -> Harrison
+    -> Chris
+    -> Paul
+
+Git: 15-20 minutes
+    -> Last week was busy so we did not cover this
+    -> 2 options
+        . Work out of one repo
+            - advantages: faster, easier, no merge requests
+            - disadvantages: code reviews are harder
+        . Work out of forked repo's (the way open source usually works)
+            - advantages: merge requests force code reviews
+            - disadvantages: minor changes are harder, someone has to accept pull requests
+    -> Make new repo?
+    -> Work through example of working/submitting code
+        . Lone programming
+        . Pair programming
+
