@@ -142,6 +142,178 @@ The sensor module retrieves sensor data and stores it in shared memory.  The sen
 * An initialization function that receives the location of shared memory and sets up the sensor hardware
 * An update function that reads sensor data from hardware and stores it in shared memory
 
+```
+
+struct SensorModule {
+
+  gyro: i2c,
+  accel: i2c,
+  magneto: i2c,
+
+  //accelerometer register addresses (ADXL345B)
+  accel_ADXL345B: u8, //slave address
+  OFSX: u8, //Axis offsets
+  OFSY: u8,
+  OFSZ: u8,
+  BW_RATE: u8, //data rate and power mode control (need to find out i2c rate)
+  POWER_CTL: u8, //power saving features, default is fine
+
+
+  //Accelerometer data is in two's compliment
+  //"0" is the least significant byte
+  //"1" is the most significant byte
+  AX0: u8,
+  AX1: u8,
+  AY0: u8,
+  AY1: u8,
+  AZ0: u8,
+  AZ1: u8,
+
+
+  //gyro register addresses (L3G4200D) max i2c rate 400kHz
+  gyro_L3G4200D: u8,
+  //Gyro data is two's complement with same format as accelerometer
+  GX0: u8,
+  GX1: u8,
+  GY0: u8,
+  GY1: u8,
+  GZ0: u8,
+  GZ1: u8,
+
+
+  //Magnetometer addresses
+  mag_HMC5883L: u8, 
+  //mag data is the same as the rest
+  MX0: u8,
+  MX1: u8,
+  MY0: u8,
+  MY1: u8,
+  MZ0: u8,
+  MZ1: u8,
+
+  //magnetometer mode selection register
+  Mag_Mode_Reg: u8,
+
+  //barometer address
+  bar_BMP085: u8,
+}
+
+
+impl SensorModule {
+
+  Function InitializeSensorModule(sharedMem: &mut SharedMemory) {
+      INPUTS: address of shared memory
+      OUTPUTS: Returns void
+
+    //accelerometer register addresses (ADXL345B)
+    accel_ADXL345B = 0x53 //slave address
+    OFSX = 0x1E //Axis offsets
+    OFSY = 0x1F
+    OFSZ = 0x20
+    BW_RATE = 0x2C //data rate and power mode control (need to find out i2c rate)
+    POWER_CTL = 0x2D //power saving features, default is fine
+
+
+
+    //Accelerometer data is in two's compliment
+    //"0" is the least significant byte
+    //"1" is the most significant byte
+    AX0 = 0x32
+    AX1 = 0x33
+    AY0 = 0x34
+    AY1 = 0x35
+    AZ0 = 0x36
+    AZ1 = 0x37
+
+    //gyro register addresses (L3G4200D) max i2c rate 400kHz
+    gyro_L3G4200D = 0x35
+    //Gyro data is two's complement with same format as accelerometer
+    GX0 = 0x28
+    GX1 = 0x29
+    GY0 = 0x2A
+    GY1 = 0x2B
+    GZ0 = 0x2C
+    GZ1 = 0x2D
+
+    //Magnetometer addresses
+    mag_HMC5883L = 0x1E
+    //mag data is the same as the rest
+    MX0 = 0x03
+    MX1 = 0x04
+    MY0 = 0x07
+    MY1 = 0x08
+    MZ0 = 0x05
+    MZ1 = 0x06
+
+    Mag_Mode_Reg = 0x02 //magnetometer mode selection register
+
+    //Not quite sure what to do with these
+    //x.address(mag_HMC5883L)
+    //x.writeReg(Mag_Mode_Reg, 0x00) //0x00 == continuous measurements, default is 0x01 == single measurement
+
+    //barometer address
+    bar_BMP085 = 0xEE
+
+
+    INITIALIZE the i2c device 
+    gyro.init(accel_ADXL345B)
+    accel.init(gyro_L3G4200D)
+    magneto.init(mag_HMC5883L)
+
+
+  ENDFUNCTION
+
+
+
+  FUNCTION SensorModuleUpdate(sharedMem: &mut SharedMemory) 
+      INPUTS: address of shared memory
+      OUTPUTS: Returns void
+
+
+    SET i2c slave address for accelerometer to accel_ADXL345B
+
+    READ from i2c at address AX0 
+    WRITE to SharedMemory in AcX
+
+    READ from i2c at address AY0 
+    WRITE to SharedMemory in AcY
+
+    READ from i2c at address AZ0 
+    WRITE to SharedMemory in AcZ
+
+
+    SET i2c slave address for gyro to gyro_L3G4200D
+
+    READ from i2c at address GX0 
+    WRITE to SharedMemory in GcX
+
+    READ from i2c at address GY0 
+    WRITE to SharedMemory in GcY
+
+    READ from i2c at address GZ0 
+    WRITE to SharedMemory in GcZ
+
+
+    SET i2c slave address for magnetometer to mag_HMC5883L
+
+    READ from i2c at address MX0 
+    WRITE to SharedMemory in McX
+
+    READ from i2c at address MY0 
+    WRITE to SharedMemory in McY
+
+    READ from i2c at address MZ0 
+    WRITE to SharedMemory in McZ
+
+
+  ENDFUNCTION
+
+}
+```
+
+
+
+
 #### Data Formatter
 The data formatter gets telemetry data from the control module, transforms it to [psas-packet format](http://psas-packet-serializer.readthedocs.org/), and writes it out to a file.
 
