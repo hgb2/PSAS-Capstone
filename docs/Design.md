@@ -30,10 +30,10 @@ CALL InitializeSensorModule with address of shared memory structure
 CALL InitializeControlModule with address of shared memory structure
 INIT variables/class/struct containing means of using high-precision time constructs
      to perform a fixed timestep loop
-     
+
 WHILE Running EQUAL true
     SET TimeConstruct.CurrentTime TO CALL RustLibraryGetCurrentTime
-    INCREMENT TimeConstruct.TimeSinceLastUpdate BY TimeConstruct.CurrentTime 
+    INCREMENT TimeConstruct.TimeSinceLastUpdate BY TimeConstruct.CurrentTime
                                                 - TimeConstruct.PreviousTime
     SET TimeConstruct.PreviousTime TO TimeConstruct.CurrentTime;
     WHILE TimeConstruct.TimeSinceLastUpdate >= constant_time_step
@@ -144,7 +144,7 @@ The sensor module retrieves sensor data and stores it in shared memory.  The sen
 
 ```
 
-struct SensorModule {
+struct SensorModule
 
   gyro: i2c,
   accel: i2c,
@@ -182,7 +182,7 @@ struct SensorModule {
 
 
   //Magnetometer addresses
-  mag_HMC5883L: u8, 
+  mag_HMC5883L: u8,
   //mag data is the same as the rest
   MX0: u8,
   MX1: u8,
@@ -199,9 +199,9 @@ struct SensorModule {
 }
 
 
-impl SensorModule {
+impl SensorModule
 
-  Function InitializeSensorModule(sharedMem: &mut SharedMemory) {
+  Function InitializeSensorModule(sharedMem: &mut SharedMemory)
       INPUTS: address of shared memory
       OUTPUTS: Returns void
 
@@ -255,7 +255,7 @@ impl SensorModule {
     bar_BMP085 = 0xEE
 
 
-    INITIALIZE the i2c device 
+    INITIALIZE the i2c device
     gyro.init(accel_ADXL345B)
     accel.init(gyro_L3G4200D)
     magneto.init(mag_HMC5883L)
@@ -265,44 +265,44 @@ impl SensorModule {
 
 
 
-  FUNCTION SensorModuleUpdate(sharedMem: &mut SharedMemory) 
+  FUNCTION SensorModuleUpdate(sharedMem: &mut SharedMemory)
       INPUTS: address of shared memory
       OUTPUTS: Returns void
 
 
     SET i2c slave address for accelerometer to accel_ADXL345B
 
-    READ from i2c at address AX0 
+    READ from i2c at address AX0
     WRITE to SharedMemory in AcX
 
-    READ from i2c at address AY0 
+    READ from i2c at address AY0
     WRITE to SharedMemory in AcY
 
-    READ from i2c at address AZ0 
+    READ from i2c at address AZ0
     WRITE to SharedMemory in AcZ
 
 
     SET i2c slave address for gyro to gyro_L3G4200D
 
-    READ from i2c at address GX0 
+    READ from i2c at address GX0
     WRITE to SharedMemory in GcX
 
-    READ from i2c at address GY0 
+    READ from i2c at address GY0
     WRITE to SharedMemory in GcY
 
-    READ from i2c at address GZ0 
+    READ from i2c at address GZ0
     WRITE to SharedMemory in GcZ
 
 
     SET i2c slave address for magnetometer to mag_HMC5883L
 
-    READ from i2c at address MX0 
+    READ from i2c at address MX0
     WRITE to SharedMemory in McX
 
-    READ from i2c at address MY0 
+    READ from i2c at address MY0
     WRITE to SharedMemory in McY
 
-    READ from i2c at address MZ0 
+    READ from i2c at address MZ0
     WRITE to SharedMemory in McZ
 
 
@@ -319,8 +319,10 @@ The data formatter gets telemetry data from the control module, transforms it to
 
 
 ### _Flight Mode Components_
-#### Std Rust Libraries
+#### Embedded Rust Libraries
 During flight mode, the system reads sensor input and dispatches control signals via [I2C](https://github.com/rust-embedded/rust-i2cdev) and [GPIO](https://github.com/rust-embedded/rust-sysfs-gpio) Rust libraries.
+
+This is mostly a wrapper around the gpio/i2c libraries, calls we can use in our JSBSim library call as well.
 
 ```
 // Import libraries
@@ -330,40 +332,44 @@ use i2cdev::*;
 use sysfs_gpio::{Direction, Pin}
 
 // to use, must initiate a new gpio object, call init, then set_value
-struct gpio {
+struct gpio
   myGpio = Pin,
 }
 
-impl gpio {
-  public function init(pin: u64, dir: Direction) -> Option<()> {
+impl gpio
+  FUNCTION init(pin: u64, dir: Direction) -> Option<()>
       // this pseudocode contains possible rust code to run
-      initialize myGpio with a new Pin code(myGpio = Pin::new(pin))
-      explicitely set the myGpio pin direction code(try!(input.set_direction(dir)))
-      return okay if try did not fail code(Ok(()))
-  }
+      INIT myGpio with a new Pin //myGpio = Pin::new(pin)
+      SET the myGpio pin direction //try!(input.set_direction(dir))
+      RETURN okay if try did not fail //Ok(())
+  END FUNCTION
 
-  public function set_value(value: u8) -> Option<()> {
-    set the value of myGpio with value code(try!(myGpio.set_value(value)))
-    return okay if try did not fail code(Ok(()))
-  }
+  FUNCTION set_value(value: u8) -> Option<()>
+    SET the value of myGpio with value //try!(myGpio.set_value(value)))
+    RETURN okay if try did not fail //Ok(()))
+  END FUNCTION
+
+  FUNCTION read_value() -> Option<u8>
+    RETURN the value of the pin, wrapper around library calls //try!(myGpio.get_value())
+  END FUNCTION
 
 }
 
-struct i2c {
+struct i2c
   myi2c = I2CDevice,
 }
 
-impl i2c {
-  public function init(bus: u8) -> Option<()> {
-    initialize the I2CDevice code(myi2c = try!(I2CDevice::new(bus)))
-    return okay if try did not fail code(Ok(()))
-  }
+impl i2c
+  FUNCTION init(bus: u8) -> Option<()>
+    INITIALIZE the I2CDevice //myi2c = try!(I2CDevice::new(bus)))
+    RETURN okay if try did not fail //Ok(()))
+  END FUNCTION
 
-  public function read_value(address: u8) -> Option<u16> {
-    let x = read register value from myi2c at address code(myi2c.smbus_read_word_data(address))
-    let r = x converted to u16 code(LittleEndian::read_u16(&x))
-    return okay if try did not fail code(Ok(r))
-  }
+  FUNCTION read_value(address: u8) -> Option<u16>
+    x <- read register value from myi2c at address //myi2c.smbus_read_word_data(address))
+    r <- x converted to u16 //LittleEndian::read_u16(&x))
+    RETURN okay if try did not fail //Ok(r))
+  END FUNCTION
 }
 
 ```
@@ -406,7 +412,7 @@ FUNCTION INITIALIZE
      PAUSE until ready to launch
      SET rocket launch
 ENDFUNCTION
-     
+
 
 ///this is the primary work loop
 FUNCTION LOOPDATA (sim_actuator_output):
