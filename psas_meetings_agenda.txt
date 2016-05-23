@@ -227,7 +227,23 @@ Monday 05/23
 
 Announcements: <5 minutes
     -> Requirements due today
-    -> Design due in a week (our pseudocode)
+    -> Design due in a week (our pseudocode), review on 26th
+
+Mid-project presentation: 5 minutes
+    -> Monday, June 6, 7:30->9:30
+    -> 12 minutes a team + 2 for questions
+    -> Must post slides, must post them on wiki, no laptop fumbling
+    -> Every student must attend Every talk
+    -> Every student must give full name, and must present
+    -> Must rehearse
+    -> Suggested Topics include:
+        . overview of project, sponsor acknowledgements
+        . how the team/project is set up/organized
+        . Project plan + schedule
+        . Requirements gathering + specifications, interesting requirements
+        . software architecture
+        . V&V plan (verification and validation)
+        . Risk and risk management
 
 Design: 15 minutes
     -> Reminders
@@ -255,4 +271,6 @@ Git: 15-20 minutes
     -> Work through example of working/submitting code
         . Lone programming
         . Pair programming
+
+
 
