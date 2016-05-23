@@ -416,20 +416,20 @@ ENDFUNCTION
 
 ///this is the primary work loop
 FUNCTION LOOPDATA (sim_actuator_output):
-     WHILE (testing)
+     IF (testing)
           GET actuator response from sim_actuator_output
           PARSE actuator response into buffer_to_jsbsim	//collapse structured data into csv
           SEND buffer_to_jsbsim to jsbsim
 
-          WHILE (script)
+          IF (script)
 	     	RUN script object’s runscript()         	//will need to know how data is to be blended
 	     	RUN fgfdmexec’s run method              	// … between script & sim actuator output
-          ENDWHILE
+          ENDIF
 
           PUT data from jsbsim into buffer_from_jsbsim      //structure csv data
           PARSE buffer_from_jsbsim
           SET data into sim_sensor_input
-     ENDWHILE
+     ENDIF
 ENDFUNCTION
 
 ///this function closes out the JSBSim Binder
