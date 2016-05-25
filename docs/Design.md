@@ -147,7 +147,6 @@ struct SensorModule
 
   gyro: i2c,
   accel: i2c,
-  magneto: i2c,
 
   //accelerometer register addresses (ADXL345B)
   accel_ADXL345B: u8, //slave address
@@ -179,22 +178,6 @@ struct SensorModule
   GZ0: u8,
   GZ1: u8,
 
-
-  //Magnetometer addresses
-  mag_HMC5883L: u8,
-  //mag data is the same as the rest
-  MX0: u8,
-  MX1: u8,
-  MY0: u8,
-  MY1: u8,
-  MZ0: u8,
-  MZ1: u8,
-
-  //magnetometer mode selection register
-  Mag_Mode_Reg: u8,
-
-  //barometer address
-  bar_BMP085: u8,
 }
 
 
@@ -211,8 +194,6 @@ impl SensorModule
     OFSZ = 0x20
     BW_RATE = 0x2C //data rate and power mode control (need to find out i2c rate)
     POWER_CTL = 0x2D //power saving features, default is fine
-
-
 
     //Accelerometer data is in two's compliment
     //"0" is the least significant byte
@@ -234,31 +215,10 @@ impl SensorModule
     GZ0 = 0x2C
     GZ1 = 0x2D
 
-    //Magnetometer addresses
-    mag_HMC5883L = 0x1E
-    //mag data is the same as the rest
-    MX0 = 0x03
-    MX1 = 0x04
-    MY0 = 0x07
-    MY1 = 0x08
-    MZ0 = 0x05
-    MZ1 = 0x06
-
-    Mag_Mode_Reg = 0x02 //magnetometer mode selection register
-
-    //Not quite sure what to do with these
-    //x.address(mag_HMC5883L)
-    //x.writeReg(Mag_Mode_Reg, 0x00) //0x00 == continuous measurements, default is 0x01 == single measurement
-
-    //barometer address
-    bar_BMP085 = 0xEE
-
 
     INITIALIZE the i2c device
-    gyro.init(accel_ADXL345B)
-    accel.init(gyro_L3G4200D)
-    magneto.init(mag_HMC5883L)
-
+    gyro.init(gyro_L3G4200D)
+    accel.init(accel_ADXL345B)
 
   ENDFUNCTION
 
@@ -291,18 +251,6 @@ impl SensorModule
 
     READ from i2c at address GZ0
     WRITE to SharedMemory in GcZ
-
-
-    SET i2c slave address for magnetometer to mag_HMC5883L
-
-    READ from i2c at address MX0
-    WRITE to SharedMemory in McX
-
-    READ from i2c at address MY0
-    WRITE to SharedMemory in McY
-
-    READ from i2c at address MZ0
-    WRITE to SharedMemory in McZ
 
 
   ENDFUNCTION
