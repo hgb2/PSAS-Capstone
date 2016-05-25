@@ -26,6 +26,7 @@ The main module is executed at program startup and does the following:
 PRINT startup information including whether test mode is enabled
 
 INIT struct containing to-be-determined information which will be shared between modules
+CALL InitializeDataFormatterModule with address of shared memory structure
 CALL InitializeSensorModule with address of shared memory structure
 CALL InitializeControlModule with address of shared memory structure
 INIT variables/class/struct containing means of using high-precision time constructs
@@ -37,9 +38,7 @@ WHILE Running EQUAL true
                                                 - TimeConstruct.PreviousTime
     SET TimeConstruct.PreviousTime TO TimeConstruct.CurrentTime;
     WHILE TimeConstruct.TimeSinceLastUpdate >= constant_time_step
-        IF CALL SensorModuleUpdate EQUAL 1 THEN
-            THROW emergency_sensor_exception
-        ENDIF
+        CALL SensorModuleUpdate
         IF CALL ControlModuleUpdate EQUAL 1 THEN
             THROW emergency_control_exception
         ENDIF
