@@ -381,26 +381,77 @@ the function calls made by the control module in flight mode. Hardware
 compatible compatible data received from the control module is converted to
 a compatible format and sent on to JSBSim.
 
+```
+extern crate pin-proxy;
+use pin_proxy::{Direction, Pin}
+
+struct gpio
+  myGpio = Pin,
+}
+
+impl gpio
+  FUNCTION init(pin: u64, dir: Direction) -> Option<()>
+    INIT myGpio with a new Pin
+      SET the myGpio pin direction
+      RETURN okay if try did not fail
+  END FUNCTION
+
+  FUNCTION set_value(value: u8) -> Option<()>
+    SET the value of myGpio with value
+    RETURN okay if try did not fail
+  END FUNCTION
+
+  FUNCTION read_value() -> Option<u8>
+    RETURN the value of the pin, wrapper around library calls
+  END FUNCTION
+
+}
+
+```
+
 #### Sensor Interface
 The sensor interface provides a set of functions that are equivalent to the
 function calls made by the sensor module in flight mode. JSBSim sensor data
 is retrieved, converted into a hardware compatible format, and made available
 to the sensor module.
 
+```
+extern crate sensor-proxy;
+use sensor_proxy::{I2CDevice}
+
+struct i2c
+  myi2c = I2CDevice,
+}
+
+impl i2c
+  FUNCTION init(bus: u8) -> Option<()>
+    INITIALIZE the proxy I2CDevice
+    RETURN okay if try did not fail
+  END FUNCTION
+
+  FUNCTION read_value(address: u8) -> Option<u16>
+    x <- read register value from myi2c at address
+    r <- x converted to u16
+    RETURN okay if try did not fail
+  END FUNCTION
+}
+
+```
+
 #### JSBSim
 JSBSim is commercial off the shelf (COTS) software that is used to
 simulate sensor outputs based on control inputs.
 
 ```
-INPUT:	sim_actuator_output			
-OUTPUT:	sim_sensor_output
+INPUT:  sim_actuator_output     
+OUTPUT: sim_sensor_output
 
 
 ///this function initializes the JSBSim Binder
 FUNCTION INITIALIZE
      //set up data buffers
-     SET buffer_to_jsbsim				          	//data in csv format		
-     SET buffer_from_jsbsim				          	//data in csv format
+     SET buffer_to_jsbsim                   //data in csv format    
+     SET buffer_from_jsbsim                   //data in csv format
 
      //set up jsbsim
      INIT jsbsim exec
@@ -417,12 +468,12 @@ ENDFUNCTION
 FUNCTION LOOPDATA (sim_actuator_output):
      IF (testing)
           GET actuator response from sim_actuator_output
-          PARSE actuator response into buffer_to_jsbsim	//collapse structured data into csv
+          PARSE actuator response into buffer_to_jsbsim //collapse structured data into csv
           SEND buffer_to_jsbsim to jsbsim
 
           IF (script)
-	     	RUN script object’s runscript()         	//will need to know how data is to be blended
-	     	RUN fgfdmexec’s run method              	// … between script & sim actuator output
+        RUN script object’s runscript()           //will need to know how data is to be blended
+        RUN fgfdmexec’s run method                // … between script & sim actuator output
           ENDIF
 
           PUT data from jsbsim into buffer_from_jsbsim      //structure csv data
@@ -433,7 +484,7 @@ ENDFUNCTION
 
 ///this function closes out the JSBSim Binder
 FUNCTION TERMINATE:
-     CLOSE buffer_to_jsbsim				
+     CLOSE buffer_to_jsbsim       
      CLOSE jsbsim output
      CLOSE jsbsim
      CLOSE buffer_from_jsbsim
