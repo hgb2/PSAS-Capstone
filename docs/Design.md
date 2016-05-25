@@ -74,11 +74,8 @@ FUNCTION init(addr)
     CALL libs::gpio::init(ESTOP pin, DIR_IN)
 
     // turn gpio pins off
-    CALL libs::gpio::set_value(CW pin, state)
-    CALL libs::gpio::set_value(CCW pin, state)
-
-    // initialize data formatter
-    CALL data_fmt::init()
+    CALL write_pin(CW_pin, state)
+    CALL write_pin(CCW_pin, state)
 
 END FUNCTION
 
@@ -99,18 +96,18 @@ FUNCTION update()
                        // (/114.3 when sensitivity is set to 250 dps)
     IF rateX GE 0.175
         CALL state_update()
-        CALL libs::gpio::set_value(CW pin, state)
+        CALL write_pin(CW pin, state)
     ELSE IF rateX LE -0.175
         CALL state_update()
-        CALL libs::gpio::set_value(CCW pin, state)
+        CALL write_pin(CCW pin, state)
     ELSE
         // turn off both gpio pins
-        CALL libs::gpio::set_value(CW pin, 0)
-        CALL libs::gpio::set_value(CCW pin, 0)
+        CALL write_pin(CW pin, 0)
+        CALL write_pin(CCW pin, 0)
     END IF
 
-    // send info to data formatter
-    CALL data_fmt::update(TBD)
+    // let the data formatter know that new data is available
+    CALL data_fmt::update()
 
     RETURN 0
 END FUNCTION
@@ -132,6 +129,12 @@ FUNCTION state_update(rateX)
         Toggle the state value
     END IF
 
+END FUNCTION
+
+FUNCTION write_pin(gpio pin, value)
+    CALL libs::gpio::set_value(pin, value)
+
+    Update the pin's state in shared memory to value
 END FUNCTION
 ```
 
