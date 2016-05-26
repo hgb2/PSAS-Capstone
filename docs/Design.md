@@ -309,20 +309,27 @@ struct gpio
 }
 
 impl gpio
-  FUNCTION init(pin: u64, dir: Direction) -> Option<()>
+  FUNCTION init(pin: u64, dir: Direction) -> Option<gpio>
       // this pseudocode contains possible rust code to run
-      INIT myGpio with a new Pin //myGpio = Pin::new(pin)
-      SET the myGpio pin direction //try!(input.set_direction(dir))
-      RETURN okay if try did not fail //Ok(())
+      TRY:
+          x <- mut gpio object INIT with a new Pin //let mut x = gpio{myGpio: Pin::new(pin)}
+          SET the gpioobj pin direction //try!(x.myGpio.set_direction(dir));
+          RETURN okay object with x // OK(x)
+      ERROR:
+          RETURN Err
   END FUNCTION
 
-  FUNCTION set_value(value: u8) -> Option<()>
-    SET the value of myGpio with value //try!(myGpio.set_value(value)))
-    RETURN okay if try did not fail //Ok(()))
+  FUNCTION set_value(&mut self, value: u8) -> Option<()>
+      TRY:
+          SET the value of myGpio with value //try!(self.myGpio.set_value(value)))
+          RETURN okay if try did not fail //Ok(()))
+      ERROR:
+          RETURN Err
+          
   END FUNCTION
 
-  FUNCTION read_value() -> Option<u8>
-    RETURN the value of the pin, wrapper around library calls //try!(myGpio.get_value())
+  FUNCTION read_value(self) -> Option<u8>
+    RETURN the value of the pin, wrapper around library calls //try!(self.myGpio.get_value())
   END FUNCTION
 
 }
@@ -333,14 +340,20 @@ struct i2c
 
 impl i2c
   FUNCTION init(bus: u8) -> Option<()>
-    INITIALIZE the I2CDevice //myi2c = try!(I2CDevice::new(bus)))
-    RETURN okay if try did not fail //Ok(()))
+      TRY:
+          INITIALIZE the I2CDevice //myi2c = try!(I2CDevice::new(bus)))
+          RETURN okay //Ok(()))
+      ERROR:
+          RETURN Err
   END FUNCTION
 
   FUNCTION read_value(address: u8) -> Option<u16>
-    x <- read register value from myi2c at address //myi2c.smbus_read_word_data(address))
-    r <- x converted to u16 //LittleEndian::read_u16(&x))
-    RETURN okay if try did not fail //Ok(r))
+      TRY:
+          x <- read register value from myi2c at address //myi2c.smbus_read_word_data(address))
+          r <- x converted to u16 //LittleEndian::read_u16(&x))
+          RETURN okay //Ok(r))
+      ERROR:
+          RETURN Err
   END FUNCTION
 }
 
