@@ -339,10 +339,10 @@ struct i2c
 }
 
 impl i2c
-  FUNCTION init(bus: u8) -> Option<()>
+  FUNCTION init(bus: u8) -> Option<i2c>
       TRY:
-          INITIALIZE the I2CDevice //myi2c = try!(I2CDevice::new(bus)))
-          RETURN okay //Ok(()))
+          x <- mut i2c device INIT with new I2CDevice //let mut x = i2c{myi2c: I2CDevice::new(bus)};
+          RETURN okay //Ok(())
       ERROR:
           RETURN Err
   END FUNCTION
