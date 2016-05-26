@@ -261,12 +261,34 @@ impl SensorModule
 }
 ```
 
-
-
-
 #### Data Formatter
 The data formatter gets telemetry data from the control module, transforms it to [psas-packet format](http://psas-packet-serializer.readthedocs.org/), and writes it out to a file.
 
+```
+FUNCTION init(addr)
+    INPUTS: address of shared memory
+    OUTPUTS: Returns void
+    
+    STORE address of shared memory
+    
+END FUNCTION
+
+
+FUNCTION send_packet(Socket)
+    INPUTS: Socket binding
+    OUTPUTS: Returns void
+    
+    READ RateX from Shared Memory
+    READ Sensor Data from Shared Memory
+    READ Selected JSBsim data pieces
+    
+    SET message type using PSAS-packet serializer
+    Set data package from Shared Memory
+    SEND UDP Packet containing the message type and data package from shared memory
+
+    RETURN 0
+END FUNCTION
+```
 
 ### _Flight Mode Components_
 #### Embedded Rust Libraries
