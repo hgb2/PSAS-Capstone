@@ -108,9 +108,6 @@ FUNCTION update()
         CALL write_pin(CCW pin, 0)
     END IF
 
-    // let the data formatter know that new data is available
-    CALL data_fmt::update()
-
     RETURN 0
 END FUNCTION
 
