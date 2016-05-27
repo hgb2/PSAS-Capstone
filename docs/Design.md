@@ -31,6 +31,7 @@ CALL InitializeSensorModule with address of shared memory structure
 CALL InitializeControlModule with address of shared memory structure
 INIT variables/class/struct containing means of using high-precision time constructs
      to perform a fixed timestep loop
+INIT UDP_Socket connection
 
 WHILE Running EQUAL true
     SET TimeConstruct.CurrentTime TO CALL RustLibraryGetCurrentTime
@@ -42,6 +43,7 @@ WHILE Running EQUAL true
         IF CALL ControlModuleUpdate EQUAL 1 THEN
             THROW emergency_control_exception
         ENDIF
+        CALL Data_Formatter::send_packet with UDP_Socket
         INCREMENT TimeConstruct.TimeSinceLastUpdate BY NEGATE constant_time_step;
         WHEN any exception
             PRINT information about exception
@@ -262,7 +264,7 @@ impl SensorModule
 ```
 
 #### Data Formatter
-The data formatter gets telemetry data from the control module, transforms it to [psas-packet format](http://psas-packet-serializer.readthedocs.org/), and writes it out to a file.
+The data formatter gets telemetry data from the control module, transforms it to [psas-packet format](http://psas-packet-serializer.readthedocs.org/), and sends a UDP packet to a server.
 
 ```
 FUNCTION init(addr)
@@ -282,9 +284,9 @@ FUNCTION send_packet(Socket)
     READ Sensor Data from Shared Memory
     READ Selected JSBsim data pieces
     
-    SET message type using PSAS-packet serializer
-    Set data package from Shared Memory
-    SEND UDP Packet containing the message type and data package from shared memory
+    SET Message type using PSAS-packet API
+    SET Data_Package from Shared Memory
+    SEND UDP_Packet containing Message type and Data_Package from shared memory
 
     RETURN 0
 END FUNCTION
