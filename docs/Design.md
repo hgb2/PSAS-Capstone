@@ -63,17 +63,22 @@ FUNCTION init(addr)
     INPUTS: address of shared memory
     OUTPUTS: Returns void
 
-    Store address of shared memory
+    STORE address of shared memory
 
-    state <- 0 // control state variable
+    STORE state <- 0 // control state variable
 
     // initialize gpio pins
     // Use pin 53 as clockwise (CW)
     // Use pin 54 as counter clockwise (CCW)
     // Use pin 0 as emergency stop (ESTOP)
-    CALL libs::gpio::init(CW pin, DIR_OUT)
-    CALL libs::gpio::init(CCW pin, DIR_OUT)
-    CALL libs::gpio::init(ESTOP pin, DIR_IN)
+    STORE CW_pin <- CALL libs::gpio::init(CW pin number)
+    CALL CW_pin.set_direction(DIR_OUT)
+
+    STORE CCW_pin <- CALL libs::gpio::init(CCW pin number)
+    CALL CCW_pin.set_direction(DIR_OUT)
+
+    STORE ESTOP_pin <- CALL libs::gpio::init(ESTOP pin number)
+    CALL ESTOP_pin.set_direction(DIR_IN)
 
     // turn gpio pins off
     CALL write_pin(CW_pin, state)
@@ -87,25 +92,25 @@ FUNCTION update()
     OUTPUTS: Returns 0 -- all is well
                      1 -- Shut Down! (HW asserted the emergency stop pin)
 
-    CALL libs::gpio::read_value(ESTOP pin)
-    IF ESTOP pin is 1
+    stop_pin <- CALL ESTOP_pin.read_value()
+    IF stop_pin is 1
         RETURN 1
     END IF
 
-    Retrieve GyX from shared memory
+    READ GyX from shared memory
 
     rateX <- GyX/114.3 // degrees per second
                        // (/114.3 when sensitivity is set to 250 dps)
     IF rateX GE 0.175
         CALL state_update()
-        CALL write_pin(CW pin, state)
+        CALL write_pin(CW_pin, state)
     ELSE IF rateX LE -0.175
         CALL state_update()
-        CALL write_pin(CCW pin, state)
+        CALL write_pin(CCW_pin, state)
     ELSE
         // turn off both gpio pins
-        CALL write_pin(CW pin, 0)
-        CALL write_pin(CCW pin, 0)
+        CALL write_pin(CW_pin, 0)
+        CALL write_pin(CCW_pin, 0)
     END IF
 
     RETURN 0
@@ -117,6 +122,10 @@ FUNCTION state_update(rateX)
     OUTPUTS: Returns void
 
     kp <- 0.25           // proportional gain for duty cycle
+
+    // wish the variables names were more descriptive here, but that's what they
+    // are called in Gain_v3.py ... don't want to make any wrong assumptions that
+    // make it worse
     a <- 2.0 * kp        // (I/(r*.1s))/Ftot equation to dc from radian error
     u <- a*abs(rateX)
 
@@ -130,10 +139,14 @@ FUNCTION state_update(rateX)
 
 END FUNCTION
 
-FUNCTION write_pin(gpio pin, value)
-    CALL libs::gpio::set_value(pin, value)
+FUNCTION write_pin(pin, value)
+    INPUTS:  pin -- gpio pin object
+             value -- value to write to the pin (0 or 1)
+    OUTPUTS: stores gpio pin's state in shared memory and returns void
 
-    Update the pin's state in shared memory to value
+    CALL pin.set_value(value)
+
+    STORE value to the pin's state in shared memory
 END FUNCTION
 ```
 
