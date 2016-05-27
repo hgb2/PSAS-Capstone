@@ -315,59 +315,24 @@ extern crate i2cdev;
 use i2cdev::*;
 use sysfs_gpio::{Direction, Pin}
 
-// to use, must initiate a new gpio object, call init, then set_value
-struct gpio
-  myGpio = Pin,
-}
+FUNCTION init(pin)
+   INPUTS: gpio pin number
+   OUTPUTS: Linux interface to GPIOs
+  
+   // embedded linux libraries found here:
+   //https://github.com/rust-embedded/rust-sysfs-gpio
+   RETURN Pin::new(pin)
+END FUNCTION
 
-impl gpio
-  FUNCTION init(pin: u64, dir: Direction) -> Option<gpio>
-      // this pseudocode contains possible rust code to run
-      TRY:
-          x <- mut gpio object INIT with a new Pin //let mut x = gpio{myGpio: Pin::new(pin)}
-          SET the gpioobj pin direction //try!(x.myGpio.set_direction(dir));
-          RETURN okay object with x // OK(x)
-      ERROR:
-          RETURN Err
-  END FUNCTION
-
-  FUNCTION set_value(&mut self, value: u8) -> Option<()>
-      TRY:
-          SET the value of myGpio with value //try!(self.myGpio.set_value(value)))
-          RETURN okay if try did not fail //Ok(()))
-      ERROR:
-          RETURN Err
-          
-  END FUNCTION
-
-  FUNCTION read_value(self) -> Option<u8>
-    RETURN the value of the pin, wrapper around library calls //try!(self.myGpio.get_value())
-  END FUNCTION
-
-}
-
-struct i2c
-  myi2c = I2CDevice,
-}
-
-impl i2c
-  FUNCTION init(bus: u8) -> Option<i2c>
-      TRY:
-          x <- mut i2c device INIT with new I2CDevice //let mut x = i2c{myi2c: I2CDevice::new(bus)};
-          RETURN okay //Ok(())
-      ERROR:
-          RETURN Err
-  END FUNCTION
-
-  FUNCTION read_value(address: u8) -> Option<u16>
-      TRY:
-          x <- read register value from myi2c at address //myi2c.smbus_read_word_data(address))
-          r <- x converted to u16 //LittleEndian::read_u16(&x))
-          RETURN okay //Ok(r))
-      ERROR:
-          RETURN Err
-  END FUNCTION
-}
+FUNCTION init(path, slave_address)
+   INPUTS: path -- path to i2c device
+           slave_address -- component of interest (gyro or accelerometer)
+   OUTPUTS: Returns Linux interface to I2C bus
+   
+   // embedded linux libraries found here:
+   // https://github.com/rust-embedded/rust-i2cdev.git
+   RETURN LinuxI2CDevice::new(path, slave_address)
+END FUNCTION
 
 ```
 
