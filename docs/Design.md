@@ -92,7 +92,7 @@ FUNCTION update()
     OUTPUTS: Returns 0 -- all is well
                      1 -- Shut Down! (HW asserted the emergency stop pin)
 
-    stop_pin <- CALL ESTOP_pin.read_value()
+    stop_pin <- CALL ESTOP_pin.get_value()
     IF stop_pin is 1
         RETURN 1
     END IF
