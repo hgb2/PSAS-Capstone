@@ -309,10 +309,9 @@ During flight mode, the system reads sensor input and dispatches control signals
 This is mostly a wrapper around the gpio/i2c libraries, calls we can use in our JSBSim library call as well.
 
 ```
+// gpio File, accessible with gpio::init()
 // Import libraries
 extern crate sysfs-gpio;
-extern crate i2cdev;
-use i2cdev::*;
 use sysfs_gpio::{Direction, Pin}
 
 FUNCTION init(pin)
@@ -324,6 +323,11 @@ FUNCTION init(pin)
    RETURN Pin::new(pin)
 END FUNCTION
 
+//i2c File, accessible with i2c::init()
+// Import libraries
+extern crate i2cdev;
+use i2cdev::*;
+
 FUNCTION init(path, slave_address)
    INPUTS: path -- path to i2c device
            slave_address -- component of interest (gyro or accelerometer)
@@ -333,7 +337,6 @@ FUNCTION init(path, slave_address)
    // https://github.com/rust-embedded/rust-i2cdev.git
    RETURN LinuxI2CDevice::new(path, slave_address)
 END FUNCTION
-
 ```
 
 
