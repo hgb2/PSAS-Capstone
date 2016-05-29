@@ -352,22 +352,31 @@ extern crate pin-proxy;
 use pin_proxy::{Direction, Pin}
 
 struct gpio
-  myGpio = Pin,
+  cw = Pin,
+  ccw = Pin,
+  estop = Pin,
 }
 
 impl gpio
-  FUNCTION init(pin: u64, dir: Direction) -> Option<()>
-    INIT myGpio with a new Pin
-      SET the myGpio pin direction
-      RETURN okay if try did not fail
-  END FUNCTION
-
-  FUNCTION set_value(value: u8) -> Option<()>
-    SET the value of myGpio with value
+  FUNCTION init(pin: u64, dir: Direction) -> Option<gpio>
+	INITIALIZE jsbsim
+    INITIALIZE cw, ccw, estop with a new Pin for each
+    SET the gpo pin directions
     RETURN okay if try did not fail
   END FUNCTION
 
-  FUNCTION read_value() -> Option<u8>
+  FUNCTION set_direction()
+	Log event
+  END FUNCTION
+  
+  FUNCTION set_value(value: u8) -> Option<()>
+	cw.get_value()
+	ccw.get_value()
+	buffer_to_jsbsim({value, cw, ccw})
+    RETURN okay if try did not fail
+  END FUNCTION
+
+  FUNCTION get_value() -> Option<u8>
     RETURN the value of the pin, wrapper around library calls
   END FUNCTION
 
@@ -390,14 +399,19 @@ struct i2c
 }
 
 impl i2c
-  FUNCTION init(bus: u8) -> Option<()>
+  FUNCTION init(bus: u8) -> Option<i2c>
     INITIALIZE the proxy I2CDevice
     RETURN okay if try did not fail
   END FUNCTION
 
   FUNCTION read_value(address: u8) -> Option<u16>
-    x <- read register value from myi2c at address
-    r <- x converted to u16
+    accel, gyro <- buffer_from_jsbsim()
+    data <- Convert to MPU-6050 format {accel, gyro}
+	buffer_to_jsbsim(data)
+  END FUNCTION
+  
+  FUNCTION write_value(address: u8) -> Option<u16>
+	Log event
     RETURN okay if try did not fail
   END FUNCTION
 }
