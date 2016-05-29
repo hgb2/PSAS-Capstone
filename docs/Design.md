@@ -158,119 +158,27 @@ The sensor module retrieves sensor data and stores it in shared memory.  The sen
 
 ```
 
-struct SensorModule
+Function InitializeSensorModule(sharedMem: &mut SharedMemory)
+  INPUTS: address of shared memory
+  OUTPUTS: Returns void
 
-  gyro: i2c,
-  accel: i2c,
+  CALL myi2c <- i2c::init(device_path, 0x68) //0x68 used in Jamey's code
+  CALL myi2c.write(0x3b) //0x3b is the beginning address of the block of registers that we want to read
 
-  //accelerometer register addresses (ADXL345B)
-  accel_ADXL345B: u8, //slave address
-  OFSX: u8, //Axis offsets
-  OFSY: u8,
-  OFSZ: u8,
-  BW_RATE: u8, //data rate and power mode control (need to find out i2c rate)
-  POWER_CTL: u8, //power saving features, default is fine
+ENDFUNCTION
 
 
-  //Accelerometer data is in two's compliment
-  //"0" is the least significant byte
-  //"1" is the most significant byte
-  AX0: u8,
-  AX1: u8,
-  AY0: u8,
-  AY1: u8,
-  AZ0: u8,
-  AZ1: u8,
+FUNCTION SensorModuleUpdate(sharedMem: &mut SharedMemory)
+  INPUTS: address of shared memory
+  OUTPUTS: Returns void
 
+  let mut buf = [0u8; (3 + 1 + 3) * 2]  //3 accel (Registers 3b-40), 1 temp (Registers 41-42), 3 gyro (Registers 43-48)
+  CALL myi2c.read(&buf) //puts block (buf.length) of registers in buf (accel, temp, and gyro)
 
-  //gyro register addresses (L3G4200D) max i2c rate 400kHz
-  gyro_L3G4200D: u8,
-  //Gyro data is two's complement with same format as accelerometer
-  GX0: u8,
-  GX1: u8,
-  GY0: u8,
-  GY1: u8,
-  GZ0: u8,
-  GZ1: u8,
+  WRITE buf into Shared Memory
 
-}
+ENDFUNCTION
 
-
-impl SensorModule
-
-  Function InitializeSensorModule(sharedMem: &mut SharedMemory)
-      INPUTS: address of shared memory
-      OUTPUTS: Returns void
-
-    //accelerometer register addresses (ADXL345B)
-    accel_ADXL345B = 0x53 //slave address
-    OFSX = 0x1E //Axis offsets
-    OFSY = 0x1F
-    OFSZ = 0x20
-    BW_RATE = 0x2C //data rate and power mode control (need to find out i2c rate)
-    POWER_CTL = 0x2D //power saving features, default is fine
-
-    //Accelerometer data is in two's compliment
-    //"0" is the least significant byte
-    //"1" is the most significant byte
-    AX0 = 0x32
-    AX1 = 0x33
-    AY0 = 0x34
-    AY1 = 0x35
-    AZ0 = 0x36
-    AZ1 = 0x37
-
-    //gyro register addresses (L3G4200D) max i2c rate 400kHz
-    gyro_L3G4200D = 0x35
-    //Gyro data is two's complement with same format as accelerometer
-    GX0 = 0x28
-    GX1 = 0x29
-    GY0 = 0x2A
-    GY1 = 0x2B
-    GZ0 = 0x2C
-    GZ1 = 0x2D
-
-
-    INITIALIZE the i2c device
-    gyro.init(gyro_L3G4200D)
-    accel.init(accel_ADXL345B)
-
-  ENDFUNCTION
-
-
-
-  FUNCTION SensorModuleUpdate(sharedMem: &mut SharedMemory)
-      INPUTS: address of shared memory
-      OUTPUTS: Returns void
-
-
-    SET i2c slave address for accelerometer to accel_ADXL345B
-
-    READ from i2c at address AX0
-    WRITE to SharedMemory in AcX
-
-    READ from i2c at address AY0
-    WRITE to SharedMemory in AcY
-
-    READ from i2c at address AZ0
-    WRITE to SharedMemory in AcZ
-
-
-    SET i2c slave address for gyro to gyro_L3G4200D
-
-    READ from i2c at address GX0
-    WRITE to SharedMemory in GcX
-
-    READ from i2c at address GY0
-    WRITE to SharedMemory in GcY
-
-    READ from i2c at address GZ0
-    WRITE to SharedMemory in GcZ
-
-
-  ENDFUNCTION
-
-}
 ```
 
 #### Data Formatter
