@@ -243,6 +243,7 @@ FUNCTION init(path, slave_address)
    
    // embedded linux libraries found here:
    // https://github.com/rust-embedded/rust-i2cdev.git
+   Set up the i2c_device hardware // Refer to PSAS code for this
    RETURN LinuxI2CDevice::new(path, slave_address)
 END FUNCTION
 ```
