@@ -244,18 +244,19 @@ Mid-project presentation: 5 minutes
         . software architecture
         . V&V plan (verification and validation)
         . Risk and risk management
+        . professional dress, no t-shirts
 
 Design: 15 minutes
     -> Reminders
         . Be sure to follow pseudocode guide sent out in email
         . Know what pieces your work depends on
 
-    -> Brian
+    -> Brian Chris
+        . 5:30
     -> Cort
     -> Tyler
     -> Sohail
     -> Harrison
-    -> Chris
     -> Paul
 
 Git: 15-20 minutes
