@@ -269,9 +269,25 @@ Git: 15-20 minutes
             - advantages: merge requests force code reviews
             - disadvantages: minor changes are harder, someone has to accept pull requests
     -> Make new repo?
+
+====================
+Monday 05/30
+====================
+
+Announcements: <5 minutes
+    -> Design doc (kind of) due today
+    -> Presentation is next week durring our finals time, 7:30-9:20
+
+Presentation: 15 minutes
+    -> Harrision: Make a google slides doc and share it with us by the end of Tuesday
+    -> Find practice presentation time, Friday? Weekend?
+
+Design: 15 minutes
+    -> Cort has sent an email with design review changes
+    -> Any further questions on this?
+    -> Design doc directly leads to programming, if something looks funny in the design doc, we need to change it now
+
+Things on next weeks agenda:
     -> Work through example of working/submitting code
         . Lone programming
         . Pair programming
-
-
-
