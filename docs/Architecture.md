@@ -28,14 +28,16 @@ The main module is executed at program startup and does the following:
 * Passes the location of shared memory to the sensor module initialization
 * Passes the location of shared memory to the control module initialization
 * Passes the location of shared memory to the data formatter initialization
+* Initializes a UDP socket connection
 * Sets up a mechanism to execute the main loop at a periodic rate
 * Drops into the main loop where:
     * Sensor updates are requested from the sensor module
     * Control updates are requested from the control module
+    * Passes the UDP socket to the data formatter for updates
 
 
 #### Control Module
-The control module implements the control algorithm. Sensor data is retrieved from shared memory and GPIO pins are asserted for course correction. Control state is stored in shared memory for the data formatter to access. The control module provides:
+The control module implements the control algorithm. Sensor data is retrieved from shared memory and GPIO pins are asserted for course correction. Control state for the GPIO pins is stored in shared memory. The control module provides:
 
 * An initialization function that receives the location of shared memory and sets up the control hardware
 * An update function that uses sensor data contained in shared memory 
