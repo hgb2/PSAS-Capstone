@@ -308,18 +308,18 @@ struct i2c
 }
 
 impl i2c
-  FUNCTION init(bus: u8) -> Option<i2c>
+  FUNCTION init() -> Option<i2c>
     INITIALIZE the proxy I2CDevice
     RETURN okay if try did not fail
   END FUNCTION
 
-  FUNCTION read_value(address: u8) -> Option<u16>
+  FUNCTION read(address: u8) -> Option<u16>
     accel, gyro <- buffer_from_jsbsim()
     data <- Convert to MPU-6050 format {accel, gyro}
 	buffer_to_jsbsim(data)
   END FUNCTION
   
-  FUNCTION write_value(address: u8) -> Option<u16>
+  FUNCTION write(address: u8) -> Option<u16>
 	Log event
     RETURN okay if try did not fail
   END FUNCTION
