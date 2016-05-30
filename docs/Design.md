@@ -209,7 +209,6 @@ FUNCTION send_packet(Socket)
     SET Data_Package from Shared Memory
     SEND UDP_Packet containing Message type and Data_Package from shared memory
 
-    RETURN 0
 END FUNCTION
 ```
 
