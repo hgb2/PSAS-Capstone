@@ -158,29 +158,26 @@ The sensor module retrieves sensor data and stores it in shared memory.  The sen
 
 ```
 
-FUNCTION InitializeSensorModule(sharedMem: &mut SharedMemory)
-    INPUTS: address of shared memory
-    OUTPUTS: Returns void
+Function InitializeSensorModule(sharedMem: &mut SharedMemory)
+  INPUTS: address of shared memory
+  OUTPUTS: Returns void
 
-    CALL myi2c <- i2c::init() 
+  CALL myi2c <- i2c::init(device_path, 0x68) //0x68 used in Jamey's code
+  CALL myi2c.write(0x3b) //0x3b is the beginning address of the block of registers that we want to read
 
 ENDFUNCTION
 
 
 FUNCTION SensorModuleUpdate(sharedMem: &mut SharedMemory)
-    INPUTS: address of shared memory
-    OUTPUTS: Returns void
+  INPUTS: address of shared memory
+  OUTPUTS: Returns void
 
-    let mut buf = [0u8; (3 + 1 + 3) * 2]  // 3 accel (Registers 3b-40), 
-                                          // 1 temp (Registers 41-42), 3 gyro (Registers 43-48)
+  let mut buf = [0u8; (3 + 1 + 3) * 2]  //3 accel (Registers 3b-40), 1 temp (Registers 41-42), 3 gyro (Registers 43-48)
+  CALL myi2c.read(&buf) //puts block (buf.length) of registers in buf (accel, temp, and gyro)
 
-    CALL myi2c.write(0x3b) // 0x3b is the beginning address of the block of registers that we want to read
-    CALL myi2c.read(&buf) // puts block (buf.length) of registers in buf (accel, temp, and gyro)
-
-    WRITE buf into Shared Memory
+  WRITE buf into Shared Memory
 
 ENDFUNCTION
-
 
 ```
 
@@ -209,6 +206,7 @@ FUNCTION send_packet(Socket)
     SET Data_Package from Shared Memory
     SEND UDP_Packet containing Message type and Data_Package from shared memory
 
+    RETURN 0
 END FUNCTION
 ```
 
@@ -262,11 +260,9 @@ a compatible format and sent on to JSBSim.
 extern crate pin-proxy;
 use pin_proxy::{Direction, Pin}
 
-/*
 struct gpio
   pin = Pin,
 }
-*/
 
 impl gpio
   FUNCTION init(Pin: u64) -> Option<gpio>
