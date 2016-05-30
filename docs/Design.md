@@ -198,9 +198,8 @@ FUNCTION send_packet(Socket)
     INPUTS: Socket binding
     OUTPUTS: Returns void
     
-    READ RateX from Shared Memory
+    READ GPIO pin states from Shared Memory
     READ Sensor Data from Shared Memory
-    READ Selected JSBsim data pieces
     
     SET Message type using PSAS-packet API
     SET Data_Package from Shared Memory
