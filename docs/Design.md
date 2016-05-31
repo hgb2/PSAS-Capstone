@@ -235,15 +235,14 @@ END FUNCTION
 extern crate i2cdev;
 use i2cdev::*;
 
-FUNCTION init(path, slave_address)
-   INPUTS: path -- path to i2c device
-           slave_address -- component of interest (gyro or accelerometer)
+FUNCTION init()
+   INPUTS: none
    OUTPUTS: Returns Linux interface to I2C bus
    
    // embedded linux libraries found here:
    // https://github.com/rust-embedded/rust-i2cdev.git
-   Set up the i2c_device hardware // Refer to PSAS code for this
-   RETURN LinuxI2CDevice::new(path, slave_address)
+   Set up the i2c_device hardware // Refer to Jamey code for this
+   RETURN LinuxI2CDevice
 END FUNCTION
 ```
 
