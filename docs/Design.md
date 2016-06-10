@@ -249,7 +249,7 @@ END FUNCTION
 #### Controller Interface
 The controller interface provides a set of functions that are equivalent to
 the function calls made by the control module in flight mode. Hardware
-compatible compatible data received from the control module is converted to
+compatible data received from the control module is converted to
 a compatible format and sent on to JSBSim.
 
 ```
