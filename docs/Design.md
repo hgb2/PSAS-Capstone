@@ -213,8 +213,6 @@ END FUNCTION
 #### Embedded Rust Libraries
 During flight mode, the system reads sensor input and dispatches control signals via [I2C](https://github.com/rust-embedded/rust-i2cdev) and [GPIO](https://github.com/rust-embedded/rust-sysfs-gpio) Rust libraries.
 
-This is mostly a wrapper around the gpio/i2c libraries, calls we can use in our JSBSim library call as well.
-
 ```
 // gpio File, accessible with gpio::init()
 // Import libraries
