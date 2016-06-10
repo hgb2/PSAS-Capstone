@@ -28,7 +28,7 @@ PRINT startup information including whether test mode is enabled
 INIT struct containing to-be-determined information which will be shared between modules
 CALL InitializeDataFormatterModule with address of shared memory structure
 CALL InitializeSensorModule with address of shared memory structure
-CALL InitializeControlModule with address of shared memory structure
+CALL InitializeControlModule
 INIT variables/class/struct containing means of using high-precision time constructs
      to perform a fixed timestep loop
 INIT UDP_Socket connection
@@ -40,7 +40,7 @@ WHILE Running EQUAL true
     SET TimeConstruct.PreviousTime TO TimeConstruct.CurrentTime;
     WHILE TimeConstruct.TimeSinceLastUpdate >= constant_time_step
         CALL SensorModuleUpdate
-        IF CALL ControlModuleUpdate EQUAL 1 THEN
+        IF CALL ControlModuleUpdate(reference to shared memory) EQUAL 1 THEN
             THROW emergency_control_exception
         ENDIF
         CALL Data_Formatter::send_packet with UDP_Socket
@@ -59,11 +59,10 @@ READ wait for user input to terminate program
 The control module implements the control algorithm. Sensor data is retrieved from shared memory and GPIO pins are asserted for course correction.
 
 ```
-FUNCTION init(addr)
-    INPUTS: address of shared memory
-    OUTPUTS: Returns void
-
-    STORE address of shared memory
+FUNCTION init()
+    INPUTS: None
+    OUTPUTS: Returns 0 -- all is well
+                     1 -- something bad happened
 
     STORE state <- 0 // control state variable
 
@@ -72,23 +71,25 @@ FUNCTION init(addr)
     // Use pin 54 as counter clockwise (CCW)
     // Use pin 0 as emergency stop (ESTOP)
     STORE CW_pin <- CALL libs::gpio::init(CW pin number)
-    CALL CW_pin.set_direction(DIR_OUT)
+    SET direction of CW pin to DIR_OUT
 
     STORE CCW_pin <- CALL libs::gpio::init(CCW pin number)
-    CALL CCW_pin.set_direction(DIR_OUT)
+    SET direction of CCW pin to DIR_OUT
 
     STORE ESTOP_pin <- CALL libs::gpio::init(ESTOP pin number)
-    CALL ESTOP_pin.set_direction(DIR_IN)
+    SET direction of ESTOP pin to DIR_IN
 
     // turn gpio pins off
-    CALL write_pin(CW_pin, state)
-    CALL write_pin(CCW_pin, state)
+    Set value of CW pin to 0
+    Set value of CCW pin to 0
+
+    RETURN 0 if everything went well, 1 otherwise
 
 END FUNCTION
 
 
-FUNCTION update()
-    INPUTS: None
+FUNCTION update(shared memory reference)
+    INPUTS: reference to shared memory
     OUTPUTS: Returns 0 -- all is well
                      1 -- Shut Down! (HW asserted the emergency stop pin)
 
@@ -97,37 +98,37 @@ FUNCTION update()
         RETURN 1
     END IF
 
-    READ GyX from shared memory
+    READ gyro_x from shared memory
 
-    rateX <- GyX/114.3 // degrees per second
-                       // (/114.3 when sensitivity is set to 250 dps)
-    IF rateX GE 0.175
-        CALL state_update()
-        CALL write_pin(CW_pin, state)
-    ELSE IF rateX LE -0.175
-        CALL state_update()
-        CALL write_pin(CCW_pin, state)
+    IF gyro_x GE 0.175
+        CALL state_update(CW pin, gyro_x)
+        CALL write_pin(CW pin, shared memory reference)
+    ELSE IF gyro_x LE -0.175
+        CALL state_update(CCW pin, gyro_x)
+        CALL write_pin(CCW pin, shared memory reference)
     ELSE
         // turn off both gpio pins
-        CALL write_pin(CW_pin, 0)
-        CALL write_pin(CCW_pin, 0)
+        SET CW pin state to 0 and CALL write_pin(CW pin, shared memory reference)
+        SET CCW pin state to 0 and CALL write_pin(CCW pin, shared memory reference)
     END IF
 
     RETURN 0
 END FUNCTION
 
 
-FUNCTION state_update(rateX)
-    INPUTS:  rateX -- rotational rate about the x axis
-    OUTPUTS: Returns void
+FUNCTION state_update(pin, gyro_x)
+    INPUTS:  pin -- gpio pin object
+             gyro_x -- rotational rate about the x axis
+    OUTPUTS: Returns 0 -- all is well
+                     1 -- something bad happened
 
-    kp <- 0.25           // proportional gain for duty cycle
+    kp <- 0.25 // proportional gain for duty cycle
 
     // wish the variables names were more descriptive here, but that's what they
     // are called in Gain_v3.py ... don't want to make any wrong assumptions that
     // make it worse
     a <- 2.0 * kp        // (I/(r*.1s))/Ftot equation to dc from radian error
-    u <- a*abs(rateX)
+    u <- a*abs(gyro_x)
 
     IF u GE 1.0
         state <- 1
@@ -137,16 +138,24 @@ FUNCTION state_update(rateX)
         Toggle the state value
     END IF
 
+    SET the pin's state value to state
+
+    RETURN 0 if everything went well, 1 otherwise
+
 END FUNCTION
 
-FUNCTION write_pin(pin, value)
+FUNCTION write_pin(pin, mem)
     INPUTS:  pin -- gpio pin object
-             value -- value to write to the pin (0 or 1)
-    OUTPUTS: stores gpio pin's state in shared memory and returns void
+             mem -- reference to shared memory
+    OUTPUTS: Returns 0 -- all is well
+                     1 -- something bad happened
 
-    CALL pin.set_value(value)
+    CALL pin.set_value(pin's state value)
 
-    STORE value to the pin's state in shared memory
+    STORE the pin's state value in shared memory
+
+    RETURN 0 if everything went well, 1 otherwise
+
 END FUNCTION
 ```
 
