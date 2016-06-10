@@ -24,10 +24,10 @@ The hardware is replaced by JSBSim to model sensor responses to control inputs.
 #### Main
 The main module is executed at program startup and does the following:
 
-* Initializes the shared memory interface
-* Passes the location of shared memory to the sensor module initialization
-* Passes the location of shared memory to the control module initialization
-* Passes the location of shared memory to the data formatter initialization
+* Creates a block of shared memory
+* Calls the sensor module initialization
+* Calls the control module initialization
+* Calls the data formatter initialization
 * Initializes a UDP socket connection
 * Sets up a mechanism to execute the main loop at a periodic rate
 * Drops into the main loop where:
@@ -39,7 +39,7 @@ The main module is executed at program startup and does the following:
 #### Control Module
 The control module implements the control algorithm. Sensor data is retrieved from shared memory and GPIO pins are asserted for course correction. Control state for the GPIO pins is stored in shared memory. The control module provides:
 
-* An initialization function that receives the location of shared memory and sets up the control hardware
+* An initialization function that sets up the control hardware
 * An update function that uses sensor data contained in shared memory 
 to calculate course updates
 
@@ -47,7 +47,7 @@ to calculate course updates
 #### Sensor Module
 The sensor module retrieves sensor data and stores it in shared memory.  The sensor module provides:
 
-* An initialization function that receives the location of shared memory and sets up the sensor hardware
+* An initialization function that sets up the sensor hardware
 * An update function that reads sensor data from hardware and stores it in shared memory
 
 #### Data Formatter
