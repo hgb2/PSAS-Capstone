@@ -194,27 +194,23 @@ ENDFUNCTION
 The data formatter gets telemetry data from the control module, transforms it to [psas-packet format](http://psas-packet-serializer.readthedocs.org/), and sends a UDP packet to a server.
 
 ```
-FUNCTION init(addr)
-    INPUTS: address of shared memory
-    OUTPUTS: Returns void
-    
-    STORE address of shared memory
-    
-END FUNCTION
 
-
-FUNCTION send_packet(Socket)
-    INPUTS: Socket binding
-    OUTPUTS: Returns void
+FUNCTION send_packet(Socket, addr)
+    INPUTS: Socket binding, Shared memory address
+    OUTPUTS: Returns 0 -- all is well
+                     1 -- Error
     
     READ GPIO pin states from Shared Memory
     READ Sensor Data from Shared Memory
     
+    RETURN 1 if Shared Memory is empty
+    
     SET Message type using PSAS-packet API
     SET Data_Package from Shared Memory
     SEND UDP_Packet containing Message type and Data_Package from shared memory
+    
+    RETURN 0 to indicate successful transmission of packet
 
-    RETURN 0
 END FUNCTION
 ```
 
