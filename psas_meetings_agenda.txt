@@ -30,10 +30,10 @@ Announcements: <1 minute (read on your own)
 General project strategy: 10 minutes
     -> Next 5 week plan
         . Planning and organizing
-            * Risk management - Grid of risks/likelyhoods, with mitigations
-            * Project Schedule - Calendar tracked events, high level drilling down to details (weekly is best)
+            - Risk management - Grid of risks/likelyhoods, with mitigations
+            - Project Schedule - Calendar tracked events, high level drilling down to details (weekly is best)
         . Aditional documents
-            * Solid initial design considerations before we start coding
+            - Solid initial design considerations before we start coding
                 - Shooting for 10 weeks of coding after this 5 weeks
                 - Need something to fit in that timeline
 
@@ -119,13 +119,10 @@ current POC in python
 Monday 05/09
 ====================
 Announcements: <1 minutes
-    -> Slack is up: All are on
-    -> Trello is up: Cort still needs to join
+    -> Slack is up: Everyone is on
+    -> Trello is up: Everyon is on
     -> Github is up: https://github.com/hgb2/PSAS-Capstone, clone it an put our documents in there!
-        . Is everyone a contributor? Can we all push (pulling has read permissions, but pushing has write permissions)
-
-Reminders: <1 minute
-    -> Put documents up in source control if you haven't yet
+        . Is everyone a contributor?
 
 Updates: 15 minutes
     -> Cort
@@ -140,9 +137,12 @@ Updates: 15 minutes
             - Talk about using excel sheet
     -> Sohail
         . Communication document
-            - put on slack and not on github so we don't spam personal information
+            - Put on slack and not on github so we don't spam personal information
+        . + Work breakdown structure
     -> Harrison
         . Devops Update
+        . + make sure everyone is contributor
+        . + Critical Path Method
 
 Timeline: <5 minutes
     -> Check out Chris' document
@@ -151,7 +151,7 @@ Timeline: <5 minutes
 
 Git etiquette: 5 minutes
     -> Keep a separate branch for documentation updates
-        . Push this branch after every update
+        . View on GitHub branches, then push to master when
     -> We will not be using git rebase
         . Use a merge with merge conflicts strategy
     -> Master will be the primary branch, we don't need secondary or development branches
@@ -160,3 +160,134 @@ Git etiquette: 5 minutes
         . Bug fixing based
         . Short description oriented, we should know what a branch is for and why it exists
 
+Git workflow: 10 minutes
+    -> Workflow if pair programming or group programming (maybe we will try mob programming)
+        . Starting with no branches except for master
+        . git checkout -b <descriptive_name> // This will create and checkout the branch
+        . Do work on that branch (commit ... commit ...)
+        . git push <branch_name> -> origin <branch_name>
+        . git checkout master
+        . git pull
+        . git merge <branch_name>
+            - Possible: manage merge conflics (edit documents)
+            - Once done, git pull again! (just in case others pushed in the meantime)
+        . git push master -> origin master
+    -> workflow if programming on ones own
+        . Follow the pair programming guide up until mergeing with master locally
+        . Instead of mergin with master, do a git diff master..<branch_name>
+            - This produces a line diff on the two branches, highlighting changes
+        . Submit that for code review in Slack channel
+            - Code review in slack should hang around for no longer than 24 hours if we can help it
+        . If accepted for code review: re-pull master, merge with master, then push master
+        . If not accpted, rewrite and submit for code review (likely directly to the same person) until accepted
+
+====================
+Monday 05/16
+====================
+
+Announcements: <1 minute
+    -> Requirements due next week
+    -> Design due week after
+        . Include pseudocode
+
+Pivots: 15 minutes
+    -> Need today: Work breakdown
+    -> Need next week: Requirements
+    -> Need before finals: Design document
+
+Assignments: <5 minutes
+    -> Harrison
+        . Devops Update
+            - Is everyone a contributor? yes
+        . Pivot to requirements
+    -> Cort
+        . Architecture Update
+        . Pivot to Design document
+    -> Paul
+        . Requirements & specification Update
+        . Pivot requirements
+    -> Tyler
+        . Risk Management Update * Done
+        . Pivot to helping with Design
+    -> Chris
+        . Project Schedule Update
+        . Pivot to helping with Requirements
+    -> Sohail
+        . Work breakdown structure Update
+        . Pivot to helping with design
+
+Get todays deliverables: 30+ minutes
+    -> Work breakdown structure
+        . Includes timeline
+    -> Risk management - Done
+
+====================
+Monday 05/23
+====================
+
+Announcements: <5 minutes
+    -> Requirements due today
+    -> Design due in a week (our pseudocode), review on 26th
+
+Mid-project presentation: 5 minutes
+    -> Monday, June 6, 7:30->9:30
+    -> 12 minutes a team + 2 for questions
+    -> Must post slides, must post them on wiki, no laptop fumbling
+    -> Every student must attend Every talk
+    -> Every student must give full name, and must present
+    -> Must rehearse
+    -> Suggested Topics include:
+        . overview of project, sponsor acknowledgements
+        . how the team/project is set up/organized
+        . Project plan + schedule
+        . Requirements gathering + specifications, interesting requirements
+        . software architecture
+        . V&V plan (verification and validation)
+        . Risk and risk management
+        . professional dress, no t-shirts
+
+Design: 15 minutes
+    -> Reminders
+        . Be sure to follow pseudocode guide sent out in email
+        . Know what pieces your work depends on
+
+    -> Brian Chris
+        . 5:30
+    -> Cort
+    -> Tyler
+    -> Sohail
+    -> Harrison
+    -> Paul
+
+Git: 15-20 minutes
+    -> Last week was busy so we did not cover this
+    -> 2 options
+        . Work out of one repo
+            - advantages: faster, easier, no merge requests
+            - disadvantages: code reviews are harder
+        . Work out of forked repo's (the way open source usually works)
+            - advantages: merge requests force code reviews
+            - disadvantages: minor changes are harder, someone has to accept pull requests
+    -> Make new repo?
+
+====================
+Monday 05/30
+====================
+
+Announcements: <5 minutes
+    -> Design doc (kind of) due today
+    -> Presentation is next week durring our finals time, 7:30-9:20
+
+Presentation: 15 minutes
+    -> Harrision: Make a google slides doc and share it with us by the end of Tuesday
+    -> Find practice presentation time, Friday? Weekend?
+
+Design: 15 minutes
+    -> Cort has sent an email with design review changes
+    -> Any further questions on this?
+    -> Design doc directly leads to programming, if something looks funny in the design doc, we need to change it now
+
+Things on next weeks agenda:
+    -> Work through example of working/submitting code
+        . Lone programming
+        . Pair programming
