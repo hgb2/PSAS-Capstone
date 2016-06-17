@@ -25,6 +25,7 @@ The main module is executed at program startup and does the following:
 ```
 PRINT startup information including whether test mode is enabled
 
+INIT Running TO true
 INIT struct containing to-be-determined information which will be shared between modules
 CALL InitializeDataFormatterModule with address of shared memory structure
 CALL InitializeSensorModule with address of shared memory structure
@@ -39,15 +40,15 @@ WHILE Running EQUAL true
                                                 - TimeConstruct.PreviousTime
     SET TimeConstruct.PreviousTime TO TimeConstruct.CurrentTime;
     WHILE TimeConstruct.TimeSinceLastUpdate >= constant_time_step
-        CALL SensorModuleUpdate
-        IF CALL ControlModuleUpdate(reference to shared memory) EQUAL 1 THEN
+        CALL SensorModuleUpdate with reference to shared memory
+        IF CALL ControlModuleUpdate with reference to shared memory EQUAL 1 THEN
             THROW emergency_control_exception
         ENDIF
-        CALL Data_Formatter::send_packet with UDP_Socket
+        CALL Data_Formatter::send_packet with reference to shared memory, UDP_Socket
         INCREMENT TimeConstruct.TimeSinceLastUpdate BY NEGATE constant_time_step;
         WHEN any exception
             PRINT information about exception
-            SET SimulationRunning TO false
+            SET Running TO false
     ENDWHILE
 ENDWHILE
 
