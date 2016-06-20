@@ -291,3 +291,23 @@ Things on next weeks agenda:
     -> Work through example of working/submitting code
         . Lone programming
         . Pair programming
+
+====================
+Monday 06/20
+====================
+
+Announcements: <5 minutes
+
+Design: 20 minutes
+    -> run through changes everyone made
+    -> If in aggreement, lock it down and start coding!
+
+Coding procedure: 20 minutes
+    -> Change control procedure
+
+Bonus: any time leftover
+    -> take sublime text (or your favorite editor)
+    -> + rustup
+    -> + racer
+    -> + sublime text rustAutoComplete (for sublime text, other editors have their own expansions)
+    -> *almost* an IDE in a text editor for rust
