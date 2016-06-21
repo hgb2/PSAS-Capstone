@@ -201,7 +201,8 @@ The data formatter gets telemetry data from the control module, transforms it to
 FUNCTION send_packet(Socket, addr)
     INPUTS: Socket binding, Shared memory address
     OUTPUTS: Returns 0 -- all is well
-                     1 -- Error
+                     1 -- Empty Shared Memory
+                     2 -- PSAS-packet exception: Mismatch for expected data size.
     
     READ GPIO pin states from Shared Memory
     READ Sensor Data from Shared Memory
@@ -210,6 +211,9 @@ FUNCTION send_packet(Socket, addr)
     
     SET Message type using PSAS-packet API
     SET Data_Package from Shared Memory
+    
+    RETURN 2 if PSAS-packet API returns an exception
+    
     SEND UDP_Packet containing Message type and Data_Package from shared memory
     
     RETURN 0 to indicate successful transmission of packet
