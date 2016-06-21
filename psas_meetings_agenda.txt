@@ -297,6 +297,7 @@ Monday 06/20
 ====================
 
 Announcements: <5 minutes
+    -> Google hangouts?
 
 Design: 20 minutes
     -> run through changes everyone made
