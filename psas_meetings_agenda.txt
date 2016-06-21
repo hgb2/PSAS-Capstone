@@ -304,6 +304,23 @@ Design: 20 minutes
 
 Coding procedure: 20 minutes
     -> Change control procedure
+    -> Workflow if lone programming
+        1 start on master branch
+        2 git checkout -b <descriptive_name> // This will create and checkout the branch
+        3 Do work on that branch (commit ... commit ...)
+        4 git push <branch_name> -> origin <branch_name>
+        5 go to github
+        6 Submit a pull request between your branch and master
+        7 Wait for pull request to be accepted (and make changes if needed)
+        8 git checkout master
+        9 git pull
+        10 git merge <branch_name>
+            - Possible: manage merge conflics (edit documents)
+            - Once done, git pull again! (just in case others pushed in the meantime)
+        11 git push master origin master
+    -> Workflow if pair programming, or group programming
+        . Follow the same steps up through step 4
+        . Imediatly skip to step 8, do not submit a pull request
 
 Bonus: any time leftover
     -> take sublime text (or your favorite editor)
@@ -311,3 +328,5 @@ Bonus: any time leftover
     -> + racer
     -> + sublime text rustAutoComplete (for sublime text, other editors have their own expansions)
     -> *almost* an IDE in a text editor for rust
+
+
