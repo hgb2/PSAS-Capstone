@@ -304,6 +304,8 @@ Design: 20 minutes
 
 Coding procedure: 20 minutes
     -> Change control procedure
+    -> Reference to "feature branch workflow" here:
+        . https://www.atlassian.com/git/tutorials/comparing-workflows/centralized-workflow
     -> Workflow if lone programming
         1 start on master branch
         2 git checkout -b <descriptive_name> // This will create and checkout the branch
