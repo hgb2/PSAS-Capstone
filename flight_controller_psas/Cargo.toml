@@ -1,0 +1,15 @@
+[package]
+name = "flight_controller_psas"
+version = "0.1.0"
+authors = ["brianbreniser <brianbreniser@gmail.com>"]
+
+[lib]
+name = "lib"
+path = "src/lib.rs"
+
+[[bin]]
+name = "main"
+path = "src/main.rs"
+doc = false
+
+[dependencies]
