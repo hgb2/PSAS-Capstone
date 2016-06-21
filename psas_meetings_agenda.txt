@@ -308,6 +308,7 @@ Coding procedure: 20 minutes
     -> Reference to "feature branch workflow" here:
         . https://www.atlassian.com/git/tutorials/comparing-workflows/centralized-workflow
     -> Workflow if lone programming
+        0 Check out Trello card
         1 start on master branch
         2 git checkout -b <descriptive_name> // This will create and checkout the branch
         3 Do work on that branch (commit ... commit ...)
@@ -315,18 +316,21 @@ Coding procedure: 20 minutes
         5 go to github
         6 Submit a pull request between your branch and master
         7 Wait for pull request to be accepted (and make changes if needed)
-        8 git checkout master
-        9 git pull
-        10 git merge <branch_name>
-            - Possible: manage merge conflics (edit documents)
-            - Once done, git pull again! (just in case others pushed in the meantime)
-        11 git push master origin master
+        8 If accepted, use github pull request confirm feature
     -> Workflow if pair programming, or group programming
         . Follow the same steps up through step 4
-        . Imediatly skip to step 8, do not submit a pull request
+        . Post on code_reviews that pair programing happened
+        . Skip to step 8, do not submit a pull request
+
+    -> Criteria for passing code review
+        1 code compiles
+        2 code test well written, well good coverage, all pass
+        3 comments are well written, explain why not what
+        4 code either meets requirements or doesn't break requirements
 
 Bonus: any time leftover
     -> take sublime text (or your favorite editor)
+    -> multirust is deprecated 
     -> + rustup
     -> + racer
     -> + sublime text rustAutoComplete (for sublime text, other editors have their own expansions)
