@@ -1,3 +1,8 @@
-pub fn hello() {
-    println!("hello from data formatter");
+use SharedMemory;
+
+pub fn init(mem: &SharedMemory) {
 }
+
+pub fn update(mem: &SharedMemory, socket: i32) {
+}
+

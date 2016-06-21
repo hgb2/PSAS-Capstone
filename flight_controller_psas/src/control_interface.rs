@@ -1,3 +1,8 @@
-pub fn hello() {
-    println!("hello from controller interface");
+use SharedMemory;
+
+pub fn init() {
 }
+
+pub fn update(mem: &mut SharedMemory) {
+}
+
