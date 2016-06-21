@@ -13,3 +13,6 @@ path = "src/main.rs"
 doc = false
 
 [dependencies]
+timer = "0.1.6"
+libc = "0.2"
+
