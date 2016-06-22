@@ -1,0 +1,13 @@
+[package]
+name = "test_mode"
+version = "0.1.0"
+authors = ["RCS team <us@pdx.com>"]
+
+[[bin]]
+name = "rcs_sw"
+path = "../common/main.rs"
+
+[lib]
+name = "libs"
+path = "src/lib.rs"
+

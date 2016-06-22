@@ -1,0 +1,12 @@
+Modules common to both flight and test modes are in the common/ directory.
+The flight_mode/ and test_mode/ directories contain mode specific libraries
+that link to the common code.
+
+To build for test mode:
+  cd test_mode
+  cargo build
+
+To build for flight mode:
+  cd flight_mode
+  cargo build
+
