@@ -60,7 +60,18 @@ fn main() {
             running = false;
             break;
           }
-          data_fmt::update(&mem, &socket);
+          match data_fmt::send_packet(&socket, &mem){
+            1=>{
+            println!("Error during data formatter send_packet.\n");
+            running = false;
+            break;}
+            2=>{
+            println!("Exception during data formatter send_packet.\n");
+            running = false;
+            break;
+            }
+            _=>()
+          }
           // Decrease by expected timestep
           time_since_last -= expected_timestep;
           println!("\n"); // Remove this when done testing otherwise outputting to console is a bottleneck
