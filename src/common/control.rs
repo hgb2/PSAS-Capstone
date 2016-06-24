@@ -2,6 +2,7 @@ use libs::gpio;
 use SharedMemory;
 
 pub fn init() {
+	gpio::init()
 }
 
 pub fn update(mem: &mut SharedMemory) -> i32 {

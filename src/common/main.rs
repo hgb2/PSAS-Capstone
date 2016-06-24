@@ -1,3 +1,5 @@
+use std::net::UdpSocket;
+
 extern crate libs;
 extern crate libc;
 
@@ -30,7 +32,7 @@ fn main() {
 
     // Timestep variables
     // The timestep in microseconds (500000 -> 500 milliseconds) -- Update when JSBSim timestep 
-    let expected_timestep = 8333; // This should translate to 120 HZ
+    let expected_timestep = 100000; // Should translate to 10 Hz. Replace with let expected_timestep = 8333; to translate to 120 Hz
     let mut running = true;
     let mut previous_time;
     let mut current_time = unsafe { ffi::clock() };
@@ -38,9 +40,8 @@ fn main() {
 
     sensor::init(); // Replace with let mut sen = sensor::init(&mut mem); soon
     control::init();        // Replace with let mut ctl = control::init(); soon
-    data_fmt::init();
 
-    let socket = 0x12345;    
+    let mut socket = UdpSocket::bind("0.0.0.0:0").unwrap(); // Update with correct IP/Port later
 
     while running{
         // Update time variables
@@ -49,12 +50,17 @@ fn main() {
         time_since_last = time_since_last + current_time-previous_time;
 
         while time_since_last >= expected_timestep {
-          sensor::update(&mut mem); // Replace with sen.update(&mut mem); soon
-          if control::update(&mut mem)==1{
+          if sensor::update(&mut mem)==1{ // Replace with sen.update(&mut mem); soon
+            println!("Error during sensor update.\n");
             running = false;
             break;
           }
-          data_fmt::update(&mem, socket);
+          if control::update(&mut mem)==1{
+            println!("Error during control update.\n");
+            running = false;
+            break;
+          }
+          data_fmt::update(&mem, &socket);
           // Decrease by expected timestep
           time_since_last -= expected_timestep;
           println!("\n"); // Remove this when done testing otherwise outputting to console is a bottleneck
