@@ -27,8 +27,7 @@ PRINT startup information including whether test mode is enabled
 
 INIT Running TO true
 INIT struct containing to-be-determined information which will be shared between modules
-CALL InitializeDataFormatterModule with address of shared memory structure
-CALL InitializeSensorModule with address of shared memory structure
+CALL InitializeSensorModule
 CALL InitializeControlModule
 INIT variables/class/struct containing means of using high-precision time constructs
      to perform a fixed timestep loop
@@ -40,15 +39,19 @@ WHILE Running EQUAL true
                                                 - TimeConstruct.PreviousTime
     SET TimeConstruct.PreviousTime TO TimeConstruct.CurrentTime;
     WHILE TimeConstruct.TimeSinceLastUpdate >= constant_time_step
-        CALL SensorModuleUpdate with reference to shared memory
-        IF CALL ControlModuleUpdate with reference to shared memory EQUAL 1 THEN
-            THROW emergency_control_exception
-        ENDIF
-        CALL Data_Formatter::send_packet with reference to shared memory, UDP_Socket
-        INCREMENT TimeConstruct.TimeSinceLastUpdate BY NEGATE constant_time_step;
-        WHEN any exception
-            PRINT information about exception
+        IF CALL SensorModuleUpdate with reference to shared memory EQUAL 1 THEN
+            PRINT information about error
             SET Running TO false
+        ENDIF
+        IF CALL ControlModuleUpdate with reference to shared memory EQUAL 1 THEN
+            PRINT information about error
+            SET Running TO false
+        ENDIF
+        CALL Data_Formatter::send_packet with reference to shared memory, UDP_Socket EQUAL 1 or 2 THEN
+            PRINT information about error
+            SET Running TO false
+        ENDIF
+        INCREMENT TimeConstruct.TimeSinceLastUpdate BY NEGATE constant_time_step;
     ENDWHILE
 ENDWHILE
 
