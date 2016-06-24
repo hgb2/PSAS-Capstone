@@ -1,9 +1,7 @@
 use libs::i2c;
 use SharedMemory;
 
-pub fn init(x: i32) {
-    println!("sensor init received {}", x);
-    i2c::init();
+pub fn init() {
 }
 
 pub fn update(mem: &mut SharedMemory) {

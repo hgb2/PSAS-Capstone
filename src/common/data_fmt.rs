@@ -1,7 +1,6 @@
 use SharedMemory;
 
-pub fn init(x: i32) {
-    println!("data formatter init received {}", x);
+pub fn init() {
 }
 
 pub fn update(mem: &SharedMemory, socket: i32) {
