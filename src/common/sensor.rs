@@ -1,15 +1,17 @@
 use libs::i2c;
 use SharedMemory;
+use UpdateResult;
 
-pub fn init(x: i32) {
-    println!("sensor init received {}", x);
-    i2c::init();
+pub fn init() {
+	i2c::init() 
 }
 
-pub fn update(mem: &mut SharedMemory) {
+pub fn update(mem: &mut SharedMemory) -> UpdateResult {
     println!("sensor update");
     i2c::update(30);
 
     mem.gyro_x = 114.75;
+    
+    Ok(0)
 }
 

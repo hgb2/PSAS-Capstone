@@ -1,15 +1,16 @@
 use SharedMemory;
+use std::net::UdpSocket;
+use UpdateResult;
 
-pub fn init(x: i32) {
-    println!("data formatter init received {}", x);
+pub fn init() {
 }
 
-pub fn update(mem: &SharedMemory, socket: i32) {
-    println!("data formatter update socket: {}", socket);
+pub fn send_packet(socket: &UdpSocket, mem: &SharedMemory) -> UpdateResult {
 
     println!("shared memory contains:");
     println!("  gyro: {}, {}, {}", mem.gyro_x, mem.gyro_y, mem.gyro_z);
     println!("  pin states: {}, {}", mem.cw_state, mem.ccw_state);
+    Ok(0)
 }
 
 
