@@ -26,7 +26,6 @@ fn main() {
                                cw_state: 0, ccw_state: 0};
 
     // Timestep variables
-    // The timestep in microseconds (500000 -> 500 milliseconds) -- Update when JSBSim timestep 
     let Hz :f64 = 2.0;  // Define the Hz to be used -- Using 2 Hz for testing
     let expected_timestep = 1.0/Hz; // Inverse of frequency
     let mut running = true;
