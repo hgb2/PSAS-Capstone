@@ -9,6 +9,9 @@ mod control;
 mod sensor;
 mod data_fmt;
 
+// Results
+pub type UpdateResult = Result<i32, i32>;
+
 // Add: use control_interface::Control; soon
 // Shared memory structure 
 pub struct SharedMemory {
@@ -45,27 +48,29 @@ fn main() {
         time_since_last = time_since_last + current_time-previous_time;
 
         while time_since_last >= expected_timestep {
-          if sensor::update(&mut mem)==1{ // Replace with sen.update(&mut mem); soon
-            println!("Error during sensor update.\n");
-            running = false;
-            break;
+          match sensor::update(&mut mem){ // Replace with sen.update(&mut mem); soon
+            Err(val) => {
+                println!("Sensor update error with code: {}", val);
+                running = false;
+                break;
+            }
+            Ok(val) => (),
           }
-          if control::update(&mut mem)==1{
-            println!("Error during control update.\n");
-            running = false;
-            break;
+          match control::update(&mut mem) {
+            Err(val) => {
+                println!("Control update error with code: {}", val);
+                running = false;
+                break;
+            }
+            Ok(val) => (),
           }
           match data_fmt::send_packet(&socket, &mem){
-            1=>{
-            println!("Error during data formatter send_packet.\n");
-            running = false;
-            break;}
-            2=>{
-            println!("Exception during data formatter send_packet.\n");
-            running = false;
-            break;
+            Err(val) => {
+                println!("Data formatter send_packet error with code: {}", val);
+                running = false;
+                break;
             }
-            _=>()
+            Ok(val) => (),
           }
           // Decrease by expected timestep
           time_since_last -= expected_timestep;
@@ -110,7 +115,7 @@ fn timestep(){
 
 // Since time libraries can only be so precice, I use this to give a little bit of error
 fn within(error : f64, value : f64, expected : f64) -> bool{
-    if((value)<expected+error&&(value)>expected-error){
+    if value<expected+error&&value>expected-error{
         return true;
     }
     return false;
