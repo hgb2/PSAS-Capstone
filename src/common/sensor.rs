@@ -8,11 +8,9 @@ use SharedMemory;
 //use i2cdev::core::*;
 //use i2cdev::linux::*;
 use std::io;
-
-pub fn init() {
-    i2c::init();
-=======
 use UpdateResult;
+
+
 
 pub fn init() {
 	i2c::init()
