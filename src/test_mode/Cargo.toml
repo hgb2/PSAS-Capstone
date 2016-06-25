@@ -14,3 +14,4 @@ path = "src/lib.rs"
 [dependencies]
 timer = "0.1.6"
 libc = "0.2"
+time = "0.1"

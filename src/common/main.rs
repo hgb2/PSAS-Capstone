@@ -1,18 +1,13 @@
 use std::net::UdpSocket;
+use time::precise_time_s;
 
 extern crate libs;
 extern crate libc;
+extern crate time;
 
 mod control;
 mod sensor;
 mod data_fmt;
-
-// External c clock method
-mod ffi {
-  extern {
-    pub fn clock() -> ::libc::clock_t;
-  }
-}
 
 // Add: use control_interface::Control; soon
 // Shared memory structure 
@@ -32,11 +27,12 @@ fn main() {
 
     // Timestep variables
     // The timestep in microseconds (500000 -> 500 milliseconds) -- Update when JSBSim timestep 
-    let expected_timestep = 100000; // Should translate to 10 Hz. Replace with let expected_timestep = 8333; to translate to 120 Hz
+    let Hz :f64 = 2.0;  // Define the Hz to be used -- Using 2 Hz for testing
+    let expected_timestep = 1.0/Hz; // Inverse of frequency
     let mut running = true;
     let mut previous_time;
-    let mut current_time = unsafe { ffi::clock() };
-    let mut time_since_last = unsafe { ffi::clock() };
+    let mut current_time = precise_time_s();
+    let mut time_since_last : f64 = 0.0;
 
     sensor::init(); // Replace with let mut sen = sensor::init(&mut mem); soon
     control::init();        // Replace with let mut ctl = control::init(); soon
@@ -46,7 +42,7 @@ fn main() {
     while running{
         // Update time variables
         previous_time = current_time;
-        current_time = unsafe { ffi::clock() };     
+        current_time = precise_time_s();
         time_since_last = time_since_last + current_time-previous_time;
 
         while time_since_last >= expected_timestep {
@@ -78,4 +74,45 @@ fn main() {
         }
 
     }
+}
+
+// Run as: cargo test -- --nocapture to see useful output about cycles
+#[test]
+fn timestep(){
+    let Hz :f64 = 2.0;  // Define the HZ to be used 
+    let mut freq = 0;
+    let mut cycles : f64 = 0.0;
+
+    let expected_timestep = 1.0/Hz; // Inverse of frequency
+    let mut running = true;
+    let mut previous_time;
+    let mut current_time = precise_time_s();
+    let mut time_since_last : f64 = 0.0;
+    let mut elapsed_time= precise_time_s()- precise_time_s();
+
+
+    while elapsed_time<=10.0{ // Run for 10 seconds        
+        // Update time variables
+        previous_time = current_time;
+        current_time = precise_time_s();
+        time_since_last = time_since_last + current_time-previous_time;
+        elapsed_time += current_time-previous_time;
+        while time_since_last >= expected_timestep {
+        println!("Cycles: {}", cycles);
+          cycles+=1.0;
+          // Decrease by expected timestep
+          time_since_last -= expected_timestep;
+        }
+    }
+    println!("Cycles: {}", cycles);
+    println!("Time: {}", elapsed_time);
+    assert_eq!(within(0.0001, cycles/(elapsed_time), Hz), true); // Accept if the frequency is within .0001 Hz
+}
+
+// Since time libraries can only be so precice, I use this to give a little bit of error
+fn within(error : f64, value : f64, expected : f64) -> bool{
+    if((value)<expected+error&&(value)>expected-error){
+        return true;
+    }
+    return false;
 }
