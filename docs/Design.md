@@ -270,33 +270,36 @@ compatible data received from the control module is converted to
 a compatible format and sent on to JSBSim.
 
 ```
-extern crate pin-proxy;
-use pin_proxy::{Direction, Pin}
+use gpio::Direction
 
-struct gpio
-  pin = Pin,
+struct Pin
+{
+  value: u8,
 }
 
-impl gpio
-  FUNCTION init(Pin: u64) -> Option<gpio>
-    INITIALIZE pin
-    RETURN struct if did not fail
-  END FUNCTION
+FUNCTION new(pin_number: u64) -> Option<gpio>
+  pin <- INITIALIZE(pin_number)
+  RETURN struct if did not fail
+END FUNCTION
 
-  FUNCTION set_direction(dir: Direction)
-	Log event
-  END FUNCTION
-  
-  FUNCTION set_value(value: u8) -> Option<()>
-	SET pin.value TO value of 1 or 0
-	buffer_to_jsbsim(pin)
-    RETURN okay if try did not fail
-  END FUNCTION
+FUNCTION set_direction(dir: Direction)
+  data <- INITIALIZE(dir)
+  buffer_to_jsbsim(data)
+END FUNCTION
 
-  FUNCTION get_value() -> Option<u8>
-    IF pin is ESTOP RETURN 0
-    RETURN pin.value
-  END FUNCTION
+FUNCTION set_value(value: u8) -> Option<()>
+  SET pin_value TO value of 1 or 0
+  data <- INITIALIZE(pin_value)
+  buffer_to_jsbsim(data)
+  RETURN okay if try did not fail
+END FUNCTION
+
+FUNCTION get_value() -> Option<u8>
+  data = buffer_from_jsbsim()
+  pin <- (data)
+  IF pin is ESTOP RETURN 0
+  RETURN pin.value
+END FUNCTION
 
 }
 
@@ -309,31 +312,24 @@ is retrieved, converted into a hardware compatible format, and made available
 to the sensor module.
 
 ```
-extern crate sensor-proxy;
-use sensor_proxy::{I2CDevice}
+FUNCTION new()
+  INITIALIZE gyro(gyro_ADXL345B)
+  INITIALIZE accel(accel_L3G4200D)
+  INITIALIZE JSBsim
+  RETURN okay if try did not fail
+END FUNCTION
 
-struct i2c
-  myi2c = I2CDevice,
-}
+FUNCTION read(address: u8) -> Option<u16>
+  accel, gyro <- buffer_from_jsbsim()
+  data <- Convert to MPU-6050 format {accel, gyro}
+  return data
+END FUNCTION
 
-impl i2c
-  FUNCTION init() -> Option<i2c>
-    INITIALIZE the proxy I2CDevice
-	INITIALIZE JSBsim
-    RETURN okay if try did not fail
-  END FUNCTION
-
-  FUNCTION read(address: u8) -> Option<u16>
-    accel, gyro <- buffer_from_jsbsim()
-    data <- Convert to MPU-6050 format {accel, gyro}
-	buffer_to_jsbsim(data)
-  END FUNCTION
-  
-  FUNCTION write(address: u8) -> Option<u16>
-	Log event
-    RETURN okay if try did not fail
-  END FUNCTION
-}
+FUNCTION write(address: u8) -> Option<u16>
+  data <- INITIALIZE 
+  buffer_to_jsbsim(data)
+  RETURN okay if try did not fail
+END FUNCTION
 
 ```
 
