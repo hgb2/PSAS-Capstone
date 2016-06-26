@@ -1,15 +1,13 @@
 extern crate byteorder;
-//extern crate i2cdev;
+extern crate i2cdev;
 
 use self::byteorder::{BigEndian, ReadBytesExt};
-
 use libs::i2c;
 use SharedMemory;
-//use i2cdev::core::*;
-//use i2cdev::linux::*;
+use i2cdev::core::*;
+use i2cdev::linux::*;
 use std::io;
 use UpdateResult;
-
 
 
 pub fn init() {
@@ -27,7 +25,7 @@ pub fn update(mem: &mut SharedMemory) -> UpdateResult {
 
 
 pub struct Sensor_Module {
-//    myi2c: LinuxI2CDevice,
+    myi2c: LinuxI2CDevice,
 }
 
 impl Sensor_Module {
@@ -39,16 +37,20 @@ impl Sensor_Module {
         //only using the gyro registers for now.
         let mut buf = [0u8; (3) * 2];
 
-        //myi2c.write(0x43) // 0x3b is the beginning address of the block of registers that we want to read
-        //myi2c.read(&buf); // puts block (buf.length) of registers in buf (accel, temp, and gyro)
+		//Will uncomment when I figure out how to make this work in both test and flight mode.
+        myi2c.write(0x43) // 0x43 is the beginning address of the block of registers that we want to read
+        myi2c.read(&buf); // puts block (buf.length) of registers in buf (accel, temp, and gyro)
 
 
         let mut rdr = io::Cursor::new(buf);
 
+		//This will eventually be done with the try! macro just wanted it to work for now.
         match rdr.read_i16::<BigEndian>() {
             Ok(n) => mem.gyro_x = (n as f32) / 131.0,
             Err(e) => println!("{}", "There was an error"),
         }
+
+
 
     	//mem.gyro_x = (rdr.read_i16::<BigEndian>() as f32) / 131.0;
     	//mem.gyro_y = (try!(rdr.read_i16::<BigEndian>()) as f32) / 131.0,
