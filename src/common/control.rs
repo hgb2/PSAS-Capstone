@@ -9,7 +9,6 @@ pub fn init() {
 
 pub fn update(mem: &mut SharedMemory) -> UpdateResult {
     println!("control update");
-    gpio::update(42);
 
     mem.cw_state = 1;
     mem.ccw_state = 2;
