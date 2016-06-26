@@ -1,0 +1,54 @@
+RCS
+    - Sensor
+        I2C <- "I sqared c" very popular, can research this
+        gryo
+    - Control
+        GPIO
+        solinoids
+
+    inside of RCS, the Sensor->Control mechanism should be easily swappable
+        at least don't make it hard
+
+Build & TEST:
+    feed it simulated data (Controll & Sensor)
+    Test harness in between RCS and Control & Sensor
+    Possibly: output either live or fake Control based on testing input data
+
+Feed in real or fake at COMPILE time but not runtime
+    Avoid going into test mode at runtime (during a flight)
+
+Will be privided a simulator
+    JSBSim
+    we will have to parse JSBSim documentaiton as well
+    JSBSim was highly rated by NASA
+    -> Assign someboy task of learning how to talk to JSBSim using Rust
+
+Stretch goals:
+    more sensors
+    arbitrary data bus
+    controllers may not be GPIO
+    doing: Rust version of Python, buuuut, also want more sensor data and Control data
+
+Telemetry:
+    802.11 going to the ground
+    no reason to send to JSBSim
+    information to the ground does not effect program
+    possibly capture incoming data (stretch goal)
+
+POC:
+    how to link RCS to JSBSim
+    will have to convert JSBSim -> MPU9150, etc.
+
+Boards
+    board: mpu9150 <- available right now
+    Board: mpu6050, 9 degree of freedom IMU <- using for RCS
+
+
+
+
+
+
+Get JSBSim from sourceforge
+    Will get help on simple model to use
+
+

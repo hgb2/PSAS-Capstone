@@ -221,4 +221,119 @@ Get todays deliverables: 30+ minutes
         . Includes timeline
     -> Risk management - Done
 
+====================
+Monday 05/23
+====================
+
+Announcements: <5 minutes
+    -> Requirements due today
+    -> Design due in a week (our pseudocode), review on 26th
+
+Mid-project presentation: 5 minutes
+    -> Monday, June 6, 7:30->9:30
+    -> 12 minutes a team + 2 for questions
+    -> Must post slides, must post them on wiki, no laptop fumbling
+    -> Every student must attend Every talk
+    -> Every student must give full name, and must present
+    -> Must rehearse
+    -> Suggested Topics include:
+        . overview of project, sponsor acknowledgements
+        . how the team/project is set up/organized
+        . Project plan + schedule
+        . Requirements gathering + specifications, interesting requirements
+        . software architecture
+        . V&V plan (verification and validation)
+        . Risk and risk management
+        . professional dress, no t-shirts
+
+Design: 15 minutes
+    -> Reminders
+        . Be sure to follow pseudocode guide sent out in email
+        . Know what pieces your work depends on
+
+    -> Brian Chris
+        . 5:30
+    -> Cort
+    -> Tyler
+    -> Sohail
+    -> Harrison
+    -> Paul
+
+Git: 15-20 minutes
+    -> Last week was busy so we did not cover this
+    -> 2 options
+        . Work out of one repo
+            - advantages: faster, easier, no merge requests
+            - disadvantages: code reviews are harder
+        . Work out of forked repo's (the way open source usually works)
+            - advantages: merge requests force code reviews
+            - disadvantages: minor changes are harder, someone has to accept pull requests
+    -> Make new repo?
+
+====================
+Monday 05/30
+====================
+
+Announcements: <5 minutes
+    -> Design doc (kind of) due today
+    -> Presentation is next week durring our finals time, 7:30-9:20
+
+Presentation: 15 minutes
+    -> Harrision: Make a google slides doc and share it with us by the end of Tuesday
+    -> Find practice presentation time, Friday? Weekend?
+
+Design: 15 minutes
+    -> Cort has sent an email with design review changes
+    -> Any further questions on this?
+    -> Design doc directly leads to programming, if something looks funny in the design doc, we need to change it now
+
+Things on next weeks agenda:
+    -> Work through example of working/submitting code
+        . Lone programming
+        . Pair programming
+
+====================
+Monday 06/20
+====================
+
+Announcements: <5 minutes
+    -> Google hangouts?
+
+Design: 20 minutes
+    -> run through changes everyone made
+    -> If in aggreement, lock it down and start coding!
+
+Coding procedure: 20 minutes
+    -> Change control procedure
+    -> Reference to "feature branch workflow" here:
+        . https://www.atlassian.com/git/tutorials/comparing-workflows/centralized-workflow
+    -> Workflow if lone programming
+        0 Check out Trello card
+        1 start on master branch
+        2 git checkout -b <descriptive_name> // This will create and checkout the branch
+        3 Do work on that branch (commit ... commit ...)
+        4 git push <branch_name> -> origin <branch_name>
+        5 go to github
+        6 Submit a pull request between your branch and master
+        7 Wait for pull request to be accepted (and make changes if needed)
+        8 If accepted, use github pull request confirm feature
+    -> Workflow if pair programming, or group programming
+        . Follow the same steps up through step 4
+        . Post on code_reviews that pair programing happened
+        . Skip to step 8, do not submit a pull request
+
+    -> Criteria for passing code review
+        1 code compiles
+        2 code test well written, well good coverage, all pass
+        3 comments are well written, explain why not what
+        4 code either meets requirements or doesn't break requirements
+
+Bonus: any time leftover
+    -> take sublime text (or your favorite editor)
+    -> multirust is deprecated 
+    -> + rustup
+    -> + racer
+    -> + sublime text rustAutoComplete (for sublime text, other editors have their own expansions)
+    -> *almost* an IDE in a text editor for rust
+
 
