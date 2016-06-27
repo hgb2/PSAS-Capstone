@@ -336,4 +336,17 @@ Bonus: any time leftover
     -> + sublime text rustAutoComplete (for sublime text, other editors have their own expansions)
     -> *almost* an IDE in a text editor for rust
 
+====================
+Monday 06/27
+====================
 
+Announcements?
+
+Code changes updates: ~5 min/person
+    -> Harrison/main
+    -> Paul/Data
+    -> Cort/Control
+    -> Tyler/Sensor
+    -> Brian/Embedded
+    -> Chris/Testing
+    -> Sohail/JSBSim
