@@ -1,5 +1,11 @@
+#![allow(unused_mut)]
+#![allow(dead_code)]
+#![allow(non_snake_case)]
+#![allow(unused_variables)]
+
 use std::net::UdpSocket;
 use time::precise_time_s;
+use control::Control;
 
 extern crate libs;
 extern crate libc;
@@ -37,7 +43,7 @@ fn main() {
     let mut time_since_last : f64 = 0.0;
 
     sensor::init(); // Replace with let mut sen = sensor::init(&mut mem); soon
-    control::init();        // Replace with let mut ctl = control::init(); soon
+    let mut ctl = Control::init();
 
     let mut socket = UdpSocket::bind("0.0.0.0:0").unwrap(); // Update with correct IP/Port later
 
@@ -56,7 +62,7 @@ fn main() {
             }
             Ok(val) => (),
           }
-          match control::update(&mut mem) {
+          match ctl.update(&mut mem) {
             Err(val) => {
                 println!("Control update error with code: {}", val);
                 running = false;
@@ -75,6 +81,7 @@ fn main() {
           // Decrease by expected timestep
           time_since_last -= expected_timestep;
           println!("\n"); // Remove this when done testing otherwise outputting to console is a bottleneck
+          running = false;
         }
 
     }
