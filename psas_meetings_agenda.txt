@@ -340,7 +340,10 @@ Bonus: any time leftover
 Monday 06/27
 ====================
 
-Announcements?
+Announcements: <5 minutes
+    -> Next Monday is the 4th of July, no meeting
+        . That week is our prototype run, look out for email from PSAS team on when this happens
+        . The prototype run will take place of that weekly meeting
 
 Code changes updates: ~5 min/person
     -> Harrison/main
