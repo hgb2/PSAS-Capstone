@@ -3,12 +3,11 @@ use SharedMemory;
 use UpdateResult;
 
 pub fn init() {
-	i2c::init() 
+	let x = i2c::init("/root/a/place", 123);
 }
 
 pub fn update(mem: &mut SharedMemory) -> UpdateResult {
     println!("sensor update");
-    i2c::update(30);
 
     mem.gyro_x = 114.75;
     

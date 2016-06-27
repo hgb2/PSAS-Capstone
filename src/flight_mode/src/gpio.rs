@@ -1,8 +1,5 @@
-pub fn init() {
-    println!("flight mode gpio init");
-}
+use sysfs_gpio::Pin;
 
-pub fn update(x: i32) {
-    println!("flight mode gpio update received {}", x);
+pub fn init(pin_num: u64) -> Pin {
+    Pin::new(pin_num)
 }
-
