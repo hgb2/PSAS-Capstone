@@ -348,10 +348,10 @@ Announcements: <5 minutes
     -> 360 reviews are going to be schedule soon, according to Bart
 
 Code changes updates: ~5 min/person
-    -> Brian/Embedded
     -> Harrison/main
     -> Paul/Data
     -> Cort/Control
+    -> Brian/Embedded
     -> Tyler/Sensor
     -> Chris/Testing
     -> Sohail/JSBSim
