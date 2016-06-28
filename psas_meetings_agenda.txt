@@ -344,12 +344,14 @@ Announcements: <5 minutes
     -> Next Monday is the 4th of July, no meeting
         . That week is our prototype run, look out for email from PSAS team on when this happens
         . The prototype run will take place of that weekly meeting
+        . Backup plan is the week after
+    -> 360 reviews are going to be schedule soon, according to Bart
 
 Code changes updates: ~5 min/person
+    -> Brian/Embedded
     -> Harrison/main
     -> Paul/Data
     -> Cort/Control
     -> Tyler/Sensor
-    -> Brian/Embedded
     -> Chris/Testing
     -> Sohail/JSBSim
