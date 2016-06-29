@@ -9,11 +9,13 @@ use self::i2cdev::linux::*;
 use std::io;
 use UpdateResult;
 
-/*
+
 //On Ok it returns a Sensor_Module object
+//Might be the path:
+///sys/devices/platform/sunxi-i2c.0/i2c-0/i2c-dev/i2c-0/device
 pub fn init() -> Result<Sensor_Module, i32> {
 	let mut smod;
-	match i2c::init() {
+	match i2c::init("/dev/i2c-0/", 0x68) {
 		//This should work with Brians part.
 		Ok(n) => smod.i2c = n,
 		//This will return whatever error the i2c module sends to it
@@ -21,12 +23,12 @@ pub fn init() -> Result<Sensor_Module, i32> {
 	}
 	Ok(smod)
 }
-*/
+
 
 //This will be replaced with the above function when the i2c lib is done.
-pub fn init() {
-	i2c::init();
-}
+//pub fn init() {
+//	i2c::init();
+//}
 
 pub fn update(mem: &mut SharedMemory) -> UpdateResult {
     println!("sensor update");
