@@ -63,7 +63,6 @@ pub fn get_value(&mut self, pin_number: u64) -> u8 {
     for pin in &self.pins {
         if pin.num == pin_number {
             //println!("get_value found pin: {}", pin.num);
-            if pin.dir != Direction::In { panic!("pin {} is not an input", pin.num); }
             match pin.io.get_value() {
                 Ok(val) => return val,
                 Err(err) => panic!("bad gpio read on pin {}: {}", pin.num, err),
@@ -88,3 +87,4 @@ pub fn set_value(&mut self, pin_number: u64, value: u8) {
 }
 
 }
+
