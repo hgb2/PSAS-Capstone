@@ -64,11 +64,14 @@ fn main() {
           }
           match ctl.update(&mut mem) {
             Err(val) => {
-                println!("Control update error with code: {}", val);
+                println!("Control update error: {}", val);
                 running = false;
                 break;
             }
-            Ok(val) => (),
+            Ok(val) => if val == 1 {
+	            running = false;
+	            break;
+            }
           }
           match data_fmt::send_packet(&socket, &mem){
             Err(val) => {
@@ -81,7 +84,6 @@ fn main() {
           // Decrease by expected timestep
           time_since_last -= expected_timestep;
           println!("\n"); // Remove this when done testing otherwise outputting to console is a bottleneck
-          running = false;
         }
 
     }

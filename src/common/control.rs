@@ -1,6 +1,5 @@
 use libs::gpio::MyPins;
 use SharedMemory;
-use UpdateResult;
 
 
 // Use pin 53 as clockwise (CW)
@@ -30,12 +29,10 @@ pub fn init() -> Control {
     ctl
 }
 
-pub fn update(&mut self, mem: &mut SharedMemory) -> UpdateResult {
+pub fn update(&mut self, mem: &mut SharedMemory) -> Result<u8, &str> {
     println!("control update");
 
-//    let stop_pin = self.pins.get_value(ESTOP);
-//    self.pins.set_value(CW, 1);
-
+    // should be 0 at first because we initialized with "low"
     let mut pi_pin = self.pins.get_value(RASPBERRY_PI);
     println!("pi_pin: {}", pi_pin);
 
@@ -47,9 +44,18 @@ pub fn update(&mut self, mem: &mut SharedMemory) -> UpdateResult {
     pi_pin = self.pins.get_value(RASPBERRY_PI);
     println!("pi_pin: {}", pi_pin);
 
-    mem.cw_state = 1;
-    mem.ccw_state = 2;
-    Ok(0)
+    self.pins.set_value(RASPBERRY_PI, 1);
+    pi_pin = self.pins.get_value(RASPBERRY_PI);
+    println!("pi_pin: {}", pi_pin);
+
+    // uncomment the following line to test error returns
+    //return Err("something bad happened!");
+
+    // Using ^C to exit the loop leaves gpio pins exported, but
+    // raspberry pi doesn't seem to care.
+    // uncomment the following line to test continuous looping
+    // pi_pin = 0;
+    Ok(pi_pin)
 }
 }
 
