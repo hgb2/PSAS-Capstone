@@ -33,19 +33,17 @@ impl fmt::Display for Error {
     }
 }
 
-pub type Result<T> = ::std::result::Result<T, Error>;
-
 impl Pin {
     fn new(number: u64) -> Pin {
         Pin { num: number, dir: Direction::In, value: 0u8 }
     }
     
-    fn export(&self) -> Result<()> {
+    fn export(&self) -> Result<(), Error> {
         println!("export called on pin {}", self.num);
         Ok(())
     }
      
-    fn get_value(&self) -> Result<u8> {
+    fn get_value(&self) -> Result<u8, Error> {
     	return Ok(self.value);
     }
     
@@ -53,12 +51,12 @@ impl Pin {
     	return self.num;
     }
    
-    fn set_direction(&self, dir: Direction) -> Result<()> {
+    fn set_direction(&self, dir: Direction) -> Result<(), Error> {
     	//self.dir = dir;
     	Ok(())
     } 
     
-    fn set_value(&self, value: u8) -> Result<()> {
+    fn set_value(&self, value: u8) -> Result<(), Error> {
     	//self.value = value;
     	Ok(())
     } 
