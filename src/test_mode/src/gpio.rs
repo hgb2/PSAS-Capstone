@@ -33,7 +33,6 @@ pub fn get_value(&mut self, pin_number: u64) -> u8 {
     for pin in &self.pins {
         if pin.num == pin_number {
             println!("get_value found pin: {}", pin.num);
-            if pin.dir != "in" { panic!("pin {} is not an input", pin.num); }
             // TODO: get the value from JSBSim and return it
             return 0;
         }
