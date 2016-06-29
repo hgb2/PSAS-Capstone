@@ -11,17 +11,15 @@ use UpdateResult;
 
 
 //On Ok it returns a Sensor_Module object
-//Might be the path:
-///sys/devices/platform/sunxi-i2c.0/i2c-0/i2c-dev/i2c-0/device
 pub fn init() -> Result<Sensor_Module, i32> {
-	let mut smod;
 	match i2c::init("/dev/i2c-0/", 0x68) {
 		//This should work with Brians part.
-		Ok(n) => smod.i2c = n,
+		Ok(x) => return Ok(Sensor_Module::new(x)),
 		//This will return whatever error the i2c module sends to it
-		Err(e) => Err(e),
+		Err(_) => return Err(-1),
 	}
-	Ok(smod)
+
+
 }
 
 
@@ -45,6 +43,10 @@ pub struct Sensor_Module {
 }
 
 impl Sensor_Module {
+
+		pub fn new(myi2c: LinuxI2CDevice) -> Sensor_Module{
+			return Sensor_Module{i2c: myi2c};
+		}
 
 	fn read_reg(&mut self, reg: u8, buf: &mut [u8]) {
 		self.i2c.write(&[reg]); // 0x43 is the beginning address of the block of registers that we want to read
