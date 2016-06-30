@@ -126,6 +126,6 @@ pub fn init() {
 	println!("initializing GPIO test stub");
 }
 
-pub fn update(num: u64) {
+pub fn update(num: i32) {
 	println!("initializing GPIO test stub pin {}", num);
 }
