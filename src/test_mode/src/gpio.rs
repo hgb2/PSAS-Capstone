@@ -64,9 +64,9 @@ impl Pin {
 
 struct Node {
     num: u64,
-    dir: Direction,
-    io: Pin,
+    dir: String,
 }
+
 pub struct MyPins {
     pins: LinkedList<Node>,
 }
@@ -92,68 +92,34 @@ impl MyPins {
     }
 
     pub fn add_pin(&mut self, pin_num: u64, direction: &str) {
-
-        let pin_dir = match direction.trim() {
-            "in" => Direction::In,
-            "out" => Direction::Out,
-            "high" => Direction::High,
-            "low" => Direction::Low,
-            other => panic!("invalid gpio pin direction {}", other),
-        };
-
-        let node = Node {
-            num: pin_num,
-            dir: pin_dir,
-            io: Pin::new(pin_num),
-        };
-
-        if let Err(err) = node.io.export() {
-            panic!("error exporting gpio pin {}: {}", pin_num, err);
-        }
-
-        if let Err(err) = node.io.set_direction(match direction.trim() {
-            "in" => Direction::In,
-            "out" => Direction::Out,
-            "high" => Direction::High,
-            "low" => Direction::Low,
-            other => panic!("invalid gpio pin direction {}", other),
-        }) {
-            panic!("error setting gpio pin {} direction: {}", pin_num, err);
-        }
-
-        self.pins.push_back(node);
+        let node = Node { num: pin_num, dir: direction.trim().to_string() };
+	    self.pins.push_back(node);
     }
 
-    pub fn get_value(&mut self, pin_number: u64) -> u8 {
-
-        for pin in &self.pins {
-            if pin.num == pin_number {
-                // println!("get_value found pin: {}", pin.num);
-                match pin.io.get_value() {
-                    Ok(val) => return val,
-                    Err(err) => panic!("bad gpio read on pin {}: {}", pin.num, err),
-                }
-            }
-        }
-        panic!("gpio pin {} not initialized", pin_number);
-    }
-
-    pub fn set_value(&mut self, pin_number: u64, value: u8) {
-        for pin in &self.pins {
-            if pin.num == pin_number {
-                // println!("set_value found pin: {}", pin.num);
-               
-                if pin.dir == Direction::In {
-                    panic!("pin {} is an input", pin.num);
-                }
-                if let Err(err) = pin.io.set_value(value) {
-                    panic!("bad gpio write on pin {}: {}", pin.num, err);
-                } 
-                return;
-            }
-        }
-        panic!("gpio pin {} not initialized", pin_number);
-    }
+	pub fn get_value(&mut self, pin_number: u64) -> u8 {
+	
+	    for pin in &self.pins {
+	        if pin.num == pin_number {
+	            println!("get_value found pin: {}", pin.num);
+	            // TODO: get the value from JSBSim and return it
+	            return 0;
+	        }
+	    }
+	    panic!("gpio pin {} not initialized", pin_number);
+	}
+	
+	pub fn set_value(&mut self, pin_number: u64, value: u8) {
+	    for pin in &self.pins {
+	        if pin.num == pin_number {
+	            println!("set_value found pin: {}", pin.num);
+	            if pin.dir == "in" { panic!("pin {} is an input", pin.num); }
+	            // TODO: set the value in JSBSim
+	
+	            return;
+	        }
+	    }
+	    panic!("gpio pin {} not initialized", pin_number);
+	}
 }
 
 pub fn init() {
