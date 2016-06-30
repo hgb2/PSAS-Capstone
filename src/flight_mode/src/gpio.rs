@@ -58,32 +58,32 @@ pub fn add_pin(&mut self, pin_num: u64, direction: &str) {
     self.pins.push_back(node);
 }
 
-pub fn get_value(&mut self, pin_number: u64) -> u8 {
+pub fn get_value(&mut self, pin_number: u64) -> Result<u8, String> {
 
     for pin in &self.pins {
         if pin.num == pin_number {
-            //println!("get_value found pin: {}", pin.num);
             match pin.io.get_value() {
-                Ok(val) => return val,
-                Err(err) => panic!("bad gpio read on pin {}: {}", pin.num, err),
+                Ok(val) => return Ok(val),
+                Err(err) => return Err(format!("bad read from gpio pin {}: {}", pin.num, err)),
             }
         }
     }
-    panic!("gpio pin {} not initialized", pin_number);
+    Err(format!("attempt to read uninitialized gpio pin {}", pin_number))
 }
 
-pub fn set_value(&mut self, pin_number: u64, value: u8) {
+pub fn set_value(&mut self, pin_number: u64, value: u8) -> Result<(), String> {
     for pin in &self.pins {
         if pin.num == pin_number {
-            //println!("set_value found pin: {}", pin.num);
-            if pin.dir == Direction::In { panic!("pin {} is an input", pin.num); }
-            if let Err(err) = pin.io.set_value(value) {
-                panic!("bad gpio write on pin {}: {}", pin.num, err);
+            if pin.dir == Direction::In {
+                return Err(format!("attempt to write to gpio input pin {}", pin.num));
             }
-            return;
+            if let Err(err) = pin.io.set_value(value) {
+                return Err(format!("bad write to gpio pin {}: {}", pin.num, err));
+            }
+            return Ok(());
         }
     }
-    panic!("gpio pin {} not initialized", pin_number);
+    Err(format!("attempt to write to uninitialized gpio pin {}", pin_number))
 }
 
 }

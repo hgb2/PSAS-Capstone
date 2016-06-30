@@ -28,29 +28,33 @@ pub fn add_pin(&mut self, pin_num: u64, direction: &str) {
 }
 
 
-pub fn get_value(&mut self, pin_number: u64) -> u8 {
+pub fn get_value(&mut self, pin_number: u64) -> Result<u8, String> {
 
     for pin in &self.pins {
         if pin.num == pin_number {
             println!("get_value found pin: {}", pin.num);
-            // TODO: get the value from JSBSim and return it
-            return 0;
+            // In the current design, this is only called for the ESTOP
+            // pin. Return 0 to keep running. Return 1 to allow
+            // the program to exit gracefully.
+            return Ok(0);
         }
     }
-    panic!("gpio pin {} not initialized", pin_number);
+    Err(format!("attempt to read uninitialized gpio pin {}", pin_number))
 }
 
-pub fn set_value(&mut self, pin_number: u64, value: u8) {
+pub fn set_value(&mut self, pin_number: u64, value: u8) -> Result<(), String> {
     for pin in &self.pins {
         if pin.num == pin_number {
             println!("set_value found pin: {}", pin.num);
-            if pin.dir == "in" { panic!("pin {} is an input", pin.num); }
-            // TODO: set the value in JSBSim
+            if pin.dir == "in" {
+                return Err(format!("attempt to write to gpio input pin {}", pin.num));
+            }
+            // TODO: send 'value' to JSBSim
 
-            return;
+            return Ok(());
         }
     }
-    panic!("gpio pin {} not initialized", pin_number);
+    Err(format!("attempt to write to uninitialized gpio pin {}", pin_number))
 }
 
 }
