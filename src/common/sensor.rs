@@ -7,35 +7,9 @@ use SharedMemory;
 use self::i2cdev::core::*;
 use self::i2cdev::linux::*;
 use std::io;
-use UpdateResult;
 
 
-//On Ok it returns a Sensor_Module object
-pub fn init() -> Result<Sensor_Module, i32> {
-	match i2c::init("/dev/i2c-0/", 0x68) {
-		//This should work with Brians part.
-		Ok(x) => return Ok(Sensor_Module::new(x)),
-		//This will return whatever error the i2c module sends to it
-		Err(_) => return Err(-1),
-	}
 
-
-}
-
-
-//This will be replaced with the above function when the i2c lib is done.
-//pub fn init() {
-//	i2c::init();
-//}
-
-pub fn update(mem: &mut SharedMemory) -> UpdateResult {
-    println!("sensor update");
-    i2c::update(30);
-
-    mem.gyro_x = 114.75;
-
-    Ok(0)
-}
 
 
 pub struct Sensor_Module {
@@ -44,16 +18,23 @@ pub struct Sensor_Module {
 
 impl Sensor_Module {
 
-		pub fn new(myi2c: LinuxI2CDevice) -> Sensor_Module{
-			return Sensor_Module{i2c: myi2c};
+	//On Ok it returns a Sensor_Module object
+	//TODO error checking.
+	pub fn init() -> Result<Sensor_Module, String> {
+		match i2c::init("/dev/i2c-0/", 0x68) {
+			Ok(x) => return Ok(Sensor_Module{i2c: x}),
+			Err(_) => return Err(format!("Error i2c not init.")),
 		}
+	}
 
+	//TODO error checking.
 	fn read_reg(&mut self, reg: u8, buf: &mut [u8]) {
 		self.i2c.write(&[reg]); // 0x43 is the beginning address of the block of registers that we want to read
 		self.i2c.read(buf); // puts block (buf.length) of registers in buf (accel, temp, and gyro.
 	}
 
-    pub fn update(&mut self, mem: &mut SharedMemory) {
+	//TODO error checking.
+    pub fn update(&mut self, mem: &mut SharedMemory) -> Result<i32, i32> {
         println!("sensor update");
 
         // 3 accel (Registers 3b-40),
@@ -72,7 +53,7 @@ impl Sensor_Module {
             Err(e) => println!("{}", "There was an error"),
         }
 
-
+		Ok(0)
 
     	//mem.gyro_x = (rdr.read_i16::<BigEndian>() as f32) / 131.0;
     	//mem.gyro_y = (try!(rdr.read_i16::<BigEndian>()) as f32) / 131.0,
