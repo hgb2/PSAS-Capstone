@@ -1,12 +1,12 @@
 use std::net::UdpSocket;
 use time::precise_time_s;
-use control::Control;
 
 extern crate libs;
 extern crate libc;
 extern crate time;
 
 mod control;
+use control::Control;
 mod sensor;
 mod data_fmt;
 
@@ -63,10 +63,10 @@ fn main() {
                 running = false;
                 break;
             }
-            Ok(val) => if val == 1 {
-                println!("Control module shutdown");
-	            running = false;
-	            break;
+            Ok(val) => if val == control::SHUT_DOWN {
+                println!("Main received shut down signal from control module.");
+                running = false;
+                break;
             }
           }
           match data_fmt::send_packet(&socket, &mem){
@@ -125,3 +125,4 @@ fn within(error : f64, value : f64, expected : f64) -> bool{
     }
     return false;
 }
+
