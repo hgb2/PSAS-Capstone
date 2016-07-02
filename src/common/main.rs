@@ -1,5 +1,6 @@
 use std::net::UdpSocket;
 use time::precise_time_s;
+use control::Control;
 
 extern crate libs;
 extern crate libc;
@@ -37,7 +38,7 @@ fn main() {
     let mut time_since_last : f64 = 0.0;
 
     sensor::init(); // Replace with let mut sen = sensor::init(&mut mem); soon
-    control::init();        // Replace with let mut ctl = control::init(); soon
+    let mut ctl = Control::init();
 
     let mut socket = UdpSocket::bind("0.0.0.0:0").unwrap(); // Update with correct IP/Port later
 
@@ -56,13 +57,17 @@ fn main() {
             }
             Ok(val) => (),
           }
-          match control::update(&mut mem) {
-            Err(val) => {
-                println!("Control update error with code: {}", val);
+          match ctl.update(&mut mem) {
+            Err(err) => {
+                println!("Control update error: {}", err);
                 running = false;
                 break;
             }
-            Ok(val) => (),
+            Ok(val) => if val == 1 {
+                println!("Control module shutdown");
+	            running = false;
+	            break;
+            }
           }
           match data_fmt::send_packet(&socket, &mem){
             Err(val) => {
