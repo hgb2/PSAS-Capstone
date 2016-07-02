@@ -65,8 +65,7 @@ The control module implements the control algorithm. Sensor data is retrieved fr
 ```
 FUNCTION init()
     INPUTS: None
-    OUTPUTS: Returns 0 -- all is well
-                     1 -- something bad happened
+    OUTPUTS: Returns an initialized Control object
 
     STORE state <- 0 // control state variable
 
@@ -74,20 +73,12 @@ FUNCTION init()
     // Use pin 53 as clockwise (CW)
     // Use pin 54 as counter clockwise (CCW)
     // Use pin 0 as emergency stop (ESTOP)
-    STORE CW_pin <- CALL libs::gpio::init(CW pin number)
-    SET direction of CW pin to DIR_OUT
+    
+    INITIALIZE CW_pin as an output and set its value to 0
+    INITIALIZE CCW_pin as an output and set its value to 0
+    INITIALIZE ESTOP_pin as an input
 
-    STORE CCW_pin <- CALL libs::gpio::init(CCW pin number)
-    SET direction of CCW pin to DIR_OUT
-
-    STORE ESTOP_pin <- CALL libs::gpio::init(ESTOP pin number)
-    SET direction of ESTOP pin to DIR_IN
-
-    // turn gpio pins off
-    Set value of CW pin to 0
-    Set value of CCW pin to 0
-
-    RETURN 0 if everything went well, 1 otherwise
+    RETURN Control object
 
 END FUNCTION
 
@@ -97,42 +88,42 @@ FUNCTION update(shared memory reference)
     OUTPUTS: Returns 0 -- all is well
                      1 -- Shut Down! (HW asserted the emergency stop pin)
 
-    stop_pin <- CALL ESTOP_pin.get_value()
+    stop_pin <- Get the value of the ESTOP pin
     IF stop_pin is 1
         RETURN 1
     END IF
 
-    READ gyro_x from shared memory
+    rate_x <- READ the gyro's x axis rate from shared memory
 
-    IF gyro_x GE 0.175
-        CALL state_update(CW pin, gyro_x)
-        CALL write_pin(CW pin, shared memory reference)
+    IF rate_x GE 0.175
+        CALL state_update(rate_x)
+        CALL write_pin(CW pin, new state value, reference to shared memory)
     ELSE IF gyro_x LE -0.175
-        CALL state_update(CCW pin, gyro_x)
-        CALL write_pin(CCW pin, shared memory reference)
+        CALL state_update(rate_x)
+        CALL write_pin(CCW pin, new state value, reference to shared memory)
     ELSE
         // turn off both gpio pins
-        SET CW pin state to 0 and CALL write_pin(CW pin, shared memory reference)
-        SET CCW pin state to 0 and CALL write_pin(CCW pin, shared memory reference)
+        CALL write_pin(CW_pin, 0, reference to shared memory)
+        CALL write_pin(CCW_pin, 0, reference to shared memory)
     END IF
 
     RETURN 0
 END FUNCTION
 
 
-FUNCTION state_update(pin, gyro_x)
-    INPUTS:  pin -- gpio pin object
-             gyro_x -- rotational rate about the x axis
-    OUTPUTS: Returns 0 -- all is well
-                     1 -- something bad happened
+FUNCTION state_update(rate_x)
+    INPUTS:  rate_x -- rotational rate about the x axis
+    OUTPUTS: Writes new value to the control state
 
+
+    // Wish the variables names were more descriptive here, but that's what
+    // they are called in Gain_v3.py ... don't want to make any wrong
+    // assumptions that make it worse. see:
+    // https://github.com/psas/reaction-control/blob/master/Controller_Scripts/Gain_v3.py
+    
     kp <- 0.25 // proportional gain for duty cycle
-
-    // wish the variables names were more descriptive here, but that's what they
-    // are called in Gain_v3.py ... don't want to make any wrong assumptions that
-    // make it worse
     a <- 2.0 * kp        // (I/(r*.1s))/Ftot equation to dc from radian error
-    u <- a*abs(gyro_x)
+    u <- a*abs(rate_x)
 
     IF u GE 1.0
         state <- 1
@@ -148,11 +139,12 @@ FUNCTION state_update(pin, gyro_x)
 
 END FUNCTION
 
-FUNCTION write_pin(pin, mem)
-    INPUTS:  pin -- gpio pin object
+FUNCTION write_pin(pin, value, mem)
+    INPUTS:  pin -- the GPIO pin number (must be an output pin)
+             value -- the value to write to the pin (0 or 1)
              mem -- reference to shared memory
     OUTPUTS: Returns 0 -- all is well
-                     1 -- something bad happened
+                     1 -- Error
 
     CALL pin.set_value(pin's state value)
 
