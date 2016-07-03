@@ -60,7 +60,7 @@ READ wait for user input to terminate program
 ```
 
 #### Control Module
-The control module implements the control algorithm. Sensor data is retrieved from shared memory and GPIO pins are asserted for course correction.
+The control module implements the control algorithm. Sensor data is retrieved from shared memory and GPIO pins are asserted for course correction. This control design is based on [Gain_v3.py](https://github.com/psas/reaction-control/blob/master/Controller_Scripts/Gain_v3.py).
 
 ```
 FUNCTION init()
@@ -83,8 +83,8 @@ FUNCTION init()
 END FUNCTION
 
 
-FUNCTION update(shared memory reference)
-    INPUTS: reference to shared memory
+FUNCTION update(mem)
+    INPUTS:  mem -- reference to shared memory
     OUTPUTS: Returns 0 -- all is well
                      1 -- Shut Down! (HW asserted the emergency stop pin)
 
@@ -97,14 +97,14 @@ FUNCTION update(shared memory reference)
 
     IF rate_x GE 0.175
         CALL state_update(rate_x)
-        CALL write_pin(CW pin, new state value, reference to shared memory)
+        CALL write_pin(CW_pin, new state value, mem)
     ELSE IF gyro_x LE -0.175
         CALL state_update(rate_x)
-        CALL write_pin(CCW pin, new state value, reference to shared memory)
+        CALL write_pin(CCW_pin, new state value, mem)
     ELSE
         // turn off both gpio pins
-        CALL write_pin(CW_pin, 0, reference to shared memory)
-        CALL write_pin(CCW_pin, 0, reference to shared memory)
+        CALL write_pin(CW_pin, 0, mem)
+        CALL write_pin(CCW_pin, 0, mem)
     END IF
 
     RETURN 0
@@ -115,14 +115,12 @@ FUNCTION state_update(rate_x)
     INPUTS:  rate_x -- rotational rate about the x axis
     OUTPUTS: Writes new value to the control state
 
-
     // Wish the variables names were more descriptive here, but that's what
-    // they are called in Gain_v3.py ... don't want to make any wrong
-    // assumptions that make it worse. see:
-    // https://github.com/psas/reaction-control/blob/master/Controller_Scripts/Gain_v3.py
+    // they are called in Gain_v3.py (see link above) ... don't want to make
+    // any wrong assumptions that make it worse.
     
-    kp <- 0.25 // proportional gain for duty cycle
-    a <- 2.0 * kp        // (I/(r*.1s))/Ftot equation to dc from radian error
+    kp <- 0.25     // proportional gain for duty cycle
+    a <- 2.0 * kp  // (I/(r*.1s))/Ftot equation to dc from radian error
     u <- a*abs(rate_x)
 
     IF u GE 1.0
@@ -133,11 +131,8 @@ FUNCTION state_update(rate_x)
         Toggle the state value
     END IF
 
-    SET the pin's state value to state
-
-    RETURN 0 if everything went well, 1 otherwise
-
 END FUNCTION
+
 
 FUNCTION write_pin(pin, value, mem)
     INPUTS:  pin -- the GPIO pin number (must be an output pin)
@@ -146,9 +141,9 @@ FUNCTION write_pin(pin, value, mem)
     OUTPUTS: Returns 0 -- all is well
                      1 -- Error
 
-    CALL pin.set_value(pin's state value)
+    SET the pin's state to value
 
-    STORE the pin's state value in shared memory
+    STORE the pin's state in shared memory
 
     RETURN 0 if everything went well, 1 otherwise
 
@@ -222,21 +217,8 @@ END FUNCTION
 #### Embedded Rust Libraries
 During flight mode, the system reads sensor input and dispatches control signals via [I2C](https://github.com/rust-embedded/rust-i2cdev) and [GPIO](https://github.com/rust-embedded/rust-sysfs-gpio) Rust libraries.
 
+##### I2C
 ```
-// gpio File, accessible with gpio::init()
-// Import libraries
-extern crate sysfs-gpio;
-use sysfs_gpio::{Direction, Pin}
-
-FUNCTION init(pin)
-   INPUTS: gpio pin number
-   OUTPUTS: Linux interface to GPIOs
-  
-   // embedded linux libraries found here:
-   //https://github.com/rust-embedded/rust-sysfs-gpio
-   RETURN Pin::new(pin)
-END FUNCTION
-
 //i2c File, accessible with i2c::init()
 // Import libraries
 extern crate i2cdev;
@@ -252,7 +234,60 @@ FUNCTION init()
    RETURN LinuxI2CDevice
 END FUNCTION
 ```
+##### GPIO
 
+```
+FUNCTION new()
+    INPUTS: None
+    OUTPUTS: Returns an object containing an empty linked list
+   
+    Create a GPIO pins object that contains an empty linked list
+   
+    RETURN GPIO pins object
+END FUNCTION
+
+
+FUNCTION add_pin(pin_number, direction)
+    INPUTS: pin_number -- the desired GPIO pin number
+            direction  -- input or output
+    OUTPUTS: Errors if direction is invalid or underlying library has problems.
+
+    Create a new pin using the pin number and direction as inputs to the embedded GPIO library.
+    Add the pin to the linked list.
+END FUNCTION
+
+
+FUNCTION get_value(pin_number)
+    INPUTS: pin_number -- the desired GPIO pin number
+    OUTPUTS: Returns the pin's state value, or
+             Reports an error if: 1) the pin was not initialized
+                                  2) the underlying library has problems
+
+    Look through the linked list for the pin number.
+    If the pin doesn't exist in the linked list, report an error.
+    Otherwise, call the embedded GPIO library to retrieve the pin's state.
+    
+    RETURN the pin's state
+END FUNCTION
+
+
+FUNCTION set_value(pin_number, value)
+    INPUTS: pin_number -- the desired GPIO pin number
+            value -- 0 to set the pin low, 1 to set the pin high
+    OUTPUTS: Sets the pin's state value, or
+             Reports an error if: 1) the pin was not initialized
+                                  2) the pin is configured as an input
+                                  3) the underlying library has problems
+
+    Look through the linked list for the pin number.
+    If the pin doesn't exist in the linked list, report an error.
+    If the pin is configured as an input, report an error.
+    Otherwise, call the embedded GPIO library to set the pin's state.
+    
+    RETURN okay status or error
+END FUNCTION
+
+```
 
 ### _Test Mode Components_
 #### Controller Interface
