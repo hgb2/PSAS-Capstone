@@ -334,19 +334,18 @@ END FUNCTION
 ```
 
 #### JSBSim
-JSBSim is commercial off the shelf (COTS) software that is used to
-simulate sensor outputs based on control inputs.
+JSBSim is an open source C++ library.  It is used to simulate sensor outputs based on control inputs for flight simulations.
 
 ```
-INPUT:  sim_actuator_output     
-OUTPUT: sim_sensor_output
-
+INPUT:  binder_input                        //data from controller interface::write to binder
+OUTPUT: binder_output                       //data to sensor interface::get value from binder
 
 ///this function initializes the JSBSim Binder
 FUNCTION INITIALIZE
      //set up data buffers
      SET buffer_to_jsbsim                   //data in csv format    
-     SET buffer_from_jsbsim                   //data in csv format
+     SET buffer_from_jsbsim                 //data in csv format
+     SET binder_output                      //data in struct format
 
      //set up jsbsim
      INIT jsbsim exec
@@ -358,30 +357,27 @@ FUNCTION INITIALIZE
      SET rocket launch
 ENDFUNCTION
 
-
 ///this is the primary work loop
-FUNCTION LOOPDATA (sim_actuator_output):
-     IF (testing)
-          GET actuator response from sim_actuator_output
-          PARSE actuator response into buffer_to_jsbsim //collapse structured data into csv
-          SEND buffer_to_jsbsim to jsbsim
+FUNCTION LOOPDATA (binder_input):
+     GET data from binder_input
+     PARSE data to buffer_to_jsbsim                    //collapse structured data into csv
 
-          IF (script)
-        RUN script object’s runscript()           //will need to know how data is to be blended
-        RUN fgfdmexec’s run method                // … between script & sim actuator output
-          ENDIF
-
-          PUT data from jsbsim into buffer_from_jsbsim      //structure csv data
-          PARSE buffer_from_jsbsim
-          SET data into sim_sensor_input
-     ENDIF
+     SEND buffer_to_jsbsim to jsbsim                   //binder.rs -> wrapper.c -> jsbsim
+     RUN script object’s runscript()                   //will need to know how data is to be blended
+     RUN fgfdmexec’s run method                        // … between script & binder_input
+     PUT jsbsim output into buffer_from_jsbsim         //jsbsim -> wrapper.c -> binder.rs
+     
+     PARSE buffer_from_jsbsim                          //csv to structured data
+     SET data into binder_output
+     CALL sensor interface                             //?verify
 ENDFUNCTION
 
 ///this function closes out the JSBSim Binder
 FUNCTION TERMINATE:
-     CLOSE buffer_to_jsbsim       
-     CLOSE jsbsim output
+     CLOSE binder_input       
+     CLOSE buffer_to_jsbsim
      CLOSE jsbsim
      CLOSE buffer_from_jsbsim
+     CLOSE binder_output
 ENDFUNCTION
 ```
