@@ -347,11 +347,17 @@ Announcements: <5 minutes
         . Backup plan is the week after
     -> 360 reviews are going to be schedule soon, according to Bart
 
+Backups
+    -> Update from Harrison
+        . Harrison will add offline backups
+
 Code changes updates: ~5 min/person
     -> Harrison/main
     -> Paul/Data
     -> Cort/Control
     -> Brian/Embedded
+        . Embedded is moving to Cort+Tyler
+        . Brian is shifting to work with Chris/Sohail
     -> Tyler/Sensor
     -> Chris/Testing
     -> Sohail/JSBSim
