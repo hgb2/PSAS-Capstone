@@ -6,7 +6,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-use libs::gpio::MyPins;
+use libs::gpio::{MyPins, Direction};
 use SharedMemory;
 
 // Use pin 53 as clockwise (CW)
@@ -35,9 +35,9 @@ pub fn init() -> Control {
     };
 
     // add the GPIO pins to it
-    ctl.pins.add_pin(CW, "low");
-    ctl.pins.add_pin(CCW, "low");
-    ctl.pins.add_pin(ESTOP, "in");
+    ctl.pins.add_pin(CW, Direction::Low);
+    ctl.pins.add_pin(CCW, Direction::Low);
+    ctl.pins.add_pin(ESTOP, Direction::In);
 
     // return to caller
     ctl
