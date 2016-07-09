@@ -6,6 +6,7 @@ extern crate libc;
 extern crate time;
 
 mod control;
+use control::Control;
 mod sensor;
 mod data_fmt;
 
@@ -37,7 +38,7 @@ fn main() {
     let mut time_since_last : f64 = 0.0;
 
     sensor::init(); // Replace with let mut sen = sensor::init(&mut mem); soon
-    control::init();        // Replace with let mut ctl = control::init(); soon
+    let mut ctl = Control::init();
 
     let mut socket = UdpSocket::bind("0.0.0.0:0").unwrap(); // Update with correct IP/Port later
 
@@ -56,13 +57,17 @@ fn main() {
             }
             Ok(val) => (),
           }
-          match control::update(&mut mem) {
-            Err(val) => {
-                println!("Control update error with code: {}", val);
+          match ctl.update(&mut mem) {
+            Err(err) => {
+                println!("Control update error: {}", err);
                 running = false;
                 break;
             }
-            Ok(val) => (),
+            Ok(val) => if val == control::SHUT_DOWN {
+                println!("Main received shut down signal from control module.");
+                running = false;
+                break;
+            }
           }
           match data_fmt::send_packet(&socket, &mem){
             Err(val) => {
@@ -120,3 +125,4 @@ fn within(error : f64, value : f64, expected : f64) -> bool{
     }
     return false;
 }
+
