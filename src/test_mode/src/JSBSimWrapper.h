@@ -2,7 +2,7 @@
 #define _JSBSIM_WRAPPER_H_
 
 #include <FGFDMExec.h>
-#include <stdio.h>
+#include <iostream>
 
 void wrapper_init();
 void wrapper_update();
