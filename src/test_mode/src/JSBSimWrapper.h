@@ -4,6 +4,8 @@
 #include <FGFDMExec.h>
 #include <stdio.h>
 
-void initJSBSim();
+void wrapper_init();
+void wrapper_update();
+void wrapper_terminate();
 
 #endif
