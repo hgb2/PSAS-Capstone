@@ -21,7 +21,7 @@ pub const SHUT_DOWN: u8 = 1;
 
 
 pub struct Control {
-    state: u8,
+    state: bool,
     pins: MyPins,
 }
 
@@ -30,7 +30,7 @@ impl Control {
 pub fn init() -> Control {
     // create a Control instance
     let mut ctl = Control {
-        state: 0,
+        state: false,
         pins: MyPins::new(),
     };
 
@@ -59,10 +59,8 @@ pub fn init() -> Control {
 ///////////////////////////////////////////////////////////////////////////////
 pub fn update(&mut self, mem: &mut SharedMemory) -> Result<u8, String> {
     // stop_pin <- Get the value of the ESTOP pin
-    let stop_pin = match self.pins.get_value(ESTOP) {
-        Ok(val) => val,
-        Err(err) => return Err(err),
-    };
+    let stop_pin = try!(self.pins.get_value(ESTOP));
+
     // IF stop_pin is 1
     if stop_pin == SHUT_DOWN {
         // RETURN 1
@@ -78,22 +76,22 @@ pub fn update(&mut self, mem: &mut SharedMemory) -> Result<u8, String> {
         // CALL state_update(rate_x)
         // CALL write_pin(CW_pin, new state value, reference to shared memory)
         self.state_update(rate_x);
-        let value = self.state;
-        if let Err(err) = self.write_pin(CW, value, mem) { return Err(err); }
+        let value = self.state as u8;
+        try!(self.write_pin(CW, value, mem));
     } // ELSE IF rate_x LE -0.175
     else if rate_x <= -ACTIVATION_THRESHOLD {
         // CALL state_update(rate_x)
         // CALL write_pin(CCW_pin, new state value, reference to shared memory)
         self.state_update(rate_x);
-        let value = self.state;
-        if let Err(err) = self.write_pin(CCW, value, mem) { return Err(err); }
+        let value = self.state as u8;
+        try!(self.write_pin(CCW, value, mem));
     } // ELSE
     else {
         // turn off both gpio pins and update their state
         // CALL write_pin(CW_pin, 0, mem)
         // CALL write_pin(CCW_pin, 0, mem)
-        if let Err(err) = self.write_pin(CW, 0, mem) { return Err(err); }
-        if let Err(err) = self.write_pin(CCW, 0, mem) { return Err(err); }
+        try!(self.write_pin(CW, 0, mem));
+        try!(self.write_pin(CCW, 0, mem));
     } // END IF
 
     // RETURN 0
@@ -124,27 +122,22 @@ fn state_update(&mut self, mut rate_x: f32) {
 
     let kp = 0.25;
     let a = 2.0 * kp;
-    if rate_x < 0.0 {
-        rate_x = -rate_x;
-    }
+    rate_x = rate_x.abs();
+
     let u = a * rate_x;
 
     // IF u GE 1.0
     if u >= 1.0 {
         // state <- 1
-        self.state = 1;
+        self.state = true;
     } // ELSE IF u LT 0.1
     else if u < 0.1 {
         // state <- 0
-        self.state = 0;
+        self.state = false;
     } // ELSE
     else {
         // Toggle the state value
-        if self.state == 0 {
-            self.state = 1;
-        } else {
-            self.state = 0;
-        }
+        self.state = !self.state;
     } // END IF
 }
 
@@ -165,9 +158,7 @@ fn state_update(&mut self, mut rate_x: f32) {
 ///////////////////////////////////////////////////////////////////////////////
 fn write_pin(&mut self, pin: u64, value: u8, mem: &mut SharedMemory) -> Result<(), String> {
     // CALL pin.set_value(value)
-    if let Err(err) = self.pins.set_value(pin, value) {
-        return Err(err);
-    }
+    try!(self.pins.set_value(pin, value));
 
     // STORE value to the pin's state in shared memory
     match pin {
