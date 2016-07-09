@@ -239,9 +239,9 @@ END FUNCTION
 ```
 FUNCTION new()
     INPUTS: None
-    OUTPUTS: Returns an object containing an empty linked list
+    OUTPUTS: Returns an object with an empty container
    
-    Create a GPIO pins object that contains an empty linked list
+    Create a GPIO pins object that has an empty container
    
     RETURN GPIO pins object
 END FUNCTION
@@ -253,7 +253,7 @@ FUNCTION add_pin(pin_number, direction)
     OUTPUTS: Errors if direction is invalid or underlying library has problems.
 
     Create a new pin using the pin number and direction as inputs to the embedded GPIO library.
-    Add the pin to the linked list.
+    Add the pin to the container.
 END FUNCTION
 
 
@@ -263,8 +263,8 @@ FUNCTION get_value(pin_number)
              Reports an error if: 1) the pin was not initialized
                                   2) the underlying library has problems
 
-    Look through the linked list for the pin number.
-    If the pin doesn't exist in the linked list, report an error.
+    Look through the container for the pin that matches pin_number.
+    If the pin doesn't exist in the container, report an error.
     Otherwise, call the embedded GPIO library to retrieve the pin's state.
     
     RETURN the pin's state
@@ -279,10 +279,10 @@ FUNCTION set_value(pin_number, value)
                                   2) the pin is configured as an input
                                   3) the underlying library has problems
 
-    Look through the linked list for the pin number.
-    If the pin doesn't exist in the linked list, report an error.
+    Look through the container for the pin that matches pin_number.
+    If the pin doesn't exist in the container, report an error.
     If the pin is configured as an input, report an error.
-    Otherwise, call the embedded GPIO library to set the pin's state.
+    Otherwise, call the embedded GPIO library to set the pin's state to value.
     
     RETURN okay status or error
 END FUNCTION
