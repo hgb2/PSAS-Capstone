@@ -58,7 +58,7 @@ impl Pin {
     }
 
     fn unexport(&self) -> Result<(), Error> {
-        println!("export called on pin {}", self.num);
+        println!("unexport called on pin {}", self.num);
         Ok(())
     }
     
