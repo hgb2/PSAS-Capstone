@@ -17,7 +17,7 @@ pub fn init(){
 	//initialize wrapper
 	unsafe{
 		wrapper_init();
-    }	
+    	}	
 	
 	//initialize jsbsim (incl. script)
 	
