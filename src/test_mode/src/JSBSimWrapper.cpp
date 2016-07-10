@@ -20,7 +20,6 @@ void fdm_close(JSBSim::FGFDMExec* fdm)
 {
 	delete fdm;
 	std::cout << "JSBSim Closed.\n" << std::endl;
-	std::cout << "Daylight come and we want to go home." << std::endl;
 }
 
 extern void wrapper_init()
