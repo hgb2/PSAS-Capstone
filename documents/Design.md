@@ -25,9 +25,9 @@ The main module is executed at program startup and does the following:
 ```
 PRINT startup information including whether test mode is enabled
 
+INIT Running TO true
 INIT struct containing to-be-determined information which will be shared between modules
-CALL InitializeDataFormatterModule with address of shared memory structure
-CALL InitializeSensorModule with address of shared memory structure
+CALL InitializeSensorModule
 CALL InitializeControlModule
 INIT variables/class/struct containing means of using high-precision time constructs
      to perform a fixed timestep loop
@@ -39,15 +39,19 @@ WHILE Running EQUAL true
                                                 - TimeConstruct.PreviousTime
     SET TimeConstruct.PreviousTime TO TimeConstruct.CurrentTime;
     WHILE TimeConstruct.TimeSinceLastUpdate >= constant_time_step
-        CALL SensorModuleUpdate
-        IF CALL ControlModuleUpdate(reference to shared memory) EQUAL 1 THEN
-            THROW emergency_control_exception
+        IF CALL SensorModuleUpdate with reference to shared memory EQUAL 1 THEN
+            PRINT information about error
+            SET Running TO false
         ENDIF
-        CALL Data_Formatter::send_packet with UDP_Socket
+        IF CALL ControlModuleUpdate with reference to shared memory EQUAL 1 THEN
+            PRINT information about error
+            SET Running TO false
+        ENDIF
+        CALL Data_Formatter::send_packet with reference to shared memory, UDP_Socket EQUAL 1 or 2 THEN
+            PRINT information about error
+            SET Running TO false
+        ENDIF
         INCREMENT TimeConstruct.TimeSinceLastUpdate BY NEGATE constant_time_step;
-        WHEN any exception
-            PRINT information about exception
-            SET SimulationRunning TO false
     ENDWHILE
 ENDWHILE
 
@@ -167,24 +171,28 @@ The sensor module retrieves sensor data and stores it in shared memory.  The sen
 
 ```
 
-Function InitializeSensorModule(sharedMem: &mut SharedMemory)
-  INPUTS: address of shared memory
-  OUTPUTS: Returns void
+FUNCTION init()
+    INPUTS: address of shared memory
+    OUTPUTS: 0 -- all is well
+             1 -- Error
 
-  CALL myi2c <- i2c::init(device_path, 0x68) //0x68 used in Jamey's code
-  CALL myi2c.write(0x3b) //0x3b is the beginning address of the block of registers that we want to read
+    CALL myi2c <- i2c::init()
 
 ENDFUNCTION
 
 
-FUNCTION SensorModuleUpdate(sharedMem: &mut SharedMemory)
-  INPUTS: address of shared memory
-  OUTPUTS: Returns void
+FUNCTION update(sharedMem: &mut SharedMemory)
+    INPUTS: address of shared memory
+    OUTPUTS: 0 -- all is well
+             1 -- Error
 
-  let mut buf = [0u8; (3 + 1 + 3) * 2]  //3 accel (Registers 3b-40), 1 temp (Registers 41-42), 3 gyro (Registers 43-48)
-  CALL myi2c.read(&buf) //puts block (buf.length) of registers in buf (accel, temp, and gyro)
+    let mut buf = [0u8; (3 + 1 + 3) * 2]  // 3 accel (Registers 3b-40),
+                                          // 1 temp (Registers 41-42), 3 gyro (Registers 43-48)
 
-  WRITE buf into Shared Memory
+    CALL myi2c.write(0x3b) // 0x3b is the beginning address of the block of registers that we want to read
+    CALL myi2c.read(&buf) // puts block (buf.length) of registers in buf (accel, temp, and gyro)
+
+    WRITE buf into Shared Memory
 
 ENDFUNCTION
 
@@ -198,7 +206,8 @@ The data formatter gets telemetry data from the control module, transforms it to
 FUNCTION send_packet(Socket, addr)
     INPUTS: Socket binding, Shared memory address
     OUTPUTS: Returns 0 -- all is well
-                     1 -- Error
+                     1 -- Empty Shared Memory
+                     2 -- PSAS-packet exception: Mismatch for expected data size.
     
     READ GPIO pin states from Shared Memory
     READ Sensor Data from Shared Memory
@@ -207,6 +216,9 @@ FUNCTION send_packet(Socket, addr)
     
     SET Message type using PSAS-packet API
     SET Data_Package from Shared Memory
+    
+    RETURN 2 if PSAS-packet API returns an exception
+    
     SEND UDP_Packet containing Message type and Data_Package from shared memory
     
     RETURN 0 to indicate successful transmission of packet
@@ -258,33 +270,36 @@ compatible data received from the control module is converted to
 a compatible format and sent on to JSBSim.
 
 ```
-extern crate pin-proxy;
-use pin_proxy::{Direction, Pin}
+use gpio::Direction
 
-struct gpio
-  pin = Pin,
+struct Pin
+{
+  value: u8,
 }
 
-impl gpio
-  FUNCTION init(Pin: u64) -> Option<gpio>
-    INITIALIZE pin
-    RETURN struct if did not fail
-  END FUNCTION
+FUNCTION new(pin_number: u64) -> Option<gpio>
+  pin <- INITIALIZE(pin_number)
+  RETURN struct if did not fail
+END FUNCTION
 
-  FUNCTION set_direction(dir: Direction)
-	Log event
-  END FUNCTION
-  
-  FUNCTION set_value(value: u8) -> Option<()>
-	SET pin.value TO value of 1 or 0
-	buffer_to_jsbsim(pin)
-    RETURN okay if try did not fail
-  END FUNCTION
+FUNCTION set_direction(dir: Direction)
+  data <- INITIALIZE(dir)
+  buffer_to_jsbsim(data)
+END FUNCTION
 
-  FUNCTION get_value() -> Option<u8>
-    IF pin is ESTOP RETURN 0
-    RETURN pin.value
-  END FUNCTION
+FUNCTION set_value(value: u8) -> Option<()>
+  SET pin_value TO value of 1 or 0
+  data <- INITIALIZE(pin_value)
+  buffer_to_jsbsim(data)
+  RETURN okay if try did not fail
+END FUNCTION
+
+FUNCTION get_value() -> Option<u8>
+  data = buffer_from_jsbsim()
+  pin <- (data)
+  IF pin is ESTOP RETURN 0
+  RETURN pin.value
+END FUNCTION
 
 }
 
@@ -297,48 +312,40 @@ is retrieved, converted into a hardware compatible format, and made available
 to the sensor module.
 
 ```
-extern crate sensor-proxy;
-use sensor_proxy::{I2CDevice}
+FUNCTION new()
+  INITIALIZE gyro(gyro_ADXL345B)
+  INITIALIZE accel(accel_L3G4200D)
+  INITIALIZE JSBsim
+  RETURN okay if try did not fail
+END FUNCTION
 
-struct i2c
-  myi2c = I2CDevice,
-}
+FUNCTION read(address: u8) -> Option<u16>
+  accel, gyro <- buffer_from_jsbsim()
+  data <- Convert to MPU-6050 format {accel, gyro}
+  return data
+END FUNCTION
 
-impl i2c
-  FUNCTION init() -> Option<i2c>
-    INITIALIZE the proxy I2CDevice
-	INITIALIZE JSBsim
-    RETURN okay if try did not fail
-  END FUNCTION
-
-  FUNCTION read(address: u8) -> Option<u16>
-    accel, gyro <- buffer_from_jsbsim()
-    data <- Convert to MPU-6050 format {accel, gyro}
-	buffer_to_jsbsim(data)
-  END FUNCTION
-  
-  FUNCTION write(address: u8) -> Option<u16>
-	Log event
-    RETURN okay if try did not fail
-  END FUNCTION
-}
+FUNCTION write(address: u8) -> Option<u16>
+  data <- INITIALIZE 
+  buffer_to_jsbsim(data)
+  RETURN okay if try did not fail
+END FUNCTION
 
 ```
 
 #### JSBSim
-JSBSim is commercial off the shelf (COTS) software that is used to
-simulate sensor outputs based on control inputs.
+JSBSim is an open source C++ library.  It is used to simulate sensor outputs based on control inputs for flight simulations.
 
 ```
-INPUT:  sim_actuator_output     
-OUTPUT: sim_sensor_output
-
+INPUT:  binder_input                        //data from controller interface::write to binder
+OUTPUT: binder_output                       //data to sensor interface::get value from binder
 
 ///this function initializes the JSBSim Binder
 FUNCTION INITIALIZE
      //set up data buffers
      SET buffer_to_jsbsim                   //data in csv format    
-     SET buffer_from_jsbsim                   //data in csv format
+     SET buffer_from_jsbsim                 //data in csv format
+     SET binder_output                      //data in struct format
 
      //set up jsbsim
      INIT jsbsim exec
@@ -350,30 +357,27 @@ FUNCTION INITIALIZE
      SET rocket launch
 ENDFUNCTION
 
-
 ///this is the primary work loop
-FUNCTION LOOPDATA (sim_actuator_output):
-     IF (testing)
-          GET actuator response from sim_actuator_output
-          PARSE actuator response into buffer_to_jsbsim //collapse structured data into csv
-          SEND buffer_to_jsbsim to jsbsim
+FUNCTION LOOPDATA (binder_input):
+     GET data from binder_input
+     PARSE data to buffer_to_jsbsim                    //collapse structured data into csv
 
-          IF (script)
-        RUN script object’s runscript()           //will need to know how data is to be blended
-        RUN fgfdmexec’s run method                // … between script & sim actuator output
-          ENDIF
-
-          PUT data from jsbsim into buffer_from_jsbsim      //structure csv data
-          PARSE buffer_from_jsbsim
-          SET data into sim_sensor_input
-     ENDIF
+     SEND buffer_to_jsbsim to jsbsim                   //binder.rs -> wrapper.c -> jsbsim
+     RUN script object’s runscript()                   //will need to know how data is to be blended
+     RUN fgfdmexec’s run method                        // … between script & binder_input
+     PUT jsbsim output into buffer_from_jsbsim         //jsbsim -> wrapper.c -> binder.rs
+     
+     PARSE buffer_from_jsbsim                          //csv to structured data
+     SET data into binder_output
+     CALL sensor interface                             //?verify
 ENDFUNCTION
 
 ///this function closes out the JSBSim Binder
 FUNCTION TERMINATE:
-     CLOSE buffer_to_jsbsim       
-     CLOSE jsbsim output
+     CLOSE binder_input       
+     CLOSE buffer_to_jsbsim
      CLOSE jsbsim
      CLOSE buffer_from_jsbsim
+     CLOSE binder_output
 ENDFUNCTION
 ```

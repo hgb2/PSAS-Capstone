@@ -336,4 +336,28 @@ Bonus: any time leftover
     -> + sublime text rustAutoComplete (for sublime text, other editors have their own expansions)
     -> *almost* an IDE in a text editor for rust
 
+====================
+Monday 06/27
+====================
 
+Announcements: <5 minutes
+    -> Next Monday is the 4th of July, no meeting
+        . That week is our prototype run, look out for email from PSAS team on when this happens
+        . The prototype run will take place of that weekly meeting
+        . Backup plan is the week after
+    -> 360 reviews are going to be schedule soon, according to Bart
+
+Backups
+    -> Update from Harrison
+        . Harrison will add offline backups
+
+Code changes updates: ~5 min/person
+    -> Harrison/main
+    -> Paul/Data
+    -> Cort/Control
+    -> Brian/Embedded
+        . Embedded is moving to Cort+Tyler
+        . Brian is shifting to work with Chris/Sohail
+    -> Tyler/Sensor
+    -> Chris/Testing
+    -> Sohail/JSBSim
