@@ -1,12 +1,13 @@
 //binder.rs
 //
 //
-extern crate libc;
-
-extern{
-	fn wrapper_init();
-	fn wrapper_loopdata();
-	fn wrapper_terminate;
+#[link(name = "stdc++")]
+#[link(name = "JSBSim")]
+#[link(name = "SimWrapper", kind = "static")]
+extern "C" {
+	pub fn wrapper_init();
+	pub fn wrapper_update();
+	pub fn wrapper_terminate();
 }
 
 pub fn init(){
@@ -40,7 +41,7 @@ pub fn loopdata(){
 pub fn terminate(){
 
 	//binder close
-	println!("test mode binder close.")
+	println!("test mode binder close.");
 
 	//close wrapper
 	unsafe{

@@ -1,10 +1,5 @@
 #include "JSBSimWrapper.h"
 
-void wrapper_init()
-{
-	std::cout << "Initializing Wrapper" << std::endl;
-}
-
 //jsbsim constructor wrapper
 JSBSim::FGFDMExec* fdm_create()
 {
@@ -28,13 +23,21 @@ void fdm_close(JSBSim::FGFDMExec* fdm)
 	std::cout << "Daylight come and we want to go home." << std::endl;
 }
 
+extern void wrapper_init()
+{
+	std::cout << "Initializing Wrapper" << std::endl;
 
-void wrapper_update()
+	JSBSim::FGFDMExec* fdm = fdm_create();
+	fdm_get_version(fdm);
+	fdm_close(fdm);
+}
+
+extern void wrapper_update()
 {
 
 }
 
-void wrapper_terminate()
+extern void wrapper_terminate()
 {
 
 }

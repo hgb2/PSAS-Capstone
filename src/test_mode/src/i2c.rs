@@ -1,4 +1,4 @@
-// use i2cdev::linux::{LinuxI2CDevice, LinuxI2CError};
+use binder;
 use std::fmt;
 
 pub struct LinuxI2CDevice {
@@ -41,7 +41,10 @@ impl LinuxI2CDevice {
 }
 
 pub fn init(path: &'static str, slave_address: u16) -> Result<LinuxI2CDevice, i32> {
-    let mut x = LinuxI2CDevice::new(path, slave_address);
+    // Initialize JSBSim FFI binder interface
+	binder::init();
+	
+	let mut x = LinuxI2CDevice::new(path, slave_address);
     match x {
         Ok(y) => return Ok(y),
         Err(_) => return Err(1),

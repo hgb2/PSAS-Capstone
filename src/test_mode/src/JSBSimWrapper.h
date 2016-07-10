@@ -4,8 +4,10 @@
 #include <FGFDMExec.h>
 #include <iostream>
 
-void wrapper_init();
-void wrapper_update();
-void wrapper_terminate();
+extern "C" {
+	void wrapper_init();
+	void wrapper_update();
+	void wrapper_terminate();
+}
 
 #endif

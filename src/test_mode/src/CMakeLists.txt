@@ -2,12 +2,12 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 
 PROJECT(psas-simulator)
 
-ADD_LIBRARY(wrapper SHARED
+ADD_LIBRARY(SimWrapper STATIC
 	JSBSimWrapper.cpp
 	JSBSimWrapper.h
 )
 
-SET(CXX_STDLIB_INCLUDE_DIR /usr/local/include/c++/5)
+SET(CXX_STDLIB_INCLUDE_DIR /usr/include/c++/5)
 
 # This is the default location of a JSBSim installation with shared libraries built
 SET(JSBSIM_LIBRARY_DIR /usr/local/lib)
@@ -19,8 +19,8 @@ INCLUDE_DIRECTORIES(${CXX_STDLIB_INCLUDE_DIR})
 INCLUDE_DIRECTORIES(${JSBSIM_INCLUDE_DIR})
 LINK_DIRECTORIES(${JSBSIM_LIBRARY_DIR})
 
-TARGET_LINK_LIBRARIES(wrapper ${JSBSIM_LIBRARY})
-INSTALL(TARGETS wrapper DESTINATION ${CMAKE_CURRENT_SOURCE_DIR})
+TARGET_LINK_LIBRARIES(SimWrapper ${JSBSIM_LIBRARY})
+INSTALL(TARGETS SimWrapper DESTINATION ${CMAKE_CURRENT_SOURCE_DIR})
 
-# install a copy of libwrapper.so in the parent directory
-INSTALL(TARGETS wrapper DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/..)
+# install a copy of libSimWrapper.so in the parent directory
+INSTALL(TARGETS SimWrapper DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/..)
