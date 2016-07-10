@@ -2,7 +2,7 @@
 //
 //
 #ifndef WRAPPER_H
-#define WRAPPER
+#define WRAPPER_H
 
 //these are temporary
 void wrapper_init();
