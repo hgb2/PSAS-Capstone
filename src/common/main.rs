@@ -1,5 +1,6 @@
 use std::net::UdpSocket;
 use time::precise_time_s;
+use sensor::Sensor_Module;
 
 extern crate libs;
 extern crate libc;
@@ -36,7 +37,15 @@ fn main() {
     let mut current_time = precise_time_s();
     let mut time_since_last : f64 = 0.0;
 
-    sensor::init(); // Replace with let mut sen = sensor::init(&mut mem); soon
+    let mut sen: Sensor_Module;
+
+    match Sensor_Module::init() {
+        Ok(s) => sen = s,
+        Err(e) => {
+            panic!(e);
+        },
+    }
+
     control::init();        // Replace with let mut ctl = control::init(); soon
 
     let mut socket = UdpSocket::bind("0.0.0.0:0").unwrap(); // Update with correct IP/Port later
@@ -48,7 +57,7 @@ fn main() {
         time_since_last = time_since_last + current_time-previous_time;
 
         while time_since_last >= expected_timestep {
-          match sensor::update(&mut mem){ // Replace with sen.update(&mut mem); soon
+          match sen.update(&mut mem){ // Replace with sen.update(&mut mem); soon
             Err(val) => {
                 println!("Sensor update error with code: {}", val);
                 running = false;
