@@ -19,7 +19,7 @@ sudo make install
 ```
 
 ###follow up:
-verify that the installer has placed libJSBSim.so in /etc/local/lib/.
+verify that the installer has placed libJSBSim.so in /usr/local/lib/.
 
 ###jsbsim links:
 website:  http://jsbsim.sourceforge.net
