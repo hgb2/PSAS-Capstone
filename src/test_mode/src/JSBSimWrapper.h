@@ -5,9 +5,12 @@
 #include <iostream>
 
 extern "C" {
-	void wrapper_init();
-	void wrapper_update();
-	void wrapper_terminate();
+	//void wrapper_init();
+	//void wrapper_update();
+	//void wrapper_terminate();
+	JSBSim::FGFDMExec* fdm_create();
+	void fdm_get_version(JSBSim::FGFDMExec* fdm);
+	void fdm_close(JSBSim::FGFDMExec* fdm);
 }
 
 #endif
