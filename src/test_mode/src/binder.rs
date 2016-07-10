@@ -11,10 +11,6 @@ extern "C" {
 	pub fn fdm_close(fdm: &u64);
 }
 
-pub enum BinderError {
-    JSBSimInitError,
-}
-
 pub fn init() -> u64 {
 
 	//init binder
