@@ -18,7 +18,10 @@ extern void fdm_get_version(JSBSim::FGFDMExec* fdm)
 //jsbsim deconstructor wrapper
 extern void fdm_close(JSBSim::FGFDMExec* fdm)
 {
-	//delete fdm; // <- deleting the FGFDMExec pointer causes runtime error!
+	//close out jsbsim
+	
+	
+	//test message:
 	std::cout << "JSBSim Closed.\n" << std::endl;
 }
 
