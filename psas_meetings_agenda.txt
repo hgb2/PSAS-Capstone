@@ -361,3 +361,36 @@ Code changes updates: ~5 min/person
     -> Tyler/Sensor
     -> Chris/Testing
     -> Sohail/JSBSim
+
+====================
+Monday 07/11
+====================
+
+Announcements: <5 minutes
+    -> 360 reviews still need to be given back
+        . Hangouts is fine, but I have physical paper to hand back as well
+        . Schedule something later this week is fine too
+
+Updates from code review: 10 minutes
+    -> 3 questions
+        . Do you feel good about the changes proposed/made?
+        . Are the changes done?
+        . Do you have any further questions?
+    -> Cort
+    -> Harrison
+    -> Chris
+
+Updates from test code meeting: 10 minutes
+
+Are we on track for a prototype run by next week?: <5 minutes
+    -> Keep in mind this is a Minimium Viable Product at this point
+    -> We will iterate to a better product before the end of the term
+
+
+
+
+
+
+
+
+
