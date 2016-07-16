@@ -55,7 +55,7 @@ fn main() {
                 running = false;
                 break;
             }
-            Ok(val) => (),
+            Ok(_) => (),
           }
           match ctl.update(&mut mem) {
             Err(err) => {
@@ -75,7 +75,7 @@ fn main() {
                 running = false;
                 break;
             }
-            Ok(val) => (),
+            Ok(_) => (),
           }
           // Decrease by expected timestep
           time_since_last -= expected_timestep;
@@ -118,9 +118,9 @@ fn timestep(){
     assert_eq!(within(0.0001, cycles/(elapsed_time), Hz), true); // Accept if the frequency is within .0001 Hz
 }
 
-// Since time libraries can only be so precice, I use this to give a little bit of error
+// Since time libraries can only be so precise, I use this to give a little bit of error
 fn within(error : f64, value : f64, expected : f64) -> bool{
-    if value<expected+error&&value>expected-error{
+    if value < expected + error && value > expected - error{
         return true;
     }
     return false;
