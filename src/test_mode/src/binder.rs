@@ -1,50 +1,52 @@
 //binder.rs
 //
 //
+
 extern crate libc;
 
-extern{
-	fn wrapper_init();
-	fn wrapper_loopdata();
-	fn wrapper_terminate;
+#[link(name = "stdc++")]
+#[link(name = "JSBSim")]
+#[link(name = "wrapper", kind = "static")]
+
+extern "C" {
+	pub fn fdm_create() -> *mut libc::c_void;
+	pub fn fdm_get_version(fdm: &*mut libc::c_void);
+	pub fn fdm_close(fdm: &*mut libc::c_void);
 }
 
-pub fn init(){
+pub fn init() -> *mut libc::c_void {
 
 	//init binder
 	println!("test mode binder init");
-	
+
+	let fdm: *mut libc::c_void;	
+
 	//initialize wrapper
-	unsafe{
-		wrapper_init();
+	unsafe {
+		fdm = fdm_create();
+		fdm_get_version(&fdm);
+		return fdm;
     	}	
 	
-	//initialize jsbsim (incl. script)
-	
+	panic!("Unable to initialized JSBSim wrapper");
 }
 
-pub fn loopdata(){
+pub fn loopdata() {
 	
 	//binder 
 	println!("test mode binder loopdata");
-	
-	//call wrapper update
-	unsafe{
-		wrapper_update();
-	}
-	
 	//call jsbsim
 	
 }
 
-pub fn terminate(){
+pub fn terminate(fdm: &*mut libc::c_void) {
 
 	//binder close
-	println!("test mode binder close.")
+	println!("test mode binder close.");
 
 	//close wrapper
-	unsafe{
-		wrapper_terminate();
+	unsafe {
+		fdm_close(fdm);
 	}
 	
 	//close jsbsim
