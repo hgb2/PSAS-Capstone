@@ -19,6 +19,8 @@
 		
 		//deconstructor
 		void fdm_close(JSBSim::FGFDMExec*);
+
+		void wrapper_loopdata(JSBSim::FGFDMExec* fdm);
 	}
 
 #endif

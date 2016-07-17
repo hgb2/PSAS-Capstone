@@ -8,8 +8,10 @@
 //jsbsim constructor wrapper
 JSBSim::FGFDMExec* fdm_create()
 {
-	JSBSim::FGFDMExec * fdm = new JSBSim::FGFDMExec();
+	JSBSim::FGFDMExec* fdm = new JSBSim::FGFDMExec();
 	std::cout << "JSBSim Initialized." << std::endl;
+
+	//fdm->LoadScript("run.xml");
 	return fdm;
 }
 
@@ -25,5 +27,11 @@ void fdm_close(JSBSim::FGFDMExec* fdm)
 {
 	delete fdm;
 	std::cout << "JSBSim Closed.\n" << std::endl;
-	std::cout << "Daylight come and we want to go home." << std::endl;
 }
+
+void wrapper_loopdata(JSBSim::FGFDMExec* fdm)
+{
+	// Step the JSBSim simulation
+	fdm->Run();
+}
+
