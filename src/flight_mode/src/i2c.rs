@@ -12,10 +12,12 @@ fn read_reg(bus: &mut LinuxI2CDevice, reg: u8, buf: &mut [u8]) -> Result<(), io:
 pub fn init() -> Result<LinuxI2CDevice, io::Error> {
     let mut dev = try!(LinuxI2CDevice::new("/dev/i2c-1", 0x68));
 
+    // Try and read from the WhoAmI register.
+    // This should return a 0x68 if this is a compatable device (i.e. MPU-6050 or the MPU-9150)
     let mut buf = [0u8; 1];
 	try!(read_reg(&mut dev, 0x75, &mut buf));
 	if buf[0] != 0x68 {
-		return Err(io::Error::new(io::ErrorKind::NotFound, "MPU-9150 WhoAmI returned wrong value").into());
+		return Err(io::Error::new(io::ErrorKind::NotFound, "MPU-6050 WhoAmI returned wrong value").into());
 	}
 
     // Wake device up, using internal oscillator.
