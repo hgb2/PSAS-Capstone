@@ -2,41 +2,34 @@
 // File Name: sensor.rs
 //
 // Purpose: The sensor module reads gyroscope data from the sensors
-//          the writes it to shared memory. 
+//          the writes it to shared memory.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 
 extern crate byteorder;
-extern crate i2cdev;
 
-use libs::i2c;
+use libs::i2c::Myi2c;
 use self::byteorder::{BigEndian, ReadBytesExt};
 use SharedMemory;
-use self::i2cdev::core::*;
-use self::i2cdev::linux::*;
 use std::io;
 
 
 
-pub struct Sensor_Module {
-    pub i2c: LinuxI2CDevice,
+pub struct SensorModule {
+    pub i2c: Myi2c,
 }
 
 
-impl Sensor_Module {
-pub fn init() -> Result<Sensor_Module, io::Error> {
-	match i2c::init() {
-		Ok(x) => return Ok(Sensor_Module{i2c: x}),
-		Err(e) => return Err(e),
+impl SensorModule {
+pub fn init() -> Result<SensorModule, io::Error> {
+    match Myi2c::init() {
+        Ok(x) => return Ok(SensorModule{i2c: x}),
+        Err(e) => return Err(e),
 	}
 }
 
-fn read_reg(&mut self, reg: u8, buf: &mut [u8]) -> Result<(), io::Error> {
-	try!(self.i2c.write(&[reg]));
-	try!(self.i2c.read(buf));
-    return Ok(());
-}
+
 
 ///////////////////////////////////////////////////////////////////////////////
 // Function Name: update
@@ -58,9 +51,9 @@ pub fn update(&mut self, mem: &mut SharedMemory) -> Result<(), io::Error> {
     //buf: &mut [u8]
     let mut buf = [0u8; (3) * 2];
 
-    try!(self.read_reg(0x43, &mut buf)); // 0x43 is the beginning address of the block of registers that we want to read
-    // 3 accel (Registers 3b-40),
-
+    // 0x43 is the beginning address of the block of registers that we want to read
+    try!(self.i2c.write(&[0x43]));
+	try!(self.i2c.read(&mut buf));
 
     let mut rdr = io::Cursor::new(buf);
 
