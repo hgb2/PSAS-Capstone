@@ -20,7 +20,7 @@ sudo make install
 
 ###follow up:
 verify that the installer has placed libJSBSim.so in /usr/local/lib/.
-if you see an error loading libJSBSim.so*, make sure you add /usr/local/lib to LD_LIBRARY_PATH
+if you see an error loading libJSBSim.so*, make sure you add /usr/local/lib to LD_LIBRARY_PATH. If you don't want to modify your environment variables, use "-DBUILD_SHARED_LIB=FALSE" instead and JSBSim will be statically linked at build time.
 
 ###jsbsim links:
 website:  http://jsbsim.sourceforge.net

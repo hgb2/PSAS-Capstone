@@ -33,24 +33,31 @@ impl fmt::Display for Error {
     }
 }
 
+#[derive(Clone)]
 struct Pin {
-    num: u64,
-    dir: Direction,
-    value: u8,
-}
-
-pub struct MyPins {
-    pins: Vec<Pin>,
+    pub num: u64,
+    pub dir: Direction,
+    pub value: u8,
 }
 
 impl Pin {
+	
+	fn new(number: u64, direction: Direction, value: u8) -> Pin {
+        Pin {
+            num: number,
+            dir: direction,
+            value: value,
+        }
+    }
+	/*
+	
     fn new(number: u64) -> Pin {
         Pin {
             num: number,
             dir: Direction::In,
             value: 0u8,
         }
-    }
+    } */
 
     fn export(&self) -> Result<(), Error> {
         println!("export called on pin {}", self.num);
@@ -74,17 +81,22 @@ impl Pin {
         return self.num;
     }
 
-    fn set_direction(&self, dir: Direction) -> Result<(), Error> {
-        // self.dir = dir;
-        Ok(())
+    fn set_direction(&self, dir: Direction) -> Result<Pin, Error> {
+        println!("set_direction");
+        let pin: Pin = Pin::new(self.num, dir, self.value);
+        return Ok(pin);
     }
 
-    fn set_value(&self, value: u8) -> Result<(), Error> {
-        // self.value = value;
-        Ok(())
+    fn set_value(&self, value: u8) -> Result<Pin, Error> {
+    	println!("set_value {}", value.clone());
+        let pin: Pin = Pin::new(self.num, self.dir.clone(), value);
+        Ok(pin)
     }
 }
 
+pub struct MyPins {
+    pins: Vec<Pin>,
+}
 
 /// Unexports any pins that were added to MyPins.
 impl Drop for MyPins {
@@ -127,15 +139,16 @@ impl MyPins {
     ///    be exported by use in userspace.
     pub fn add_pin(&mut self, pin_number: u64, direction: Direction) {
 
-        let pin = Pin::new(pin_number);
+        let mut pin = Pin::new(pin_number, direction.clone(), 0u8);
 
         if let Err(err) = pin.export() {
             panic!("error exporting gpio pin {}: {}", pin_number, err);
         }
-
-        if let Err(err) = pin.set_direction(direction) {
-            panic!("error setting gpio pin {} direction: {}", pin_number, err);
-        }
+        
+        pin = match pin.set_direction(direction) {
+        	Err(err) => panic!("error setting gpio pin {} direction: {}", pin_number, err),
+        	Ok(p) => p,
+        };
 
         self.pins.push(pin);
     }
