@@ -1,8 +1,22 @@
-pub fn init() {
-    println!("test mode i2c init");
+use std::io;
+
+
+
+pub struct Myi2c {
+
 }
 
-pub fn update(x: i32) -> i32 {
-    println!("test mode i2c update received {}", x);
-    x
+impl Myi2c {
+
+    pub fn init() -> Result<Myi2c, io::Error> {
+        return Ok(Myi2c{});
+    }
+
+    pub fn write (&mut self, reg: &[u8]) -> Result<(), io::Error> {
+        return Ok(());
+    }
+
+    pub fn read(&mut self, mut buf: &mut [u8]) -> Result<(), io::Error> {
+        return Ok(());
+    }
 }
