@@ -1,5 +1,8 @@
 use std::net::UdpSocket;
+use std::net::SocketAddrV4;
+use std::net::Ipv4Addr;
 use time::precise_time_s;
+use std::time::Instant;
 
 extern crate libs;
 extern crate libc;
@@ -21,13 +24,18 @@ pub struct SharedMemory {
     gyro_z:    f32,
     cw_state:  u8,
     ccw_state: u8,
+    boot_time: Instant,
+    sequence_number: u32,
+    telemetry_buffer: Vec<u8>,    // Buffer of messages to build a telemetry Packet
 }
 
 fn main() {
     println!("main function\n");
 
     let mut mem = SharedMemory{gyro_x: 0.0, gyro_y: 0.0, gyro_z: 0.0,
-                               cw_state: 0, ccw_state: 0};
+                               cw_state: 0, ccw_state: 0, sequence_number: 0,
+                               boot_time: std::time::Instant::now(), 
+                               telemetry_buffer: Vec::with_capacity(1432)};
 
     // Timestep variables
     let Hz :f64 = 2.0;  // Define the Hz to be used -- Using 2 Hz for testing
@@ -40,8 +48,8 @@ fn main() {
     sensor::init(); // Replace with let mut sen = sensor::init(&mut mem); soon
     let mut ctl = Control::init();
 
-    let mut socket = UdpSocket::bind("0.0.0.0:0").unwrap(); // Update with correct IP/Port later
-
+	let mut socket = UdpSocket::bind("127.0.0.1:1234").unwrap();
+	
     while running{
         // Update time variables
         previous_time = current_time;
@@ -69,7 +77,7 @@ fn main() {
                 break;
             }
           }
-          match data_fmt::send_packet(&socket, &mem){
+          match data_fmt::send_packet(&socket, &mut mem){
             Err(val) => {
                 println!("Data formatter send_packet error with code: {}", val);
                 running = false;
