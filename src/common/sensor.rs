@@ -10,8 +10,6 @@ use std::io;
 
 
 
-
-
 pub struct Sensor_Module {
     pub i2c: LinuxI2CDevice,
 }
@@ -19,7 +17,7 @@ pub struct Sensor_Module {
 impl Sensor_Module {
 
 	//On Ok it returns a Sensor_Module object
-	pub fn init() -> Result<Sensor_Module, String> {
+	pub fn init() -> Result<Sensor_Module, io::Error> {
 		match i2c::init() {
 			Ok(x) => return Ok(Sensor_Module{i2c: x}),
 			Err(e) => return Err(e),
@@ -27,14 +25,14 @@ impl Sensor_Module {
 	}
 
 
-	fn read_reg(&mut self, reg: u8, buf: &mut [u8]) -> Result<(), String> {
-		self.i2c.write(&[reg]); // 0x43 is the beginning address of the block of registers that we want to read
-		self.i2c.read(buf); // puts block (buf.length) of registers in buf (accel, temp, and gyro.
-            return Ok(());
+	fn read_reg(&mut self, reg: u8, buf: &mut [u8]) -> Result<(), io::Error> {
+		try!(self.i2c.write(&[reg])); // 0x43 is the beginning address of the block of registers that we want to read
+		try!(self.i2c.read(buf)); // puts block (buf.length) of registers in buf (accel, temp, and gyro.
+        return Ok(());
 	}
 
 
-    pub fn update(&mut self, mem: &mut SharedMemory) -> Result<(), String> {
+    pub fn update(&mut self, mem: &mut SharedMemory) -> Result<(), io::Error> {
         println!("sensor update");
 
         // 3 accel (Registers 3b-40),
@@ -47,20 +45,13 @@ impl Sensor_Module {
 
         let mut rdr = io::Cursor::new(buf);
 
-        match rdr.read_i16::<BigEndian>() {
-            Ok(n) => mem.gyro_x = (n as f32) / 131.0,
-            Err(e) => println!("{}", "There was an error"),
-        }
+        //114.3 degrees per second (/114.3 when sensitivity is set to 250 dps)
+        //Or this could be /131.0 degrees per second
+        mem.gyro_x = (try!(rdr.read_i16::<BigEndian>()) as f32) / 131.0;
+	    mem.gyro_y = (try!(rdr.read_i16::<BigEndian>()) as f32) / 131.0;
+		mem.gyro_z = (try!(rdr.read_i16::<BigEndian>()) as f32) / 131.0;
 
-        match rdr.read_i16::<BigEndian>() {
-            Ok(n) => mem.gyro_y = (n as f32) / 131.0,
-            Err(e) => println!("{}", "There was an error"),
-        }
 
-        match rdr.read_i16::<BigEndian>() {
-            Ok(n) => mem.gyro_z = (n as f32) / 131.0,
-            Err(e) => println!("{}", "There was an error"),
-        }
         return Ok(());
     }
 }
