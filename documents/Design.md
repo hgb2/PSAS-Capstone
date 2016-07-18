@@ -208,19 +208,19 @@ FUNCTION send_packet(Socket, addr)
     OUTPUTS: Returns 0 -- all is well
                      1 -- Empty Shared Memory
                      2 -- PSAS-packet exception: Mismatch for expected data size.
-    
+
     READ GPIO pin states from Shared Memory
     READ Sensor Data from Shared Memory
-    
+
     RETURN 1 if Shared Memory is empty
-    
+
     SET Message type using PSAS-packet API
     SET Data_Package from Shared Memory
-    
+
     RETURN 2 if PSAS-packet API returns an exception
-    
+
     SEND UDP_Packet containing Message type and Data_Package from shared memory
-    
+
     RETURN 0 to indicate successful transmission of packet
 
 END FUNCTION
@@ -239,7 +239,7 @@ use sysfs_gpio::{Direction, Pin}
 FUNCTION init(pin)
    INPUTS: gpio pin number
    OUTPUTS: Linux interface to GPIOs
-  
+
    // embedded linux libraries found here:
    //https://github.com/rust-embedded/rust-sysfs-gpio
    RETURN Pin::new(pin)
@@ -252,13 +252,30 @@ use i2cdev::*;
 
 FUNCTION init()
    INPUTS: none
-   OUTPUTS: Returns Linux interface to I2C bus
-   
+   OUTPUTS: Returns returns a Myi2c object
+
    // embedded linux libraries found here:
    // https://github.com/rust-embedded/rust-i2cdev.git
    Set up the i2c_device hardware // Refer to Jamey code for this
    RETURN LinuxI2CDevice
 END FUNCTION
+
+FUNCTION read(buf: &mut [u8])
+   INPUTS: Memory the the data will be read into
+   OUTPUTS: 0 -- all is well
+            1 -- Error
+
+   CALLS read from the rust library.
+END FUNCTION
+
+FUNCTION write(reg: &[u8])
+   INPUTS: registers to write to
+   OUTPUTS: 0 -- all is well
+            1 -- Error
+   CALLS write from the rust library.
+END FUNCTION
+
+
 ```
 
 
@@ -326,7 +343,7 @@ FUNCTION read(address: u8) -> Option<u16>
 END FUNCTION
 
 FUNCTION write(address: u8) -> Option<u16>
-  data <- INITIALIZE 
+  data <- INITIALIZE
   buffer_to_jsbsim(data)
   RETURN okay if try did not fail
 END FUNCTION
@@ -366,7 +383,7 @@ FUNCTION LOOPDATA (binder_input):
      RUN script object’s runscript()                   //will need to know how data is to be blended
      RUN fgfdmexec’s run method                        // … between script & binder_input
      PUT jsbsim output into buffer_from_jsbsim         //jsbsim -> wrapper.c -> binder.rs
-     
+
      PARSE buffer_from_jsbsim                          //csv to structured data
      SET data into binder_output
      CALL sensor interface                             //?verify
