@@ -26,7 +26,7 @@ pub fn init() -> Result<SensorModule, io::Error> {
     match Myi2c::init() {
         Ok(x) => return Ok(SensorModule{i2c: x}),
         Err(e) => return Err(e),
-	}
+    }
 }
 
 
@@ -53,7 +53,7 @@ pub fn update(&mut self, mem: &mut SharedMemory) -> Result<(), io::Error> {
 
     // 0x43 is the beginning address of the block of registers that we want to read
     try!(self.i2c.write(&[0x43]));
-	try!(self.i2c.read(&mut buf));
+      try!(self.i2c.read(&mut buf));
 
     let mut rdr = io::Cursor::new(buf);
 
@@ -61,7 +61,7 @@ pub fn update(&mut self, mem: &mut SharedMemory) -> Result<(), io::Error> {
     //Or this could be /131.0 degrees per second
     mem.gyro_x = (try!(rdr.read_i16::<BigEndian>()) as f32) / 131.0;
     mem.gyro_y = (try!(rdr.read_i16::<BigEndian>()) as f32) / 131.0;
-	mem.gyro_z = (try!(rdr.read_i16::<BigEndian>()) as f32) / 131.0;
+        mem.gyro_z = (try!(rdr.read_i16::<BigEndian>()) as f32) / 131.0;
 
     return Ok(());
 }
