@@ -31,7 +31,7 @@ extern "C" {
     pub fn fdm_run_ic(fdm: *mut FDM) -> bool;
 }
 
-
+// Binder functions
 pub fn init() -> *mut FDM {
 
     // placeholder
