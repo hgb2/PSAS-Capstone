@@ -49,20 +49,20 @@ fn pack_header(name: [u8; 4], time: time::Duration, message_size: usize) -> [u8;
 
         // Fields:
         // ID (Four character code)
-        header.write(&name).unwrap();
+        header.write(&name);
 
         // Timestamp, 6 bytes nanoseconds from boot
         let nanos: u64 = (time.as_secs() * 1000000000) + time.subsec_nanos() as u64;
         let mut time_buffer = [0u8; 8];
         {
             let mut t = Cursor::<&mut [u8]>::new(&mut time_buffer);
-            t.write_u64::<BigEndian>(nanos).unwrap();
+            t.write_u64::<BigEndian>(nanos);
         }
         // Truncate to 6 least significant bytes
-        header.write(&time_buffer[2..8]).unwrap();
+        header.write(&time_buffer[2..8]);
 
         // Size:
-        header.write_u16::<BigEndian>(message_size as u16).unwrap();
+        header.write_u16::<BigEndian>(message_size as u16);
     }
     buffer
 }
@@ -79,17 +79,17 @@ fn pack_header(name: [u8; 4], time: time::Duration, message_size: usize) -> [u8;
 //
 ///////////////////////////////////////////////////////////////////////////////
 // Pack PSAS data information into a byte array
-pub fn as_message(mem: &mut SharedMemory) -> [u8; SIZE_OF_MESSAGE] {
+fn as_message(mem: &mut SharedMemory) -> [u8; SIZE_OF_MESSAGE] {
     let mut buffer = [0u8; SIZE_OF_MESSAGE];
     {
         let mut message = Cursor::<&mut [u8]>::new(&mut buffer);
 
         //Write RCSS message
-        message.write_f32::<BigEndian>(mem.gyro_x).unwrap();
-        message.write_f32::<BigEndian>(mem.gyro_y).unwrap();
-        message.write_f32::<BigEndian>(mem.gyro_z).unwrap();
-        message.write_u8(mem.cw_state).unwrap();
-        message.write_u8(mem.ccw_state).unwrap();
+        message.write_f32::<BigEndian>(mem.gyro_x);
+        message.write_f32::<BigEndian>(mem.gyro_y);
+        message.write_f32::<BigEndian>(mem.gyro_z);
+        message.write_u8(mem.cw_state);
+        message.write_u8(mem.ccw_state);
     }
     buffer
 }
@@ -114,7 +114,7 @@ fn flush_telemetry(socket: &UdpSocket, mem: &mut SharedMemory) {
     let telemetry_addr: SocketAddrV4 = SocketAddrV4::new(Ipv4Addr::new(127, 0, 0, 1), PSAS_TELEMETRY_UDP_PORT);
 
     //send UDP packet to UDP packet target
-    socket.send_to(&mem.telemetry_buffer, telemetry_addr).unwrap();
+    socket.send_to(&mem.telemetry_buffer, telemetry_addr);
 
     // Increment SEQN
     mem.sequence_number += 1;
@@ -124,7 +124,7 @@ fn flush_telemetry(socket: &UdpSocket, mem: &mut SharedMemory) {
 
     // Prepend with next sequence number
     let mut seqn = Vec::with_capacity(4);
-    seqn.write_u32::<BigEndian>(mem.sequence_number).unwrap();
+    seqn.write_u32::<BigEndian>(mem.sequence_number);
     mem.telemetry_buffer.extend_from_slice(&mut seqn);
 }
      
@@ -153,16 +153,16 @@ pub fn send_packet(socket: &UdpSocket, mem: &mut SharedMemory) -> UpdateResult  
     // Send UDP packet once packet size limit (P_LIMIT) has been reached
     if (mem.telemetry_buffer.len() + HEADER_SIZE + SIZE_OF_MESSAGE) > P_LIMIT {
             flush_telemetry(socket, mem);
-    } else {
-
-        // Pack Header into telemetry buffer
-        let header = pack_header(RCSS_NAME, now, SIZE_OF_MESSAGE);
-        mem.telemetry_buffer.extend_from_slice(&header);
-
-        // Pack message into telemetry buffer
-        let message = as_message(mem);
-        mem.telemetry_buffer.extend_from_slice(&message);
     }
+
+    // Pack Header into telemetry buffer
+    let header = pack_header(RCSS_NAME, now, SIZE_OF_MESSAGE);
+    mem.telemetry_buffer.extend_from_slice(&header);
+
+    // Pack message into telemetry buffer
+    let message = as_message(mem);
+    mem.telemetry_buffer.extend_from_slice(&message);
+        
     Ok(0)
 }
 
