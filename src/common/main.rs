@@ -1,6 +1,6 @@
 use std::net::UdpSocket;
 use time::precise_time_s;
-use sensor::Sensor_Module;
+use sensor::SensorModule;
 
 extern crate libs;
 extern crate libc;
@@ -37,9 +37,9 @@ fn main() {
     let mut current_time = precise_time_s();
     let mut time_since_last : f64 = 0.0;
 
-    let mut sen: Sensor_Module;
+    let mut sen: SensorModule;
 
-    match Sensor_Module::init() {
+    match SensorModule::init() {
         Ok(s) => sen = s,
         Err(e) => {
             panic!(e);
