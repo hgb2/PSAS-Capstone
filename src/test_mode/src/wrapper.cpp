@@ -14,7 +14,7 @@ void wrapper_init(){
 }
 
 void wrapper_step(){
-    std::cout << "wrapper_loop" << std::endl;
+    std::cout << "wrapper_step" << std::endl;
     return;
 }
 
