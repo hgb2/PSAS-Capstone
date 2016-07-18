@@ -395,7 +395,23 @@ Updates to prepare for MVP (Minimum Viable Product): 10 minutes
 
 Schedule 360 reviews: <5 minutes
 
+====================
+Monday 07/11
+====================
 
+Announcements:
+
+Pull requests review: 15 minutes
+
+MVP update: 15 minutes
+    Sohail
+    Chris
+    Cort
+    Tyler
+    Harrison
+    Paul
+
+Demo update: <5 minutes
 
 
 
