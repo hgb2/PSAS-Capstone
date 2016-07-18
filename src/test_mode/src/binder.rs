@@ -1,51 +1,35 @@
-//binder.rs
+// binder.rs
 //
 //
 extern crate libc;
+mod wrapper;
 
-extern{
-	fn wrapper_init();
-	fn wrapper_loopdata();
-	fn wrapper_terminate;
+pub fn init() -> *mut wrapper::FDM {
+
+    //placeholder
+    println!("test mode binder init");
+    
+    unsafe{
+        let fdm = wrapper::fdm_create();
+        return fdm;
+    }
 }
 
-pub fn init(){
-
-	//init binder
-	println!("test mode binder init");
-	
-	//initialize wrapper
-	unsafe{
-		wrapper_init();
-    	}	
-	
-	//initialize jsbsim (incl. script)
-	
+pub fn step(fdm: *mut wrapper::FDM){
+    //placeholder 
+    println!("test mode binder step");
 }
 
-pub fn loopdata(){
-	
-	//binder 
-	println!("test mode binder loopdata");
-	
-	//call wrapper update
-	unsafe{
-		wrapper_update();
-	}
-	
-	//call jsbsim
-	
+pub fn close(fdm: *mut wrapper::FDM){
+    //placeholder
+    println!("test mode binder close");
+
+//left for backwards compatibility.  should be deleted    
+pub fn loopdata(fdm: &*mut libc::c_void) {
+    println!("please replace call to binder::loopback with call to binder::step");
 }
 
-pub fn terminate(){
-
-	//binder close
-	println!("test mode binder close.")
-
-	//close wrapper
-	unsafe{
-		wrapper_terminate();
-	}
-	
-	//close jsbsim
+//left for backwards compatibility.  should be deleted    
+pub fn terminate(fdm: &*mut libc::c_void) {
+    println!("please replace call to binder::terminate with call to binder::close");
 }
