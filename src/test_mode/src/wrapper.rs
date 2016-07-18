@@ -6,7 +6,10 @@ extern crate libc;
 //type:  FGFDMExec
 pub enum FDM{}
 
-#[link(name="JSBSim")]
+//verify that these links are needed
+#[link(name = "stdc++")]
+#[link(name = "JSBSim")]
+#[link(name = "wrapper", kind = "static")]
 extern "C"{
 	//wrapper test functions (development only)
 	pub fn wrapper_test();
