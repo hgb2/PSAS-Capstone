@@ -29,5 +29,4 @@ extern "C"{
 	//that are listed in wrapper.h & implemented in wrapper.cpp
 	pub fn fdm_run(fdm: *mut FDM)->bool;
 	pub fn fdm_run_ic(fdm: *mut FDM)->bool;
-	pub fn fdm_load_script(fdm: *mut FDM, script_name: libc::c_char, delta_t: f64, init_file: libc::c_char)->bool;
 }
