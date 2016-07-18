@@ -1,52 +1,35 @@
 // binder.rs
 //
 //
-
 extern crate libc;
+mod wrapper;
 
-#[link(name = "stdc++")]
-#[link(name = "JSBSim")]
-#[link(name = "wrapper", kind = "static")]
+pub fn init() -> *mut wrapper::FDM {
 
-extern "C" {
-    pub fn fdm_create() -> *mut libc::c_void;
-    pub fn fdm_get_version(fdm: &*mut libc::c_void);
-    pub fn fdm_close(fdm: &*mut libc::c_void);
-    pub fn wrapper_loopdata(fdm: &*mut libc::c_void);
-}
-
-pub fn init() -> *mut libc::c_void {
-
-    // init binder
+    //placeholder
     println!("test mode binder init");
-
-    let fdm: *mut libc::c_void;
-
-    // initialize wrapper
-    unsafe {
-        fdm = fdm_create();
-        fdm_get_version(&fdm);
+    
+    unsafe{
+        let fdm = wrapper::fdm_create();
         return fdm;
     }
-
-    panic!("Unable to initialized JSBSim wrapper");
 }
 
+pub fn step(fdm: *mut wrapper::FDM){
+    //placeholder 
+    println!("test mode binder step");
+}
+
+pub fn close(fdm: *mut wrapper::FDM){
+    //placeholder
+    println!("test mode binder close");
+
+//left for backwards compatibility.  should be deleted    
 pub fn loopdata(fdm: &*mut libc::c_void) {
-    unsafe {
-        wrapper_loopdata(fdm);
-    }
+    println!("please replace call to binder::loopback with call to binder::step");
 }
 
+//left for backwards compatibility.  should be deleted    
 pub fn terminate(fdm: &*mut libc::c_void) {
-
-    // binder close
-    println!("test mode binder close.");
-
-    // close wrapper
-    unsafe {
-        fdm_close(fdm);
-    }
-
-    // close jsbsim
+    println!("please replace call to binder::terminate with call to binder::close");
 }
