@@ -48,7 +48,7 @@ fn main() {
     sensor::init(); // Replace with let mut sen = sensor::init(&mut mem); soon
     let mut ctl = Control::init();
 
-	let mut socket = UdpSocket::bind("127.0.0.1:1234").unwrap();
+    let mut socket = UdpSocket::bind("127.0.0.1:1234").unwrap();
 	
     while running{
         // Update time variables
