@@ -186,29 +186,70 @@ ENDFUNCTION
 ```
 
 #### Data Formatter
-The data formatter gets telemetry data from the control module, transforms it to [psas-packet format](http://psas-packet-serializer.readthedocs.org/), and sends a UDP packet to a server.
+The data formatter take in data stored in Shared Memory, and serializes the UDP message it into a byte array. The header for the UDP packet is also serialized, then both the header and message byte arrays are stored in a Telemetry_buffer also stored in Shared memory. Once the Telemetry_buffer reaches a specified threshold, the packet is sent to the telemetry viewer. 
 
+The PSAS telemetry viewer and the PSAS packet serializer must be installed to view the data sent by the Data Formatter - these are found in the following repositories.
+https://github.com/psas/telemetry
+https://github.com/psas/psas_packet
 ```
+FUNCTION pack_header(name, time, packet_message_size)
+    INPUTS: name                -- ASCII PSAS message definition name.
+            time                -- Time duration with respect to boot time.
+            packet_message_size -- Size of message associated with this header type.
+    OUTPUTS: Byte_array
+    
+    
+    SET Temp_buffer[packet_header_size]
+    SET Curser to move through Byte_array
+    WRITE header name using ASCII code into Temp_buffer
+    WRITE Timestamp into Temp_buffer
+    WRITE size of packet message into Temp_buffer
+    
+END FUNCTION
+
+
+FUNCTION as_message(addr)
+    INPUTS: Shared memory address
+    OUTPUTS: Returns Byte_array
+                     
+                     
+    SET Temp_buffer[packet_message_size]
+    SET Curser to move through Byte_array
+    WRITE data fields in shared memory into Temp_buffer
+    
+    RETURN Temp_buffer
+    
+END FUNCTION
+
+
+FUNCTION flush_telemetry(Socket, addr)
+    INPUTS: Socket binding, Shared memory address
+    OUTPUTS: Returns 0 -- all is well
+                     1 -- Error
+                    
+                     
+    SET address for UDP packet target
+    SEND UDP packet containing Telemetry_buffer to the UDP packet target
+    CLEAR Telemetry_buffer
+    SET sequence number in Telemetry_buffer
+
+END FUNCTION
+
 
 FUNCTION send_packet(Socket, addr)
     INPUTS: Socket binding, Shared memory address
     OUTPUTS: Returns 0 -- all is well
-                     1 -- Empty Shared Memory
-                     2 -- PSAS-packet exception: Mismatch for expected data size.
+                     1 -- Error
+
     
-    READ GPIO pin states from Shared Memory
-    READ Sensor Data from Shared Memory
+    GET Timestamp for packet
     
-    RETURN 1 if Shared Memory is empty
-    
-    SET Message type using PSAS-packet API
-    SET Data_Package from Shared Memory
-    
-    RETURN 2 if PSAS-packet API returns an exception
-    
-    SEND UDP_Packet containing Message type and Data_Package from shared memory
-    
-    RETURN 0 to indicate successful transmission of packet
+    IF Telemetry_Buffer is full THEN
+        CALL flush_telemetry
+    ELSE
+        CALL pack_header([u8; 4], time::Duration, usize)
+        APPEND header to buffer
+        CALL as_message(&mut SharedMemory) 
 
 END FUNCTION
 ```

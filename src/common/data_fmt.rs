@@ -153,16 +153,16 @@ pub fn send_packet(socket: &UdpSocket, mem: &mut SharedMemory) -> UpdateResult  
     // Send UDP packet once packet size limit (P_LIMIT) has been reached
     if (mem.telemetry_buffer.len() + HEADER_SIZE + SIZE_OF_MESSAGE) > P_LIMIT {
             flush_telemetry(socket, mem);
+    } else {
+
+        // Pack Header into telemetry buffer
+        let header = pack_header(RCSS_NAME, now, SIZE_OF_MESSAGE);
+        mem.telemetry_buffer.extend_from_slice(&header);
+
+        // Pack message into telemetry buffer
+        let message = as_message(mem);
+        mem.telemetry_buffer.extend_from_slice(&message);
     }
-
-    // Pack Header into telemetry buffer
-    let header = pack_header(RCSS_NAME, now, SIZE_OF_MESSAGE);
-    mem.telemetry_buffer.extend_from_slice(&header);
-
-    // Pack message into telemetry buffer
-    let message = as_message(mem);
-    mem.telemetry_buffer.extend_from_slice(&message);
-
     Ok(0)
 }
 
