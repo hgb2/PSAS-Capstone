@@ -18,9 +18,9 @@ impl Myi2c {
         let mut buf = [0u8; 1];
         try!(dev.write(&[0x75]));
         try!(dev.read(&mut buf));
-    	if buf[0] != 0x68 {
-    		return Err(io::Error::new(io::ErrorKind::NotFound, "MPU-6050 WhoAmI returned wrong value").into());
-    	}
+        if buf[0] != 0x68 {
+            return Err(io::Error::new(io::ErrorKind::NotFound, "MPU-6050 WhoAmI returned wrong value").into());
+        }
 
         // Wake device up, using internal oscillator.
         try!(dev.write(&[0x6b, 0x00]));
