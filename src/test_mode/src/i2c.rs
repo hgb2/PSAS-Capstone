@@ -1,6 +1,6 @@
 use std::fmt;
 
-use wrapper
+use wrapper;
 
 pub struct LinuxI2CDevice {
     path: String,
