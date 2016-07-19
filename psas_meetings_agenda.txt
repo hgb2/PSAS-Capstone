@@ -399,19 +399,37 @@ Schedule 360 reviews: <5 minutes
 Monday 07/11
 ====================
 
-Announcements:
+Announcements: <1 minute
+    license files should be added: GPLv2, with file headers as appropriate
+        owner: Chris
 
 Pull requests review: 15 minutes
+    fixed_build
+        - should have a compilable build now, please merge -Brian
 
-MVP update: 15 minutes
-    Sohail
-    Chris
-    Cort
-    Tyler
-    Harrison
-    Paul
+    data formatter
+        - Done by this week - Paul
 
-Demo update: <5 minutes
+    sensor module v1
+        - Done by end of week - Tyler
+
+MVP done?: 15 minutes
+    Sohail - Sunday 24th
+    Chris - Thursday 28th
+    Cort - yes (fixed_build pending)
+    Tyler - Fight mode yes
+    Harrison - Yes
+    Paul - Yes
+
+Meeting:
+    - Connecting JSBSim to test module
+    - Friday 4pm hanouts meeting to discuss
+
+Demo update: <1 minute
+    - Contacting Jamie for potential prototype run
+
+XML files for JSBSim
+    - Contact Jamie/Nathan about existing xml file use
 
 
 
