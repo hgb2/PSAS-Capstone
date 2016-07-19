@@ -60,13 +60,12 @@ READ wait for user input to terminate program
 ```
 
 #### Control Module
-The control module implements the control algorithm. Sensor data is retrieved from shared memory and GPIO pins are asserted for course correction.
+The control module implements the control algorithm. Sensor data is retrieved from shared memory and GPIO pins are asserted for course correction. This control design is based on [Gain_v3.py](https://github.com/psas/reaction-control/blob/master/Controller_Scripts/Gain_v3.py).
 
 ```
 FUNCTION init()
     INPUTS: None
-    OUTPUTS: Returns 0 -- all is well
-                     1 -- something bad happened
+    OUTPUTS: Returns an initialized Control object
 
     STORE state <- 0 // control state variable
 
@@ -74,65 +73,55 @@ FUNCTION init()
     // Use pin 53 as clockwise (CW)
     // Use pin 54 as counter clockwise (CCW)
     // Use pin 0 as emergency stop (ESTOP)
-    STORE CW_pin <- CALL libs::gpio::init(CW pin number)
-    SET direction of CW pin to DIR_OUT
 
-    STORE CCW_pin <- CALL libs::gpio::init(CCW pin number)
-    SET direction of CCW pin to DIR_OUT
+    INITIALIZE CW_pin as an output and set its value to 0
+    INITIALIZE CCW_pin as an output and set its value to 0
+    INITIALIZE ESTOP_pin as an input
 
-    STORE ESTOP_pin <- CALL libs::gpio::init(ESTOP pin number)
-    SET direction of ESTOP pin to DIR_IN
-
-    // turn gpio pins off
-    Set value of CW pin to 0
-    Set value of CCW pin to 0
-
-    RETURN 0 if everything went well, 1 otherwise
+    RETURN Control object
 
 END FUNCTION
 
 
-FUNCTION update(shared memory reference)
-    INPUTS: reference to shared memory
+FUNCTION update(mem)
+    INPUTS:  mem -- reference to shared memory
     OUTPUTS: Returns 0 -- all is well
                      1 -- Shut Down! (HW asserted the emergency stop pin)
 
-    stop_pin <- CALL ESTOP_pin.get_value()
+    stop_pin <- Get the value of the ESTOP pin
     IF stop_pin is 1
         RETURN 1
     END IF
 
-    READ gyro_x from shared memory
+    rate_x <- READ the gyro's x axis rate from shared memory
 
-    IF gyro_x GE 0.175
-        CALL state_update(CW pin, gyro_x)
-        CALL write_pin(CW pin, shared memory reference)
+    IF rate_x GE 0.175
+        CALL state_update(rate_x)
+        CALL write_pin(CW_pin, new state value, mem)
     ELSE IF gyro_x LE -0.175
-        CALL state_update(CCW pin, gyro_x)
-        CALL write_pin(CCW pin, shared memory reference)
+        CALL state_update(rate_x)
+        CALL write_pin(CCW_pin, new state value, mem)
     ELSE
         // turn off both gpio pins
-        SET CW pin state to 0 and CALL write_pin(CW pin, shared memory reference)
-        SET CCW pin state to 0 and CALL write_pin(CCW pin, shared memory reference)
+        CALL write_pin(CW_pin, 0, mem)
+        CALL write_pin(CCW_pin, 0, mem)
     END IF
 
     RETURN 0
 END FUNCTION
 
 
-FUNCTION state_update(pin, gyro_x)
-    INPUTS:  pin -- gpio pin object
-             gyro_x -- rotational rate about the x axis
-    OUTPUTS: Returns 0 -- all is well
-                     1 -- something bad happened
+FUNCTION state_update(rate_x)
+    INPUTS:  rate_x -- rotational rate about the x axis
+    OUTPUTS: Writes new value to the control state
 
-    kp <- 0.25 // proportional gain for duty cycle
+    // Wish the variables names were more descriptive here, but that's what
+    // they are called in Gain_v3.py (see link above) ... don't want to make
+    // any wrong assumptions that make it worse.
 
-    // wish the variables names were more descriptive here, but that's what they
-    // are called in Gain_v3.py ... don't want to make any wrong assumptions that
-    // make it worse
-    a <- 2.0 * kp        // (I/(r*.1s))/Ftot equation to dc from radian error
-    u <- a*abs(gyro_x)
+    kp <- 0.25     // proportional gain for duty cycle
+    a <- 2.0 * kp  // (I/(r*.1s))/Ftot equation to dc from radian error
+    u <- a*abs(rate_x)
 
     IF u GE 1.0
         state <- 1
@@ -142,21 +131,19 @@ FUNCTION state_update(pin, gyro_x)
         Toggle the state value
     END IF
 
-    SET the pin's state value to state
-
-    RETURN 0 if everything went well, 1 otherwise
-
 END FUNCTION
 
-FUNCTION write_pin(pin, mem)
-    INPUTS:  pin -- gpio pin object
+
+FUNCTION write_pin(pin, value, mem)
+    INPUTS:  pin -- the GPIO pin number (must be an output pin)
+             value -- the value to write to the pin (0 or 1)
              mem -- reference to shared memory
     OUTPUTS: Returns 0 -- all is well
-                     1 -- something bad happened
+                     1 -- Error
 
-    CALL pin.set_value(pin's state value)
+    SET the pin's state to value
 
-    STORE the pin's state value in shared memory
+    STORE the pin's state in shared memory
 
     RETURN 0 if everything went well, 1 otherwise
 
@@ -230,21 +217,8 @@ END FUNCTION
 #### Embedded Rust Libraries
 During flight mode, the system reads sensor input and dispatches control signals via [I2C](https://github.com/rust-embedded/rust-i2cdev) and [GPIO](https://github.com/rust-embedded/rust-sysfs-gpio) Rust libraries.
 
+##### I2C
 ```
-// gpio File, accessible with gpio::init()
-// Import libraries
-extern crate sysfs-gpio;
-use sysfs_gpio::{Direction, Pin}
-
-FUNCTION init(pin)
-   INPUTS: gpio pin number
-   OUTPUTS: Linux interface to GPIOs
-
-   // embedded linux libraries found here:
-   //https://github.com/rust-embedded/rust-sysfs-gpio
-   RETURN Pin::new(pin)
-END FUNCTION
-
 //i2c File, accessible with i2c::init()
 // Import libraries
 extern crate i2cdev;
@@ -274,10 +248,61 @@ FUNCTION write(reg: &[u8])
             1 -- Error
    CALLS write from the rust library.
 END FUNCTION
-
+```
+##### GPIO
 
 ```
+FUNCTION new()
+    INPUTS: None
+    OUTPUTS: Returns an object with an empty container
 
+    Create a GPIO pins object that has an empty container
+
+    RETURN GPIO pins object
+END FUNCTION
+
+
+FUNCTION add_pin(pin_number, direction)
+    INPUTS: pin_number -- the desired GPIO pin number
+            direction  -- input or output
+    OUTPUTS: Errors if direction is invalid or underlying library has problems.
+
+    Create a new pin using the pin number and direction as inputs to the embedded GPIO library.
+    Add the pin to the container.
+END FUNCTION
+
+
+FUNCTION get_value(pin_number)
+    INPUTS: pin_number -- the desired GPIO pin number
+    OUTPUTS: Returns the pin's state value, or
+             Reports an error if: 1) the pin was not initialized
+                                  2) the underlying library has problems
+
+    Look through the container for the pin that matches pin_number.
+    If the pin doesn't exist in the container, report an error.
+    Otherwise, call the embedded GPIO library to retrieve the pin's state.
+
+    RETURN the pin's state
+END FUNCTION
+
+
+FUNCTION set_value(pin_number, value)
+    INPUTS: pin_number -- the desired GPIO pin number
+            value -- 0 to set the pin low, 1 to set the pin high
+    OUTPUTS: Sets the pin's state value, or
+             Reports an error if: 1) the pin was not initialized
+                                  2) the pin is configured as an input
+                                  3) the underlying library has problems
+
+    Look through the container for the pin that matches pin_number.
+    If the pin doesn't exist in the container, report an error.
+    If the pin is configured as an input, report an error.
+    Otherwise, call the embedded GPIO library to set the pin's state to value.
+
+    RETURN okay status or error
+END FUNCTION
+
+```
 
 ### _Test Mode Components_
 #### Controller Interface
@@ -353,48 +378,35 @@ END FUNCTION
 #### JSBSim
 JSBSim is an open source C++ library.  It is used to simulate sensor outputs based on control inputs for flight simulations.
 
+In order to work with JSBSim from Rust, it is necessary to create a wrapper for JSBSim.  This wrapper is implemented in three files:  wrapper.cpp, wrapper.h, & wrapper.rs.  The wrapper.cpp file contains the native C++ calls to JSBSim wrapped in C functions.  The wrapper.h file contains the externed C headers for these wrapped functions.  The wrapper.rs file will contain the raw Rust calls to the C abi.
+
+The higher level calls that will be used to send data to, receive data from, & otherwise work with jsbsim will be located in the binder.rs file.  The very general pseudo code for these is listed below.
+
 ```
 INPUT:  binder_input                        //data from controller interface::write to binder
 OUTPUT: binder_output                       //data to sensor interface::get value from binder
 
 ///this function initializes the JSBSim Binder
-FUNCTION INITIALIZE
-     //set up data buffers
-     SET buffer_to_jsbsim                   //data in csv format    
-     SET buffer_from_jsbsim                 //data in csv format
-     SET binder_output                      //data in struct format
-
-     //set up jsbsim
-     INIT jsbsim exec
-     INSTANTIATE fgfdmexec
-     INSTANTIATE script object
-     LOAD script into script object
-     RUN startup loop (empty)
-     PAUSE until ready to launch
-     SET rocket launch
+FUNCTION Binder Init
+     INIT basic environmental variables
+     INSTANTIATE jsbsim exec                           //fgfdmexec
+     LOAD script                                       //loadscript
+     RUN startup loop (empty)                          //runic
+     RETURN pointer to jsbsim exec
 ENDFUNCTION
 
 ///this is the primary work loop
-FUNCTION LOOPDATA (binder_input):
-     GET data from binder_input
-     PARSE data to buffer_to_jsbsim                    //collapse structured data into csv
-
-     SEND buffer_to_jsbsim to jsbsim                   //binder.rs -> wrapper.c -> jsbsim
-     RUN script object’s runscript()                   //will need to know how data is to be blended
-     RUN fgfdmexec’s run method                        // … between script & binder_input
-     PUT jsbsim output into buffer_from_jsbsim         //jsbsim -> wrapper.c -> binder.rs
-
-     PARSE buffer_from_jsbsim                          //csv to structured data
-     SET data into binder_output
-     CALL sensor interface                             //?verify
+FUNCTION Binder Step (pointer to jsbsim exec, binder_input):
+     GET data from binder_input                        //this is the data from the controller interface
+     RUN jsbsim exec's run method                      //binder -> wrapper -> jsbsim
+                                                       //will need to know how data is to be blended
+                                                       // … between script & binder_input
+     GET output from jsbsim exec's run method          //jsbsim -> wrapper -> binder
+     Send data to binder_output                        //this will be sent to the sensor interface
 ENDFUNCTION
 
 ///this function closes out the JSBSim Binder
-FUNCTION TERMINATE:
-     CLOSE binder_input       
-     CLOSE buffer_to_jsbsim
-     CLOSE jsbsim
-     CLOSE buffer_from_jsbsim
-     CLOSE binder_output
+FUNCTION Binder Close ((pointer to jsbsim exec)
+     CLOSE jsbsim                                      //will need to close this in jsbsim & rust
 ENDFUNCTION
 ```

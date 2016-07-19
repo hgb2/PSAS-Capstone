@@ -361,3 +361,79 @@ Code changes updates: ~5 min/person
     -> Tyler/Sensor
     -> Chris/Testing
     -> Sohail/JSBSim
+
+====================
+Monday 07/11
+====================
+
+Announcements: <5 minutes
+    -> 360 reviews still need to be given back
+        . Hangouts is fine, but I have physical paper to hand back as well
+        . Schedule something later this week is fine too
+
+Updates from test code meeting: 10 minutes
+    -> Wrapper functions will be done by this week
+    -> Test module done by next Friday
+    -> Everyone needs to follow these directions and Test JBSim works for them:
+        . https://github.com/hgb2/PSAS-Capstone/tree/binder/src/test_mode
+            - Directions are in the binder branch
+    -> Shooting for a running prototype (MVP) by next Friday
+
+Updates to prepare for MVP (Minimum Viable Product): 10 minutes
+    -> Keep in mind this is a Minimium Viable Product at this point
+        . We will iterate to a better product before the end of the term
+    -> 3 questions:
+        . Do you have any major changes (other than syntactical, etc?)
+        . Do you have any blockers (technologies not working?)
+        . Can you have an MVP done by next Friday?
+    -> From Test module meeting:
+        . Sohail and Chris are both commited to next week MVP
+    -> Harrison
+    -> Cort
+    -> Paul
+    -> Tyler
+
+Schedule 360 reviews: <5 minutes
+
+====================
+Monday 07/11
+====================
+
+Announcements: <1 minute
+    license files should be added: GPLv2, with file headers as appropriate
+        owner: Chris
+
+Pull requests review: 15 minutes
+    fixed_build
+        - should have a compilable build now, please merge -Brian
+
+    data formatter
+        - Done by this week - Paul
+
+    sensor module v1
+        - Done by end of week - Tyler
+
+MVP done?: 15 minutes
+    Sohail - Sunday 24th
+    Chris - Thursday 28th
+    Cort - yes (fixed_build pending)
+    Tyler - Fight mode yes
+    Harrison - Yes
+    Paul - Yes
+
+Meeting:
+    - Connecting JSBSim to test module
+    - Friday 4pm hanouts meeting to discuss
+
+Demo update: <1 minute
+    - Contacting Jamie for potential prototype run
+
+XML files for JSBSim
+    - Contact Jamie/Nathan about existing xml file use
+
+
+
+
+
+
+

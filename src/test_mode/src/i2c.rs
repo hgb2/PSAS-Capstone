@@ -1,14 +1,34 @@
 use std::io;
+use std::fmt;
+use wrapper;
 
 
-
-pub struct Myi2c {
-
+pub enum Error {
+    Unexpected(i32),
 }
+
+impl fmt::Display for Error {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "Sensor error")
+    }
+}
+
+pub enum I2CError {
+    NotSupported,
+    Other(&'static str),
+}
+
+pub type I2CResult<T> = Result<T, I2CError>;
+
+
+pub struct Myi2c {}
 
 impl Myi2c {
 
     pub fn init() -> Result<Myi2c, io::Error> {
+        // Initialize JSBSim FFI binder interface
+        let fdm = wrapper::init();
+
         return Ok(Myi2c{});
     }
 

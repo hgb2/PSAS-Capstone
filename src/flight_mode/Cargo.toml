@@ -17,3 +17,5 @@ libc = "0.2"
 time = "0.1"
 i2cdev = "*"
 byteorder = "0.5"
+sysfs_gpio = "0.4"
+

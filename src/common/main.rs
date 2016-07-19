@@ -7,6 +7,7 @@ extern crate libc;
 extern crate time;
 
 mod control;
+use control::Control;
 mod sensor;
 mod data_fmt;
 
@@ -46,7 +47,7 @@ fn main() {
         },
     }
 
-    control::init();        // Replace with let mut ctl = control::init(); soon
+    let mut ctl = Control::init();
 
     let mut socket = UdpSocket::bind("0.0.0.0:0").unwrap(); // Update with correct IP/Port later
 
@@ -63,15 +64,19 @@ fn main() {
                 running = false;
                 break;
             }
-            Ok(val) => (),
+            Ok(_) => (),
           }
-          match control::update(&mut mem) {
-            Err(val) => {
-                println!("Control update error with code: {}", val);
+          match ctl.update(&mut mem) {
+            Err(err) => {
+                println!("Control update error: {}", err);
                 running = false;
                 break;
             }
-            Ok(val) => (),
+            Ok(val) => if val == control::SHUT_DOWN {
+                println!("Main received shut down signal from control module.");
+                running = false;
+                break;
+            }
           }
           match data_fmt::send_packet(&socket, &mem){
             Err(val) => {
@@ -79,7 +84,7 @@ fn main() {
                 running = false;
                 break;
             }
-            Ok(val) => (),
+            Ok(_) => (),
           }
           // Decrease by expected timestep
           time_since_last -= expected_timestep;
@@ -122,9 +127,9 @@ fn timestep(){
     assert_eq!(within(0.0001, cycles/(elapsed_time), Hz), true); // Accept if the frequency is within .0001 Hz
 }
 
-// Since time libraries can only be so precice, I use this to give a little bit of error
+// Since time libraries can only be so precise, I use this to give a little bit of error
 fn within(error : f64, value : f64, expected : f64) -> bool{
-    if value<expected+error&&value>expected-error{
+    if value < expected + error && value > expected - error{
         return true;
     }
     return false;

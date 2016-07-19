@@ -61,7 +61,7 @@ pub fn update(&mut self, mem: &mut SharedMemory) -> Result<(), io::Error> {
     //Or this could be /131.0 degrees per second
     mem.gyro_x = (try!(rdr.read_i16::<BigEndian>()) as f32) / 131.0;
     mem.gyro_y = (try!(rdr.read_i16::<BigEndian>()) as f32) / 131.0;
-        mem.gyro_z = (try!(rdr.read_i16::<BigEndian>()) as f32) / 131.0;
+    mem.gyro_z = (try!(rdr.read_i16::<BigEndian>()) as f32) / 131.0;
 
     return Ok(());
 }
