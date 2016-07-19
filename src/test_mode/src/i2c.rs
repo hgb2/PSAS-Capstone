@@ -1,6 +1,6 @@
 use std::fmt;
 
-use wrapper;
+//use wrapper
 
 pub struct LinuxI2CDevice {
     path: String,
@@ -43,7 +43,7 @@ impl LinuxI2CDevice {
 
 pub fn init(path: &'static str, slave_address: u16) -> Result<LinuxI2CDevice, i32> {
     // Initialize JSBSim FFI binder interface
-    let fdm = wrapper::init();
+    let fdm = binder::init();
 
     let mut x = LinuxI2CDevice::new(path, slave_address);
     match x {
