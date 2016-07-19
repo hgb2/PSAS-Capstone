@@ -13,9 +13,6 @@ pub enum FDM {}
 extern "C" {
     // wrapper test functions (development only)
     pub fn wrapper_test();
-    pub fn wrapper_init();
-    pub fn wrapper_step();
-    pub fn wrapper_close();
 
     // jsbsim constructor
     pub fn fdm_create() -> *mut FDM;
@@ -51,14 +48,4 @@ pub fn step(fdm: *mut FDM) {
 pub fn close(fdm: *mut FDM) {
     // placeholder
     println!("test mode binder close");
-}
-
-// left for backwards compatibility.  should be deleted
-pub fn loopdata(fdm: &*mut libc::c_void) {
-    println!("please replace call to loopback with call to step");
-}
-
-// left for backwards compatibility.  should be deleted
-pub fn terminate(fdm: &*mut libc::c_void) {
-    println!("please replace call to terminate with call to close");
 }
