@@ -73,7 +73,7 @@ FUNCTION init()
     // Use pin 53 as clockwise (CW)
     // Use pin 54 as counter clockwise (CCW)
     // Use pin 0 as emergency stop (ESTOP)
-    
+
     INITIALIZE CW_pin as an output and set its value to 0
     INITIALIZE CCW_pin as an output and set its value to 0
     INITIALIZE ESTOP_pin as an input
@@ -118,7 +118,7 @@ FUNCTION state_update(rate_x)
     // Wish the variables names were more descriptive here, but that's what
     // they are called in Gain_v3.py (see link above) ... don't want to make
     // any wrong assumptions that make it worse.
-    
+
     kp <- 0.25     // proportional gain for duty cycle
     a <- 2.0 * kp  // (I/(r*.1s))/Ftot equation to dc from radian error
     u <- a*abs(rate_x)
@@ -195,19 +195,19 @@ FUNCTION send_packet(Socket, addr)
     OUTPUTS: Returns 0 -- all is well
                      1 -- Empty Shared Memory
                      2 -- PSAS-packet exception: Mismatch for expected data size.
-    
+
     READ GPIO pin states from Shared Memory
     READ Sensor Data from Shared Memory
-    
+
     RETURN 1 if Shared Memory is empty
-    
+
     SET Message type using PSAS-packet API
     SET Data_Package from Shared Memory
-    
+
     RETURN 2 if PSAS-packet API returns an exception
-    
+
     SEND UDP_Packet containing Message type and Data_Package from shared memory
-    
+
     RETURN 0 to indicate successful transmission of packet
 
 END FUNCTION
@@ -226,12 +226,27 @@ use i2cdev::*;
 
 FUNCTION init()
    INPUTS: none
-   OUTPUTS: Returns Linux interface to I2C bus
-   
+   OUTPUTS: Returns returns a Myi2c object
+
    // embedded linux libraries found here:
    // https://github.com/rust-embedded/rust-i2cdev.git
    Set up the i2c_device hardware // Refer to Jamey code for this
    RETURN LinuxI2CDevice
+END FUNCTION
+
+FUNCTION read(buf: &mut [u8])
+   INPUTS: Memory the the data will be read into
+   OUTPUTS: 0 -- all is well
+            1 -- Error
+
+   CALLS read from the rust library.
+END FUNCTION
+
+FUNCTION write(reg: &[u8])
+   INPUTS: registers to write to
+   OUTPUTS: 0 -- all is well
+            1 -- Error
+   CALLS write from the rust library.
 END FUNCTION
 ```
 ##### GPIO
@@ -240,9 +255,9 @@ END FUNCTION
 FUNCTION new()
     INPUTS: None
     OUTPUTS: Returns an object with an empty container
-   
+
     Create a GPIO pins object that has an empty container
-   
+
     RETURN GPIO pins object
 END FUNCTION
 
@@ -266,7 +281,7 @@ FUNCTION get_value(pin_number)
     Look through the container for the pin that matches pin_number.
     If the pin doesn't exist in the container, report an error.
     Otherwise, call the embedded GPIO library to retrieve the pin's state.
-    
+
     RETURN the pin's state
 END FUNCTION
 
@@ -283,7 +298,7 @@ FUNCTION set_value(pin_number, value)
     If the pin doesn't exist in the container, report an error.
     If the pin is configured as an input, report an error.
     Otherwise, call the embedded GPIO library to set the pin's state to value.
-    
+
     RETURN okay status or error
 END FUNCTION
 
@@ -353,7 +368,7 @@ FUNCTION read(address: u8) -> Option<u16>
 END FUNCTION
 
 FUNCTION write(address: u8) -> Option<u16>
-  data <- INITIALIZE 
+  data <- INITIALIZE
   buffer_to_jsbsim(data)
   RETURN okay if try did not fail
 END FUNCTION

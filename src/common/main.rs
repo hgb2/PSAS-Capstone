@@ -1,5 +1,6 @@
 use std::net::UdpSocket;
 use time::precise_time_s;
+use sensor::SensorModule;
 
 extern crate libs;
 extern crate libc;
@@ -14,7 +15,7 @@ mod data_fmt;
 pub type UpdateResult = Result<i32, i32>;
 
 // Add: use control_interface::Control; soon
-// Shared memory structure 
+// Shared memory structure
 pub struct SharedMemory {
     gyro_x:    f32,
     gyro_y:    f32,
@@ -37,7 +38,15 @@ fn main() {
     let mut current_time = precise_time_s();
     let mut time_since_last : f64 = 0.0;
 
-    sensor::init(); // Replace with let mut sen = sensor::init(&mut mem); soon
+    let mut sen: SensorModule;
+
+    match SensorModule::init() {
+        Ok(s) => sen = s,
+        Err(e) => {
+            panic!(e);
+        },
+    }
+
     let mut ctl = Control::init();
 
     let mut socket = UdpSocket::bind("0.0.0.0:0").unwrap(); // Update with correct IP/Port later
@@ -49,7 +58,7 @@ fn main() {
         time_since_last = time_since_last + current_time-previous_time;
 
         while time_since_last >= expected_timestep {
-          match sensor::update(&mut mem){ // Replace with sen.update(&mut mem); soon
+          match sen.update(&mut mem){ // Replace with sen.update(&mut mem); soon
             Err(val) => {
                 println!("Sensor update error with code: {}", val);
                 running = false;
@@ -88,7 +97,7 @@ fn main() {
 // Run as: cargo test -- --nocapture to see useful output about cycles
 #[test]
 fn timestep(){
-    let Hz :f64 = 2.0;  // Define the HZ to be used 
+    let Hz :f64 = 2.0;  // Define the HZ to be used
     let mut freq = 0;
     let mut cycles : f64 = 0.0;
 
@@ -100,7 +109,7 @@ fn timestep(){
     let mut elapsed_time= precise_time_s()- precise_time_s();
 
 
-    while elapsed_time<=10.0{ // Run for 10 seconds        
+    while elapsed_time<=10.0{ // Run for 10 seconds
         // Update time variables
         previous_time = current_time;
         current_time = precise_time_s();
@@ -125,4 +134,3 @@ fn within(error : f64, value : f64, expected : f64) -> bool{
     }
     return false;
 }
-

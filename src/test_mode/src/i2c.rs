@@ -1,11 +1,7 @@
+use std::io;
 use std::fmt;
-
 use wrapper;
 
-pub struct LinuxI2CDevice {
-    path: String,
-    slave_address: u16,
-}
 
 pub enum Error {
     Unexpected(i32),
@@ -24,35 +20,23 @@ pub enum I2CError {
 
 pub type I2CResult<T> = Result<T, I2CError>;
 
-impl LinuxI2CDevice {
-    fn new(path: &'static str, slave_address: u16) -> Result<LinuxI2CDevice, Error> {
-        Ok(LinuxI2CDevice {
-            path: String::from(path),
-            slave_address: slave_address,
-        })
+
+pub struct Myi2c {}
+
+impl Myi2c {
+
+    pub fn init() -> Result<Myi2c, io::Error> {
+        // Initialize JSBSim FFI binder interface
+        let fdm = wrapper::init();
+
+        return Ok(Myi2c{});
     }
 
-    pub fn read(&mut self, data: &mut [u8]) -> I2CResult<()> {
-        Ok(())
+    pub fn write (&mut self, reg: &[u8]) -> Result<(), io::Error> {
+        return Ok(());
     }
 
-    pub fn write(&mut self, data: &[u8]) -> I2CResult<()> {
-        Ok(())
+    pub fn read(&mut self, mut buf: &mut [u8]) -> Result<(), io::Error> {
+        return Ok(());
     }
-}
-
-pub fn init(path: &'static str, slave_address: u16) -> Result<LinuxI2CDevice, i32> {
-    // Initialize JSBSim FFI binder interface
-    let fdm = wrapper::wrapper_init();
-
-    let mut x = LinuxI2CDevice::new(path, slave_address);
-    match x {
-        Ok(y) => return Ok(y),
-        Err(_) => return Err(1),
-    }
-}
-
-pub fn update(x: i32) -> i32 {
-    println!("test mode i2c update received {}", x);
-    x
 }
