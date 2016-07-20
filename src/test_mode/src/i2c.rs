@@ -27,7 +27,7 @@ impl Myi2c {
 
     pub fn init() -> Result<Myi2c, io::Error> {
         // Initialize JSBSim FFI binder interface
-        let fdm = wrapper::init();
+        let fdm = wrapper::wrapper_init();
 
         return Ok(Myi2c{});
     }
