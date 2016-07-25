@@ -196,10 +196,12 @@ FUNCTION pack_header(name, time, packet_message_size)
     INPUTS: name                -- ASCII PSAS message definition name.
             time                -- Time duration with respect to boot time.
             packet_message_size -- Size of message associated with this header type.
-    OUTPUTS: Byte_array
+            buffer              -- Buffer/byte array to hold header information.
+
+    OUTPUTS: Ok(0)          -- all is well
+             Err(io::Error) -- an error occurred
     
     
-    SET Temp_buffer[packet_header_size]
     SET Curser to move through Byte_array
     WRITE header name using ASCII code into Temp_buffer
     WRITE Timestamp into Temp_buffer
@@ -209,43 +211,49 @@ END FUNCTION
 
 
 FUNCTION as_message(addr)
-    INPUTS: Shared memory address
-    OUTPUTS: Returns Byte_array
+    INPUTS: mem    --  Shared memory address
+            buffer -- Buffer/byte array to hold message information.
+            
+    OUTPUTS: Ok(0)          -- all is well
+             Err(io::Error) -- an error occurred
                      
                      
-    SET Temp_buffer[packet_message_size]
     SET Curser to move through Byte_array
-    WRITE data fields in shared memory into Temp_buffer
+    WRITE data fields for RCSS packet in shared memory into Temp_buffer
     
     RETURN Temp_buffer
     
 END FUNCTION
 
 
-FUNCTION flush_telemetry(Socket, addr)
-    INPUTS: Socket binding, Shared memory address
-    OUTPUTS: Returns 0 -- all is well
-                     1 -- Error
+FUNCTION flush_telemetry(socket, addr)
+    INPUTS: socket -- Socket binding
+            mem    -- Shared memory address
+    
+    OUTPUTS: Ok(0)          -- all is well
+             Err(io::Error) -- an error occurred
                     
                      
     SET address for UDP packet target
     SEND UDP packet containing Telemetry_buffer to the UDP packet target
     CLEAR Telemetry_buffer
-    SET sequence number in Telemetry_buffer
 
 END FUNCTION
 
 
 FUNCTION send_packet(Socket, addr)
-    INPUTS: Socket binding, Shared memory address
-    OUTPUTS: Returns 0 -- all is well
-                     1 -- Error
-
+    INPUTS: socket -- Socket binding
+            mem    -- Shared memory address
+    
+    OUTPUTS: Ok(0)          -- all is well
+             Err(io::Error) -- an error occurred
     
     GET Timestamp for packet
     
     IF Telemetry_Buffer is full THEN
         CALL flush_telemetry
+    ElSE IF Telemetry_buffer is empty
+        APPEND packet sequence number to telemtry_buffer    
     ELSE
         CALL pack_header([u8; 4], time::Duration, usize)
         APPEND header to buffer

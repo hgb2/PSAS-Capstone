@@ -1,6 +1,4 @@
 use std::net::UdpSocket;
-use std::net::SocketAddrV4;
-use std::net::Ipv4Addr;
 use time::precise_time_s;
 use std::time::Instant;
 
@@ -47,8 +45,12 @@ fn main() {
 
     sensor::init(); // Replace with let mut sen = sensor::init(&mut mem); soon
     let mut ctl = Control::init();
-
-    let socket = UdpSocket::bind("127.0.0.1:1234").unwrap();
+    
+    let socket: UdpSocket;
+    match UdpSocket::bind(("127.0.0.1:1234")) {
+        Ok(sock) => { socket = sock; },
+        Err(e) => { panic!(e) },
+    }
 	
     while running{
         // Update time variables
@@ -79,7 +81,7 @@ fn main() {
           }
           match data_fmt::send_packet(&socket, &mut mem){
             Err(val) => {
-                println!("Data formatter send_packet error with code: {}", val);
+                println!("Error inside Data Formatter: {}", val);
                 running = false;
                 break;
             }
