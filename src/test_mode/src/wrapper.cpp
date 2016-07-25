@@ -31,9 +31,14 @@ bool fdm_run_ic(JSBSim::FGFDMExec *fdm){
 	return fdm->RunIC();
 }
 
-//bool LoadScript(const std::string& Script, double deltaT=0.0, const std::string&                  initfile="");
-bool fdm_load_script(JSBSim::FGFDMExec *fdm, std::string script_name, double delta_t, std::string init_file){
-    return fdm->LoadScript(script_name, delta_t, init_file);
+//bool LoadScript("run.xml")
+bool fdm_load_script(JSBSim::FGFDMExec *fdm) {
+	std::cerr << "Loading run.xml" << std::endl;
+	bool success = fdm->LoadScript("run.xml");
+	if(!success) {
+		std::cerr << "Unable to load run.xml" << std::endl;
+	}
+	return success;
 }
 
 //FGInput* GetInput(void)
