@@ -1,58 +1,38 @@
-use std::fmt;
+use std::io;
 
 use wrapper;
 
-pub struct LinuxI2CDevice {
-    path: String,
-    slave_address: u16,
+pub struct SimulationI2CDevice {
+    fdm: *mut wrapper::FDM,
 }
 
-pub enum Error {
-    Unexpected(i32),
-}
-
-impl fmt::Display for Error {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "Sensor error")
+impl SimulationI2CDevice {
+    fn new() -> Result<SimulationI2CDevice, io::Error> {
+        Ok(SimulationI2CDevice { fdm: wrapper::init() })
     }
 }
 
-pub enum I2CError {
-    NotSupported,
-    Other(&'static str),
-}
-
-pub type I2CResult<T> = Result<T, I2CError>;
-
-impl LinuxI2CDevice {
-    fn new(path: &'static str, slave_address: u16) -> Result<LinuxI2CDevice, Error> {
-        Ok(LinuxI2CDevice {
-            path: String::from(path),
-            slave_address: slave_address,
-        })
-    }
-
-    pub fn read(&mut self, data: &mut [u8]) -> I2CResult<()> {
-        Ok(())
-    }
-
-    pub fn write(&mut self, data: &[u8]) -> I2CResult<()> {
-        Ok(())
+impl Drop for SimulationI2CDevice {
+    fn drop(&mut self) {
+        println!("Closing Null I2C Device");
+        wrapper::close(self.fdm);
     }
 }
 
-pub fn init(path: &'static str, slave_address: u16) -> Result<LinuxI2CDevice, i32> {
-    // Initialize JSBSim FFI binder interface
-    let fdm = wrapper::wrapper_init();
-
-    let mut x = LinuxI2CDevice::new(path, slave_address);
-    match x {
-        Ok(y) => return Ok(y),
-        Err(_) => return Err(1),
-    }
+pub struct Myi2c {
+    pub i2c: SimulationI2CDevice,
 }
 
-pub fn update(x: i32) -> i32 {
-    println!("test mode i2c update received {}", x);
-    x
+impl Myi2c {
+    pub fn init() -> Result<Myi2c, io::Error> {
+        return Ok(Myi2c { i2c: try!(SimulationI2CDevice::new()) });
+    }
+
+    pub fn write(&mut self, reg: &[u8]) -> Result<(), io::Error> {
+        return Ok(());
+    }
+
+    pub fn read(&mut self, mut buf: &mut [u8]) -> Result<(), io::Error> {
+        return Ok(());
+    }
 }
