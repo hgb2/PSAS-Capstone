@@ -400,40 +400,59 @@ Monday 07/11
 ====================
 
 Announcements: <1 minute
-    license files should be added: GPLv2, with file headers as appropriate
+    -> license files should be added: GPLv2, with file headers as appropriate
         owner: Chris
 
 Pull requests review: 15 minutes
-    fixed_build
+    -> fixed_build
         - should have a compilable build now, please merge -Brian
 
-    data formatter
+    -> data formatter
         - Done by this week - Paul
 
-    sensor module v1
+    -> sensor module v1
         - Done by end of week - Tyler
 
 MVP done?: 15 minutes
-    Sohail - Sunday 24th
-    Chris - Thursday 28th
-    Cort - yes (fixed_build pending)
-    Tyler - Fight mode yes
-    Harrison - Yes
-    Paul - Yes
+    -> Sohail - Sunday 24th
+    -> Chris - Thursday 28th
+    -> Cort - yes (fixed_build pending)
+    -> Tyler - Fight mode yes
+    -> Harrison - Yes
+    -> Paul - Yes
 
 Meeting:
-    - Connecting JSBSim to test module
-    - Friday 4pm hanouts meeting to discuss
+    -> Connecting JSBSim to test module
+    -> Friday 4pm hanouts meeting to discuss
 
 Demo update: <1 minute
-    - Contacting Jamie for potential prototype run
+    -> Contacting Jamie for potential prototype run
 
 XML files for JSBSim
-    - Contact Jamie/Nathan about existing xml file use
+    -> Contact Jamie/Nathan about existing xml file use
 
 
+====================
+Monday 07/11
+====================
+
+Announcements: <1 minute
+    -> Travis ci is now building automatically! Thanks harrison!
 
 
+Weekly pull request check in: 15 minutes
+    -> run.xml
+        - Chris
+    -> Dara formatter
+        - Paul
+        - Build failing right now
 
+MVP: 10 minutes
+    -> Flight mode testing:
+        - Jamey/Theo have not gotten back yet about a date
+    -> Test mode:
+        - Status update from Chris/Sohail
 
+Flight team updates: <5 minutes
+    -> Start working on stretch goals until prototype run
 
