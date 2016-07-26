@@ -1,0 +1,27 @@
+sudo: true
+language: rust
+rust:
+  - stable
+  - beta
+  - nightly
+matrix:
+  allow_failures:
+    - rust: nightly
+before_install:
+  - wget -O jsbsim.tar.gz http://jsbsim.cvs.sourceforge.net/viewvc/jsbsim/?view=tar
+  - tar -xvf jsbsim.tar.gz
+install:
+  - cd jsbsim/JSBSim/
+  - cmake -DBUILD_SHARED_LIBS=TRUE
+  - make
+  - sudo make install
+  - export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
+  - cd ../../
+script:
+  - cd src/flight_mode
+  - cargo build --verbose
+  - cargo test --verbose
+  - cd ../test_mode
+  - cargo build --verbose
+  - cargo test --verbose
+

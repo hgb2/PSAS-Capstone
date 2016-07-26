@@ -73,7 +73,7 @@ FUNCTION init()
     // Use pin 53 as clockwise (CW)
     // Use pin 54 as counter clockwise (CCW)
     // Use pin 0 as emergency stop (ESTOP)
-    
+
     INITIALIZE CW_pin as an output and set its value to 0
     INITIALIZE CCW_pin as an output and set its value to 0
     INITIALIZE ESTOP_pin as an input
@@ -118,7 +118,7 @@ FUNCTION state_update(rate_x)
     // Wish the variables names were more descriptive here, but that's what
     // they are called in Gain_v3.py (see link above) ... don't want to make
     // any wrong assumptions that make it worse.
-    
+
     kp <- 0.25     // proportional gain for duty cycle
     a <- 2.0 * kp  // (I/(r*.1s))/Ftot equation to dc from radian error
     u <- a*abs(rate_x)
@@ -275,12 +275,27 @@ use i2cdev::*;
 
 FUNCTION init()
    INPUTS: none
-   OUTPUTS: Returns Linux interface to I2C bus
-   
+   OUTPUTS: Returns returns a Myi2c object
+
    // embedded linux libraries found here:
    // https://github.com/rust-embedded/rust-i2cdev.git
    Set up the i2c_device hardware // Refer to Jamey code for this
    RETURN LinuxI2CDevice
+END FUNCTION
+
+FUNCTION read(buf: &mut [u8])
+   INPUTS: Memory the the data will be read into
+   OUTPUTS: 0 -- all is well
+            1 -- Error
+
+   CALLS read from the rust library.
+END FUNCTION
+
+FUNCTION write(reg: &[u8])
+   INPUTS: registers to write to
+   OUTPUTS: 0 -- all is well
+            1 -- Error
+   CALLS write from the rust library.
 END FUNCTION
 ```
 ##### GPIO
@@ -289,9 +304,9 @@ END FUNCTION
 FUNCTION new()
     INPUTS: None
     OUTPUTS: Returns an object with an empty container
-   
+
     Create a GPIO pins object that has an empty container
-   
+
     RETURN GPIO pins object
 END FUNCTION
 
@@ -315,7 +330,7 @@ FUNCTION get_value(pin_number)
     Look through the container for the pin that matches pin_number.
     If the pin doesn't exist in the container, report an error.
     Otherwise, call the embedded GPIO library to retrieve the pin's state.
-    
+
     RETURN the pin's state
 END FUNCTION
 
@@ -332,7 +347,7 @@ FUNCTION set_value(pin_number, value)
     If the pin doesn't exist in the container, report an error.
     If the pin is configured as an input, report an error.
     Otherwise, call the embedded GPIO library to set the pin's state to value.
-    
+
     RETURN okay status or error
 END FUNCTION
 
@@ -402,7 +417,7 @@ FUNCTION read(address: u8) -> Option<u16>
 END FUNCTION
 
 FUNCTION write(address: u8) -> Option<u16>
-  data <- INITIALIZE 
+  data <- INITIALIZE
   buffer_to_jsbsim(data)
   RETURN okay if try did not fail
 END FUNCTION
@@ -412,48 +427,35 @@ END FUNCTION
 #### JSBSim
 JSBSim is an open source C++ library.  It is used to simulate sensor outputs based on control inputs for flight simulations.
 
+In order to work with JSBSim from Rust, it is necessary to create a wrapper for JSBSim.  This wrapper is implemented in three files:  wrapper.cpp, wrapper.h, & wrapper.rs.  The wrapper.cpp file contains the native C++ calls to JSBSim wrapped in C functions.  The wrapper.h file contains the externed C headers for these wrapped functions.  The wrapper.rs file will contain the raw Rust calls to the C abi.
+
+The higher level calls that will be used to send data to, receive data from, & otherwise work with jsbsim will be located in the binder.rs file.  The very general pseudo code for these is listed below.
+
 ```
 INPUT:  binder_input                        //data from controller interface::write to binder
 OUTPUT: binder_output                       //data to sensor interface::get value from binder
 
 ///this function initializes the JSBSim Binder
-FUNCTION INITIALIZE
-     //set up data buffers
-     SET buffer_to_jsbsim                   //data in csv format    
-     SET buffer_from_jsbsim                 //data in csv format
-     SET binder_output                      //data in struct format
-
-     //set up jsbsim
-     INIT jsbsim exec
-     INSTANTIATE fgfdmexec
-     INSTANTIATE script object
-     LOAD script into script object
-     RUN startup loop (empty)
-     PAUSE until ready to launch
-     SET rocket launch
+FUNCTION Binder Init
+     INIT basic environmental variables
+     INSTANTIATE jsbsim exec                           //fgfdmexec
+     LOAD script                                       //loadscript
+     RUN startup loop (empty)                          //runic
+     RETURN pointer to jsbsim exec
 ENDFUNCTION
 
 ///this is the primary work loop
-FUNCTION LOOPDATA (binder_input):
-     GET data from binder_input
-     PARSE data to buffer_to_jsbsim                    //collapse structured data into csv
-
-     SEND buffer_to_jsbsim to jsbsim                   //binder.rs -> wrapper.c -> jsbsim
-     RUN script object’s runscript()                   //will need to know how data is to be blended
-     RUN fgfdmexec’s run method                        // … between script & binder_input
-     PUT jsbsim output into buffer_from_jsbsim         //jsbsim -> wrapper.c -> binder.rs
-     
-     PARSE buffer_from_jsbsim                          //csv to structured data
-     SET data into binder_output
-     CALL sensor interface                             //?verify
+FUNCTION Binder Step (pointer to jsbsim exec, binder_input):
+     GET data from binder_input                        //this is the data from the controller interface
+     RUN jsbsim exec's run method                      //binder -> wrapper -> jsbsim
+                                                       //will need to know how data is to be blended
+                                                       // … between script & binder_input
+     GET output from jsbsim exec's run method          //jsbsim -> wrapper -> binder
+     Send data to binder_output                        //this will be sent to the sensor interface
 ENDFUNCTION
 
 ///this function closes out the JSBSim Binder
-FUNCTION TERMINATE:
-     CLOSE binder_input       
-     CLOSE buffer_to_jsbsim
-     CLOSE jsbsim
-     CLOSE buffer_from_jsbsim
-     CLOSE binder_output
+FUNCTION Binder Close ((pointer to jsbsim exec)
+     CLOSE jsbsim                                      //will need to close this in jsbsim & rust
 ENDFUNCTION
 ```
