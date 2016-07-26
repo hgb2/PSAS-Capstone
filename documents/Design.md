@@ -207,6 +207,8 @@ FUNCTION pack_header(name, time, packet_message_size)
     WRITE Timestamp into Temp_buffer
     WRITE size of packet message into Temp_buffer
     
+    RETURN 0
+    
 END FUNCTION
 
 
@@ -221,7 +223,7 @@ FUNCTION as_message(addr)
     SET Curser to move through Byte_array
     WRITE data fields for RCSS packet in shared memory into Temp_buffer
     
-    RETURN Temp_buffer
+    RETURN 0
     
 END FUNCTION
 
@@ -237,6 +239,8 @@ FUNCTION flush_telemetry(socket, addr)
     SET address for UDP packet target
     SEND UDP packet containing Telemetry_buffer to the UDP packet target
     CLEAR Telemetry_buffer
+    
+    RETURN 0
 
 END FUNCTION
 
@@ -258,6 +262,9 @@ FUNCTION send_packet(Socket, addr)
         CALL pack_header([u8; 4], time::Duration, usize)
         APPEND header to buffer
         CALL as_message(&mut SharedMemory) 
+        APPEND message to buffer
+
+    RETURN 0
 
 END FUNCTION
 ```
