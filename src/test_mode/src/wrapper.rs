@@ -26,6 +26,8 @@ extern "C" {
     // that are listed in wrapper.h & implemented in wrapper.cpp
     pub fn fdm_run(fdm: *mut FDM) -> bool;
     pub fn fdm_run_ic(fdm: *mut FDM) -> bool;
+    
+    pub fn fdm_load_script(fdm: *mut FDM) -> bool;
 }
 
 // Binder functions
@@ -36,6 +38,7 @@ pub fn init() -> *mut FDM {
 
     unsafe {
         let fdm = fdm_create();
+        fdm_load_script(fdm);
         return fdm;
     }
 }
@@ -49,3 +52,4 @@ pub fn close(fdm: *mut FDM) {
     // placeholder
     println!("test mode binder close");
 }
+
