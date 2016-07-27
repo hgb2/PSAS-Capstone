@@ -439,13 +439,12 @@ Monday 07/11
 Announcements: <1 minute
     -> Travis ci is now building automatically! Thanks harrison!
 
-
 Weekly pull request check in: 15 minutes
     -> run.xml
         - Chris
     -> Dara formatter
         - Paul
-        - Build failing right now
+        - Github desktop app: Sync failed there are both local and remote commits, please commit all changes and repeat
 
 MVP: 10 minutes
     -> Flight mode testing:
