@@ -40,14 +40,16 @@ fn main() {
 
     let mut sen: SensorModule;
 
-    match SensorModule::init() {
+	let mut ctl = Control::init();
+
+    match SensorModule::init(&ctl.pins) {
         Ok(s) => sen = s,
         Err(e) => {
             panic!(e);
         },
     }
 
-    let mut ctl = Control::init();
+    
 
     let mut socket = UdpSocket::bind("0.0.0.0:0").unwrap(); // Update with correct IP/Port later
 
