@@ -33,7 +33,7 @@ bool fdm_run(JSBSim::FGFDMExec *fdm);
 bool fdm_run_ic(JSBSim::FGFDMExec *fdm);
 
 //bool LoadScript(const std::string& Script, double deltaT=0.0, const std::string& initfile="");
-bool fdm_load_script(JSBSim::FGFDMExec *fdm, std::string script_name, double delta_t, std::string init_file);
+bool fdm_load_script(JSBSim::FGFDMExec *fdm);
 
 //FGInput* GetInput(void)
 JSBSim::FGInput* fdm_get_input(JSBSim::FGFDMExec *fdm);
