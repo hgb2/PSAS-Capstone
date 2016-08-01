@@ -14,19 +14,37 @@ use self::byteorder::{BigEndian, ReadBytesExt};
 use SharedMemory;
 use std::io;
 
+// MyPins are only used in test mode
+use libs::gpio::MyPins;
 
 
 pub struct SensorModule {
     pub i2c: Myi2c,
 }
 
-
 impl SensorModule {
+
+pub fn init_simulation(pins: &MyPins) -> Result<SensorModule, io::Error> {
+    
+	if cfg!(feature = "testmode") {
+	    match Myi2c::init_simulation(pins) {
+	        Ok(x) => return Ok(SensorModule { i2c: x }),
+	        Err(e) => return Err(e),
+	    }
+	} else {
+		Err(io::Error::new(io::ErrorKind::NotConnected, "Simulation can only be initialized through test mode."))
+	}
+}
+
 pub fn init() -> Result<SensorModule, io::Error> {
-    match Myi2c::init() {
-        Ok(x) => return Ok(SensorModule{i2c: x}),
-        Err(e) => return Err(e),
-    }
+	if cfg!(feature = "flightmode") {
+	    match Myi2c::init() {
+	        Ok(x) => return Ok(SensorModule{i2c: x}),
+	        Err(e) => return Err(e),
+	    }
+	} else {
+		Err(io::Error::new(io::ErrorKind::NotConnected, "Unable to initialize I2C device, flight mode not enabled."))
+	}
 }
 
 

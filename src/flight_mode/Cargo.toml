@@ -3,6 +3,10 @@ name = "flight_mode"
 version = "0.1.0"
 authors = ["RCS team <us@pdx.com>"]
 
+[features]
+default = ["flightmode"]
+flightmode = []
+
 [[bin]]
 name = "rcs_sw"
 path = "../common/main.rs"

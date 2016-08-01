@@ -2,7 +2,7 @@ use i2cdev::core::*;
 use i2cdev::linux::*;
 use std::io;
 
-
+use gpio::MyPins;
 
 pub struct Myi2c {
     pub i2c: LinuxI2CDevice,
@@ -34,6 +34,10 @@ impl Myi2c {
 
         return Ok(Myi2c{i2c: dev});
     }
+    
+	pub fn init_simulation(pins: *const MyPins) -> Result<Myi2c, io::Error>  {
+		Err(io::Error::new(io::ErrorKind::NotConnected, "Simulation not availible in flight mode"))
+	}
 
     pub fn write (&mut self, reg: &[u8]) -> Result<(), io::Error> {
         try!(self.i2c.write(reg));
