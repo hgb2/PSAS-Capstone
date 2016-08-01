@@ -22,7 +22,7 @@ pub const SHUT_DOWN: u8 = 1;
 
 pub struct Control {
     state: bool,
-    pins: MyPins,
+    pub pins: MyPins,
 }
 
 

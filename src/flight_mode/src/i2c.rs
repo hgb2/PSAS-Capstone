@@ -1,7 +1,7 @@
 use i2cdev::core::*;
 use i2cdev::linux::*;
 use std::io;
-
+use gpio::MyPins;
 
 
 pub struct Myi2c {
@@ -10,7 +10,7 @@ pub struct Myi2c {
 
 impl Myi2c {
 
-    pub fn init() -> Result<Myi2c, io::Error> {
+    pub fn init(unused: *const MyPins) -> Result<Myi2c, io::Error> {
         let mut dev = try!(LinuxI2CDevice::new("/dev/i2c-1", 0x68));
 
         // Try and read from the WhoAmI register.

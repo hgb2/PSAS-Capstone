@@ -14,6 +14,8 @@ use self::byteorder::{BigEndian, ReadBytesExt};
 use SharedMemory;
 use std::io;
 
+// MyPins are only used in test mode
+use libs::gpio::MyPins;
 
 
 pub struct SensorModule {
@@ -22,9 +24,9 @@ pub struct SensorModule {
 
 
 impl SensorModule {
-pub fn init() -> Result<SensorModule, io::Error> {
-    match Myi2c::init() {
-        Ok(x) => return Ok(SensorModule{i2c: x}),
+pub fn init(pins: &MyPins) -> Result<SensorModule, io::Error> {
+    match Myi2c::init(pins) {
+        Ok(x) => return Ok(SensorModule { i2c: x }),
         Err(e) => return Err(e),
     }
 }

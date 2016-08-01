@@ -46,12 +46,14 @@ fn main() {
 
     let mut sen: SensorModule;
 
-    match SensorModule::init() {
+	let mut ctl = Control::init();
+	
+    match SensorModule::init(&ctl.pins) {
         Ok(s) => sen = s,
         Err(e) => {
             panic!(e);
         },
-    }
+	}
 
     let mut ctl = Control::init();
     
