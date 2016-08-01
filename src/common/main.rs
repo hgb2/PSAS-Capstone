@@ -46,19 +46,30 @@ fn main() {
 
     let mut sen: SensorModule;
 
-    match SensorModule::init() {
-        Ok(s) => sen = s,
-        Err(e) => {
-            panic!(e);
-        },
-    }
+	let mut ctl = Control::init();
+		
+	let socket: UdpSocket;
+	match UdpSocket::bind(("127.0.0.1:1234")) {
+		Ok(sock) => { socket = sock; },
+		Err(e) => { panic!(e) },
+	}
 
-    let mut ctl = Control::init();
-    
-    let socket: UdpSocket;
-    match UdpSocket::bind(("127.0.0.1:1234")) {
-        Ok(sock) => { socket = sock; },
-        Err(e) => { panic!(e) },
+    if cfg!(feature = "flightmode") {
+	    match SensorModule::init() {
+	        Ok(s) => sen = s,
+	        Err(e) => {
+	            panic!(e);
+	        },
+	    }
+    } else if cfg!(feature = "testmode") {
+		match SensorModule::init_simulation(ctl.get_pins()) {
+			Ok(s) => sen = s,
+			Err(e) => {
+			    panic!(e);
+			},
+		}
+    } else {
+    	panic!("testmode or flightmode must be declared in Cargo.toml");
     }
 	
     while running{

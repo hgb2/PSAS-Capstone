@@ -49,15 +49,6 @@ impl Pin {
             value: value,
         }
     }
-	/*
-	
-    fn new(number: u64) -> Pin {
-        Pin {
-            num: number,
-            dir: Direction::In,
-            value: 0u8,
-        }
-    } */
 
     fn export(&self) -> Result<(), Error> {
         println!("export called on pin {}", self.num);

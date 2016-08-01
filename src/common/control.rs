@@ -43,6 +43,9 @@ pub fn init() -> Control {
     ctl
 }
 
+pub fn get_pins(&self) -> &MyPins {
+	&self.pins
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 // Function Name: update

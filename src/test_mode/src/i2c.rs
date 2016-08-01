@@ -1,14 +1,19 @@
 use std::io;
 
 use wrapper;
+use gpio::MyPins;
 
 pub struct SimulationI2CDevice {
     fdm: *mut wrapper::FDM,
+    pins: *const MyPins,
 }
 
 impl SimulationI2CDevice {
-    fn new() -> Result<SimulationI2CDevice, io::Error> {
-        Ok(SimulationI2CDevice { fdm: wrapper::init() })
+    fn new(pins: *const MyPins) -> Result<SimulationI2CDevice, io::Error> {
+        Ok(SimulationI2CDevice {
+            fdm: wrapper::init(),
+            pins: pins,
+        })
     }
 }
 
@@ -25,7 +30,11 @@ pub struct Myi2c {
 
 impl Myi2c {
     pub fn init() -> Result<Myi2c, io::Error> {
-        return Ok(Myi2c { i2c: try!(SimulationI2CDevice::new()) });
+        Err(io::Error::new(io::ErrorKind::NotConnected, "Test mode must I2C must be initialzed as a simulation"))
+    }
+    
+    pub fn init_simulation(pins: *const MyPins) -> Result<Myi2c, io::Error> {
+        return Ok(Myi2c { i2c: try!(SimulationI2CDevice::new(pins)) });
     }
 
     pub fn write(&mut self, reg: &[u8]) -> Result<(), io::Error> {
