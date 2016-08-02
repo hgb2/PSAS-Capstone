@@ -29,5 +29,4 @@ extern "C" {
     void fdm_set_root_dir(JSBSim::FGFDMExec *fdm, const char* root_dir);
 
 }           //end extern block
-
 #endif      //end #define WRAPPER_H
