@@ -3,12 +3,6 @@
 //
 #include "wrapper.h"
 
-//test functions:  for development only
-void wrapper_test(){
-    std::cout << "wrapper_test" << std::endl;
-    return;
-}
-
 //constructor
 JSBSim::FGFDMExec* fdm_create(){
     return new JSBSim::FGFDMExec; 
@@ -16,46 +10,42 @@ JSBSim::FGFDMExec* fdm_create(){
 
 //destructor
 void fdm_close(JSBSim::FGFDMExec *fdm){
-    //coordinate with both rust & jsbsim
+	//coordinate with both rust & jsbsim
     //delete fdm;
 }
 
 //functions 
-//bool Run(void)
 bool fdm_run(JSBSim::FGFDMExec *fdm){
     return fdm->Run();
 }
 
-//bool RunIC(void)
 bool fdm_run_ic(JSBSim::FGFDMExec *fdm){
 	return fdm->RunIC();
 }
 
-//bool LoadScript("run.xml")
-bool fdm_load_script(JSBSim::FGFDMExec *fdm) {
-	std::cerr << "Loading run.xml" << std::endl;
-	bool success = fdm->LoadScript("run.xml");
-	if(!success) {
-		std::cerr << "Unable to load run.xml" << std::endl;
-	}
-	return success;
+bool fdm_load_script(JSBSim::FGFDMExec *fdm, const char* script_name, double delta_t, const char* init_file){
+    std::string script_name_cpp = script_name;
+    std::string init_file_cpp = init_file;
+    return fdm->LoadScript(script_name_cpp, delta_t, init_file_cpp="");
 }
 
-//FGInput* GetInput(void)
-JSBSim::FGInput* fdm_get_input(JSBSim::FGFDMExec *fdm){
-    return fdm->GetInput();
+bool fdm_set_engine_path(JSBSim::FGFDMExec *fdm, const char* engine_path){
+    std::string engine_path_cpp = engine_path;
+	return fdm->SetEnginePath(engine_path_cpp);
 }
 
-//FGOutput* GetOutput(void)
-JSBSim::FGOutput* fdm_get_output(JSBSim::FGFDMExec *fdm){
-    return fdm->GetOutput();
+bool fdm_set_aircraft_path(JSBSim::FGFDMExec *fdm, const char* aircraft_path){
+    std::string aircraft_path_cpp = aircraft_path;
+	return fdm->SetAircraftPath(aircraft_path_cpp);
 }
 
-//from FGJSBBase class
-std::string fdm_get_version(JSBSim::FGFDMExec *fdm){
-	std::string version = fdm->GetVersion();
-    
-    //for testing:  remove in final
-    std::cout << "wrapper version:  " << version << std::endl;
-    return version;
+bool fdm_set_systems_path(JSBSim::FGFDMExec *fdm, const char* systems_path){
+    std::string systems_path_cpp = systems_path;
+	return fdm->SetSystemsPath(systems_path_cpp);
 }
+
+void fdm_set_root_dir(JSBSim::FGFDMExec *fdm, const char* root_dir){
+    std::string root_dir_cpp = root_dir;
+	fdm->SetRootDir(root_dir_cpp);
+}
+

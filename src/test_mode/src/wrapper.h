@@ -6,44 +6,28 @@
 
 //#includes
 #include <iostream>
-	
 #include "FGFDMExec.h"
 #include "math/FGLocation.h"
 #include "input_output/FGGroundCallback.h"
 
 //c api
 extern "C" {
+    
+    //constructor
+    JSBSim::FGFDMExec* fdm_create();
 		
-//wrapper test functions (development only)
-void wrapper_test();
-
-//JSBSim constructor
-JSBSim::FGFDMExec* fdm_create();
+    //deconstructor
+    void fdm_close(JSBSim::FGFDMExec *fdm);		
 		
-//JSBSim deconstructor
-void fdm_close(JSBSim::FGFDMExec *fdm);		
-		
-//JSBSim functions: 
-//the original function definition from JSBSim::FGFDMExec is listed for reference
-
-//bool Run(void);
-bool fdm_run(JSBSim::FGFDMExec *fdm);
-        
-//bool RunIC(void);     
-bool fdm_run_ic(JSBSim::FGFDMExec *fdm);
-
-//bool LoadScript(const std::string& Script, double deltaT=0.0, const std::string& initfile="");
-bool fdm_load_script(JSBSim::FGFDMExec *fdm);
-
-//FGInput* GetInput(void)
-JSBSim::FGInput* fdm_get_input(JSBSim::FGFDMExec *fdm);
-
-//FGOutput* GetOutput(void)
-JSBSim::FGOutput* fdm_get_output(JSBSim::FGFDMExec *fdm);
-
-//from FGJSBBase class
-//string GetVersion()
-std::string fdm_get_version(JSBSim::FGFDMExec *fdm);
+    //functions: 
+    bool fdm_run(JSBSim::FGFDMExec *fdm);
+    bool fdm_run_ic(JSBSim::FGFDMExec *fdm);
+    bool fdm_load_script(JSBSim::FGFDMExec *fdm, const char* script_name, double delta_t, const char* init_file);
+    bool fdm_set_engine_path(JSBSim::FGFDMExec *fdm, const char* engine_path);
+    bool fdm_set_aircraft_path(JSBSim::FGFDMExec *fdm, const char* aircraft_path);
+    bool fdm_set_systems_path(JSBSim::FGFDMExec *fdm, const char* systems_path);
+    void fdm_set_root_dir(JSBSim::FGFDMExec *fdm, const char* root_dir);
 
 }           //end extern block
+
 #endif      //end #define WRAPPER_H
