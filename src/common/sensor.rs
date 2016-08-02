@@ -60,7 +60,7 @@ pub fn update(&mut self, mem: &mut SharedMemory) -> Result<(), io::Error> {
     //114.3 degrees per second (/114.3 when sensitivity is set to 250 dps)
     //Or this could be /131.0 degrees per second
     mem.gyro_x = (try!(rdr.read_i16::<BigEndian>()) as f32) / 131.0;
-    mem.gyro_y = (try!(rdr.read_i16::<BigEndian>()) as f32) / 131.0;
+    mem.gyro_y = (try!(rdr.read_i16::<BigEndian>()) as f32) / 131.0; // This is the correct one to use 
     mem.gyro_z = (try!(rdr.read_i16::<BigEndian>()) as f32) / 131.0;
 
     return Ok(());
