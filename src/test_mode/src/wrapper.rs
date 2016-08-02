@@ -73,7 +73,6 @@ pub fn send_to_jsbsim(newcw: u8, newccw: u8)->bool{
 
 //returns current state variable
 pub fn get_from_jsbsim()->(f32, f32, f32){
-    
     unsafe{
         return (gyro_x, gyro_y, gyro_z);
     }
