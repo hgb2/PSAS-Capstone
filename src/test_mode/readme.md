@@ -1,14 +1,12 @@
 #Test Mode Notes:
 
 ###JSBSim Script Directory Structure
+```
 test_mode / jsbsim / aircraft
-
                    / engine
-                   
                    / scripts
-                   
                    / systems
-
+```
 
 ##Compiling JSBSim on Linux
 
