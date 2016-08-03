@@ -2,8 +2,11 @@
 
 ###JSBSim Script Directory Structure
 test_mode / jsbsim / aircraft
+
                    / engine
+                   
                    / scripts
+                   
                    / systems
 
 
