@@ -1,3 +1,5 @@
+extern crate byteorder;
+use self::byteorder::{BigEndian, ReadBytesExt};
 use i2cdev::core::*;
 use i2cdev::linux::*;
 use std::io;
@@ -35,13 +37,25 @@ impl Myi2c {
         return Ok(Myi2c{i2c: dev});
     }
 
-    pub fn write (&mut self, reg: &[u8]) -> Result<(), io::Error> {
-        try!(self.i2c.write(reg));
-        return Ok(());
+    pub fn get_gyro(&mut self) -> Result<(f32, f32, f32), io::Error> {
+        // 1 temp (Registers 41-42), 3 gyro (Registers 43-48)
+        //only using the gyro registers for now.
+        //buf: &mut [u8]
+        let mut buf = [0u8; (3) * 2];
+
+        // 0x43 is the beginning address of the block of registers that we want to read
+        try!(self.i2c.write(&[0x43]));
+        try!(self.i2c.read(&mut buf));
+
+        let mut rdr = io::Cursor::new(buf);
+
+        //114.3 degrees per second (/114.3 when sensitivity is set to 250 dps)
+        //Or this could be /131.0 degrees per second
+        let gyro_x = (try!(rdr.read_i16::<BigEndian>()) as f32) / 131.0;
+        let gyro_y = (try!(rdr.read_i16::<BigEndian>()) as f32) / 131.0;
+        let gyro_z = (try!(rdr.read_i16::<BigEndian>()) as f32) / 131.0;
+
+        Ok((gyro_x, gyro_y, gyro_z))
     }
 
-    pub fn read(&mut self, mut buf: &mut [u8]) -> Result<(), io::Error> {
-        try!(self.i2c.read(buf));
-        return Ok(());
-    }
 }
