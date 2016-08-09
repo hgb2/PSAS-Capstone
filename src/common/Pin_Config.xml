@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+    <!-- GPIO pins -->
+    <cw_pin value="53"/>
+    <ccw_pin value="54"/>
+    <estop_pin value="0"/>

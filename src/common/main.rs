@@ -11,6 +11,7 @@ mod control;
 use control::Control;
 mod sensor;
 mod data_fmt;
+mod config_reader;
 
 // Results
 pub type UpdateResult = Result<i32, i32>;
@@ -28,6 +29,14 @@ pub struct SharedMemory {
     telemetry_buffer: Vec<u8>,    // Buffer of messages to build a telemetry Packet
 }
 
+//Pin values from configuration file.
+pub struct ConfigPins {
+    cw_pin: u64,
+    ccw_pin: u64,
+    estop_pin: u64,    
+}
+
+
 fn main() {
     println!("main function\n");
 
@@ -43,6 +52,21 @@ fn main() {
     let mut previous_time;
     let mut current_time = precise_time_s();
     let mut time_since_last : f64 = 0.0;
+     
+    let mut config_pins = ConfigPins { cw_pin: 0, ccw_pin: 0, estop_pin: 0};
+    
+    match config_reader::xml_reader(&mut config_pins) {
+        Err(val) => {
+            panic!("XMLEvent error from configuration file: {}", val);
+        }
+        Ok(_) => (),
+    }
+    
+//*REMOVE LATER*
+    print!("\ncw_pin from Pin_Config: {}\n", config_pins.cw_pin);
+    print!("ccw_pin from Pin_Config: {}\n", config_pins.ccw_pin);
+    print!("estop_pin from Pin_Config: {}\n", config_pins.estop_pin);
+//    
 
     let mut sen: SensorModule;
 
@@ -53,7 +77,7 @@ fn main() {
         },
     }
 
-    let mut ctl = Control::init();
+    let mut ctl = Control::init(&config_pins);
     
     let socket: UdpSocket;
     match UdpSocket::bind(("127.0.0.1:1234")) {
