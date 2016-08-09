@@ -77,7 +77,7 @@ fn main() {
         },
     }
 
-    let mut ctl = Control::init(&config_pins);
+    let mut ctl = Control::init();
     
     let socket: UdpSocket;
     match UdpSocket::bind(("127.0.0.1:1234")) {
