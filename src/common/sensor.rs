@@ -6,11 +6,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-
-extern crate byteorder;
-
 use libs::i2c::Myi2c;
-use self::byteorder::{BigEndian, ReadBytesExt};
 use SharedMemory;
 use std::io;
 
@@ -46,22 +42,10 @@ pub fn init() -> Result<SensorModule, io::Error> {
 pub fn update(&mut self, mem: &mut SharedMemory) -> Result<(), io::Error> {
     println!("sensor update");
 
-    // 1 temp (Registers 41-42), 3 gyro (Registers 43-48)
-    //only using the gyro registers for now.
-    //buf: &mut [u8]
-    let mut buf = [0u8; (3) * 2];
-
-    // 0x43 is the beginning address of the block of registers that we want to read
-    try!(self.i2c.write(&[0x43]));
-      try!(self.i2c.read(&mut buf));
-
-    let mut rdr = io::Cursor::new(buf);
-
-    //114.3 degrees per second (/114.3 when sensitivity is set to 250 dps)
-    //Or this could be /131.0 degrees per second
-    mem.gyro_x = (try!(rdr.read_i16::<BigEndian>()) as f32) / 131.0;
-    mem.gyro_y = (try!(rdr.read_i16::<BigEndian>()) as f32) / 131.0; // This is the correct one to use 
-    mem.gyro_z = (try!(rdr.read_i16::<BigEndian>()) as f32) / 131.0;
+    let gyro = try!(self.i2c.get_gyro());
+    mem.gyro_x = gyro.0;
+    mem.gyro_y = gyro.1;
+    mem.gyro_z = gyro.2;
 
     return Ok(());
 }

@@ -455,3 +455,47 @@ MVP: 10 minutes
 Flight team updates: <5 minutes
     -> Start working on stretch goals until prototype run
 
+
+====================
+Monday 08/01
+====================
+
+Anouncements: <1 minute
+    -> We have the LED prototype to work on!
+        . We also have directions to use it
+
+Picture walk-through: 10 minutes
+
+Prototype setup: 10 minutes
+
+
+====================
+Monday 08/08
+====================
+
+Announcements: <1 minutes
+    -> Schedule
+        . 2 weeks left to work (including this week)
+        . 1 week to prep for presentation
+        . Presentation is Aug 29th at 5:45pm
+
+Presentations: 5 minutes
+    -> We are second in line, estimated start time of 6:15
+    -> 21 minutes to present, 4 minutes for questions
+    -> Must be present for all presentations
+    -> Must contain a demo (or a demo video prepped ahead of time)
+    -> More info to come as the leads meet tonight
+
+Goals: 5 mintues
+    -> Run and video a second test on the LED prototype
+        . Tomorrow, 6:30, capstone lab
+    -> Run on cold gas jet by end of next week
+
+Check in: 15 minutes
+    -> Flight
+        . Any successes?
+    -> Test
+        . Conversation
+        . Bringing in PSAS help (nathan)
+        . What to do if we can't get test mode working
+
