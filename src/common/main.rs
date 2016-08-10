@@ -33,34 +33,27 @@ fn main() {
 
     let mut mem = SharedMemory{gyro_x: 0.0, gyro_y: 0.0, gyro_z: 0.0,
                                cw_state: 0, ccw_state: 0, sequence_number: 0,
-                               boot_time: std::time::Instant::now(), 
+                               boot_time: std::time::Instant::now(),
                                telemetry_buffer: Vec::with_capacity(1432)};
 
     // Timestep variables
-    let Hz :f64 = 2.0;  // Define the Hz to be used -- Using 2 Hz for testing
+    let Hz :f64 = 100.0;  // Define the Hz to be used -- Using 2 Hz for testing
     let expected_timestep = 1.0/Hz; // Inverse of frequency
     let mut running = true;
     let mut previous_time;
     let mut current_time = precise_time_s();
     let mut time_since_last : f64 = 0.0;
 
-    let mut sen: SensorModule;
-
-    match SensorModule::init() {
-        Ok(s) => sen = s,
-        Err(e) => {
-            panic!(e);
-        },
-    }
+    let mut sen = SensorModule::init().unwrap();
 
     let mut ctl = Control::init();
-    
+
     let socket: UdpSocket;
     match UdpSocket::bind(("127.0.0.1:1234")) {
         Ok(sock) => { socket = sock; },
         Err(e) => { panic!(e) },
     }
-	
+
     while running{
         // Update time variables
         previous_time = current_time;
@@ -74,8 +67,9 @@ fn main() {
                 running = false;
                 break;
             }
-            Ok(_) => (),
+            Ok(_) => println!("{} {} {}", mem.gyro_x, mem.gyro_y, mem.gyro_z),
           }
+          
           match ctl.update(&mut mem) {
             Err(err) => {
                 println!("Control update error: {}", err);
@@ -88,6 +82,7 @@ fn main() {
                 break;
             }
           }
+          
           match data_fmt::send_packet(&socket, &mut mem){
             Err(val) => {
                 println!("Error inside Data Formatter: {}", val);

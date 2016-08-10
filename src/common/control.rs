@@ -12,9 +12,10 @@ use SharedMemory;
 // Use pin 53 as clockwise (CW)
 // Use pin 54 as counter clockwise (CCW)
 // Use pin 0 as emergency stop (ESTOP)
-const CW: u64 = 53;
-const CCW: u64 = 54;
+const CW: u64 = 43; // Pin 11 on cold gas jet? 
+const CCW: u64 = 42; // Pin 12 on col gas jet? 
 const ESTOP: u64 = 0;
+
 
 // shut down value for the ESTOP pin
 pub const SHUT_DOWN: u8 = 1;
@@ -62,13 +63,14 @@ pub fn update(&mut self, mem: &mut SharedMemory) -> Result<u8, String> {
     let stop_pin = try!(self.pins.get_value(ESTOP));
 
     // IF stop_pin is 1
-    if stop_pin == SHUT_DOWN {
+    if false && stop_pin == SHUT_DOWN {
         // RETURN 1
         return Ok(stop_pin);
     } // END IF
 
     // rate_x <- READ the gyro's x axis rate from shared memory
-    let rate_x = mem.gyro_x;
+    let rate_x = mem.gyro_y - 0.41; // Offsetting the led edison board 
+	println!("gyro rate {}", rate_x); 
 
     const ACTIVATION_THRESHOLD: f32 = 0.175;
     // IF rate_x GE 0.175
@@ -95,7 +97,7 @@ pub fn update(&mut self, mem: &mut SharedMemory) -> Result<u8, String> {
     } // END IF
 
     // RETURN 0
-    return Ok(stop_pin);
+    return Ok(0);
 
 }
 
