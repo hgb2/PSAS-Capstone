@@ -13,7 +13,7 @@ pub struct Myi2c {
 impl Myi2c {
 
     pub fn init() -> Result<Myi2c, io::Error> {
-        let mut dev = try!(LinuxI2CDevice::new("/dev/i2c-1", 0x68));
+        let mut dev = try!(LinuxI2CDevice::new("/dev/i2c-6", 0x68));
 
         // Try and read from the WhoAmI register.
         // This should return a 0x68 if this is a compatable device (i.e. MPU-6050 or the MPU-9150)
