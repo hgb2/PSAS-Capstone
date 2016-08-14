@@ -84,6 +84,10 @@ impl MyPins {
     /// 1) Attempt to read an uninitialized pin.
     /// 2) TBD: something bad happened in JSBSim?
     pub fn get_value(&mut self, pin_number: u64) -> Result<u8, String> {
+<<<<<<< d521e852aab2dd9a3e56683b0222c6bb12669c86
+=======
+
+>>>>>>> added tests
         for pin in &self.pins {
             if pin.num == pin_number {
                 //println!("get_value found pin: {}", pin.num);
@@ -94,7 +98,10 @@ impl MyPins {
                 return Ok(pin.state);
             }
         }
+<<<<<<< d521e852aab2dd9a3e56683b0222c6bb12669c86
 
+=======
+>>>>>>> added tests
         Err(format!("attempt to read uninitialized gpio pin {}", pin_number))
     }
 
@@ -121,16 +128,23 @@ impl MyPins {
                 if pin.dir == Direction::In {
                     return Err(format!("attempt to write to gpio input pin {}", pin.num));
                 }
+<<<<<<< d521e852aab2dd9a3e56683b0222c6bb12669c86
 
                 pin.state = value;
 
+=======
+                pin.state = value;
+>>>>>>> added tests
                 // update the direction states if needed
                 if pin.num == CW {
                     self.cw_state = value;
                 } else if pin.num == CCW {
                     self.ccw_state = value;
                 }
+<<<<<<< d521e852aab2dd9a3e56683b0222c6bb12669c86
 
+=======
+>>>>>>> added tests
                 // For the current design, the pin that just changed state was
                 // probably CW or CCW, so tell JSBSim about it.
                 wrapper::send_to_jsbsim(self.cw_state, self.ccw_state);

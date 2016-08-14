@@ -83,6 +83,34 @@ impl MyPins {
         if let Err(err) = pin.export() {
             panic!("error exporting gpio pin {}: {}", pin_number, err);
         }
+    }
+
+    /// Used to add GPIO pins to a MyPins object. Sets the direction of
+    /// the pin and exports it.
+    ///
+    /// Inputs:
+    ///
+    ///    `pin_number` -- the desired GPIO pin number
+    ///
+    ///    `direction` -- `In`   configures a pin as an input,
+    ///                   `Out`  configures a pin as an output,
+    ///                   `High` configures pin as an output and sets its value to 1, and
+    ///                   `Low`  configures pin as an output and sets its value to 0.
+    ///
+    /// # Panics
+    /// 1) User does not have root privileges.
+    /// 2) Invalid 'direction' argument.
+    /// 3) The system does not support the GPIO sysfs interface.
+    /// 4) The requested GPIO is out of range and cannot be exported.
+    /// 5) The requested GPIO is in use by the kernel and cannot
+    ///    be exported by use in userspace.
+    pub fn add_pin(&mut self, pin_number: u64, direction: Direction) {
+
+        let pin = sysfs_gpio::Pin::new(pin_number);
+
+        if let Err(err) = pin.export() {
+            panic!("error exporting gpio pin {}: {}", pin_number, err);
+        }
 
         if let Err(err) = pin.set_direction(convert_dir(direction)) {
             panic!("error setting gpio pin {} direction: {}", pin_number, err);
@@ -195,4 +223,3 @@ fn convert_dir_works() {
     assert_eq!(convert_dir(Direction::High), sysfs_gpio::Direction::High);
     assert_eq!(convert_dir(Direction::Low), sysfs_gpio::Direction::Low);
 }
-
