@@ -12,14 +12,14 @@
 
 //c api
 extern "C" {
-    
+
     //constructor
     JSBSim::FGFDMExec* fdm_create();
-		
+
     //deconstructor
-    void fdm_close(JSBSim::FGFDMExec *fdm);		
-		
-    //functions: 
+    void fdm_close(JSBSim::FGFDMExec *fdm);
+
+    //functions:
     bool fdm_run(JSBSim::FGFDMExec *fdm);
     bool fdm_run_ic(JSBSim::FGFDMExec *fdm);
     bool fdm_load_script(JSBSim::FGFDMExec *fdm, const char* script_name, double delta_t, const char* init_file);

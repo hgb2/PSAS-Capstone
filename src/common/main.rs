@@ -69,7 +69,7 @@ fn main() {
             }
             Ok(_) => println!("{} {} {}", mem.gyro_x, mem.gyro_y, mem.gyro_z),
           }
-          
+
           match ctl.update(&mut mem) {
             Err(err) => {
                 println!("Control update error: {}", err);
@@ -82,7 +82,7 @@ fn main() {
                 break;
             }
           }
-          
+
           match data_fmt::send_packet(&socket, &mut mem){
             Err(val) => {
                 println!("Error inside Data Formatter: {}", val);

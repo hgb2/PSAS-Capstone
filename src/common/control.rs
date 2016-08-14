@@ -12,8 +12,8 @@ use SharedMemory;
 // Use pin 53 as clockwise (CW)
 // Use pin 54 as counter clockwise (CCW)
 // Use pin 0 as emergency stop (ESTOP)
-const CW: u64 = 43; // Pin 11 on cold gas jet? 
-const CCW: u64 = 42; // Pin 12 on col gas jet? 
+const CW: u64 = 43; // Pin 11 on cold gas jet?
+const CCW: u64 = 42; // Pin 12 on col gas jet?
 const ESTOP: u64 = 0;
 
 
@@ -50,7 +50,7 @@ pub fn init() -> Control {
 //
 // Purpose: Reads sensor data from shared memory, executes the control
 //          algorithm, and updates GPIO pin states in shared memory.
-// 
+//
 // INPUTS: mem -- reference to shared memory
 //
 // RETURNS: Ok(0)    -- all is well; continue running
@@ -69,8 +69,8 @@ pub fn update(&mut self, mem: &mut SharedMemory) -> Result<u8, String> {
     } // END IF
 
     // rate_x <- READ the gyro's x axis rate from shared memory
-    let rate_x = mem.gyro_y - 0.41; // Offsetting the led edison board 
-	println!("gyro rate {}", rate_x); 
+    let rate_x = mem.gyro_y - 0.41; // Offsetting the led edison board
+	println!("gyro rate {}", rate_x);
 
     const ACTIVATION_THRESHOLD: f32 = 0.175;
     // IF rate_x GE 0.175
@@ -105,8 +105,8 @@ pub fn update(&mut self, mem: &mut SharedMemory) -> Result<u8, String> {
 ///////////////////////////////////////////////////////////////////////////////
 // Function Name: state_update
 //
-// Purpose: Updates the control state. 
-// 
+// Purpose: Updates the control state.
+//
 // INPUTS: rate_x -- rotational rate about the x axis
 //
 // OUTPUTS: Writes new value to the 'state' variable in the Control structure.
@@ -148,8 +148,8 @@ fn state_update(&mut self, mut rate_x: f32) {
 // Function Name: write_pin
 //
 // Purpose: Writes a new value to a GPIO pin and updates its state in
-//          shared memory. 
-// 
+//          shared memory.
+//
 // INPUTS: pin   -- the GPIO pin number (must be an output pin)
 //         value -- the value to write to the pin (0 or 1)
 //         mem   -- reference to shared memory
@@ -168,7 +168,7 @@ fn write_pin(&mut self, pin: u64, value: u8, mem: &mut SharedMemory) -> Result<(
         CCW => mem.ccw_state = value,
         _ => return Err(format!("Invalid pin number: {}", pin)),
     }
-    
+
     Ok(())
 }
 } // impl Control

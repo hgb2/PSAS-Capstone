@@ -33,7 +33,7 @@ const PSAS_TELEMETRY_UDP_PORT: u16 = 35001;             // UDP packet target por
 // Function name: pack_header
 //
 // Purpose: Packs header information into a byte array.
-//		
+//
 // INPUTS: name         -- ASCII PSAS message definition name.
 //         time         -- Time duration with respect to boot time.
 //         message_size -- Size of message associated with this header type.
@@ -62,7 +62,7 @@ fn pack_header(name: [u8; 4], time: time::Duration, message_size: usize, buffer:
 
     // Write the size of the message associated with the header.
     try!(header.write_u16::<BigEndian>(message_size as u16));
-    
+
     Ok(0)
 }
 
@@ -71,7 +71,7 @@ fn pack_header(name: [u8; 4], time: time::Duration, message_size: usize, buffer:
 // Function name: as_message
 //
 // Purpose: Packs select pieces of data from SharedMemory into a byte array.
-//		
+//
 // INPUTS: mem    -- Reverence to SharedMemory
 //         buffer -- Buffer/byte array to hold message information.
 //
@@ -100,7 +100,7 @@ fn as_message(mem: &mut SharedMemory, buffer: &mut [u8; SIZE_OF_MESSAGE]) -> Res
 //
 // Purpose: Establishes an address for the UDP packet target, sends a UDP
 // packet, then clears the "telemetry_buffer" for the next packet.
-//		
+//
 // INPUTS: socket -- Reference to source UDP socket
 //         mem -- Reference to SharedMemory
 //
@@ -112,29 +112,29 @@ fn flush_telemetry(socket: &UdpSocket, mem: &mut SharedMemory) -> Result<u8, io:
 
     // Address for UDP packet target
     let telemetry_addr: SocketAddrV4 = SocketAddrV4::new(Ipv4Addr::new(127, 0, 0, 1), PSAS_TELEMETRY_UDP_PORT);
-    
+
     //send UDP packet to UDP packet target
     try!(socket.send_to(&mem.telemetry_buffer, telemetry_addr));
-    
+
     // Increment SEQN
     mem.sequence_number += 1;
 
     // Start telemetry buffer over
     mem.telemetry_buffer.clear();
- 
+
     Ok(0)
 }
-     
-		
+
+
 
 ///////////////////////////////////////////////////////////////////////////////
 // Function name: send_packet
 //
-// Purpose: Calls functions "pack_header" and "as_message" which produces 
+// Purpose: Calls functions "pack_header" and "as_message" which produces
 // byte arrays. These byte arrays are stored in a buffer; if the contents of
-// the buffer exceeds the size specified by "P_LIMIT" - this results in the 
+// the buffer exceeds the size specified by "P_LIMIT" - this results in the
 // transmition of the UDP packet.
-//		
+//
 // INPUTS: socket -- Reference to source UDP socket
 //         mem    -- Reference to SharedMemory
 //
@@ -158,7 +158,7 @@ pub fn send_packet(socket: &UdpSocket, mem: &mut SharedMemory) -> Result<u8, io:
         try!(seqn.write_u32::<BigEndian>(mem.sequence_number));
         mem.telemetry_buffer.extend_from_slice(&mut seqn);
     }
-    
+
     // Pack Header into telemetry buffer
     let mut header_buffer = [0u8; HEADER_SIZE];
     try!(pack_header(RCSS_NAME, now, SIZE_OF_MESSAGE, &mut header_buffer));
@@ -168,7 +168,7 @@ pub fn send_packet(socket: &UdpSocket, mem: &mut SharedMemory) -> Result<u8, io:
     let mut message_buffer = [0u8; SIZE_OF_MESSAGE];
     try!(as_message(mem, &mut message_buffer));
     mem.telemetry_buffer.extend_from_slice(&message_buffer);
-    
+
     Ok(0)
 }
 

@@ -21,48 +21,48 @@ pub fn wrapper_init(){
     unsafe{
         //create a new fdm
         fdm = fdm_create();
-        
+
         //set base jsbsim scripts folder
         let jsbsim_root_dir = std::ffi::CString::new("jsbsim/").unwrap();
         fdm_set_root_dir(fdm, jsbsim_root_dir.as_ptr());
-        
+
         //set aircraft folder
         let apresult: bool;
         let jsbsim_aircraft_path = std::ffi::CString::new("aircraft").unwrap();
         apresult = fdm_set_aircraft_path(fdm, jsbsim_aircraft_path.as_ptr());
-        
+
         //set engine folder
         let epresult: bool;
         let jsbsim_engine_path = std::ffi::CString::new("engine").unwrap();
         epresult = fdm_set_engine_path(fdm, jsbsim_engine_path.as_ptr());
-        
+
         //set systems folder
         let spresult: bool;
         let jsbsim_systems_path = std::ffi::CString::new("systems").unwrap();
         spresult = fdm_set_systems_path(fdm, jsbsim_systems_path.as_ptr());
-        
+
         //load script prep
         let script_name = std::ffi::CString::new("scripts/c1723.xml").unwrap();
         let delta_t: f64 = 0.0;
         let init_file = std::ffi::CString::new("").unwrap();
         let lsresult: bool;
-        
+
         //load script
         lsresult = fdm_load_script(fdm, script_name.as_ptr(), delta_t, init_file.as_ptr());
-        
+
         //run initial
         let icresult: bool;
         icresult = fdm_run_ic(fdm);
-    }    
+    }
 }
 
-//sends data to jsbsim.  iterates fdm.  gets response from jsbsim.  
+//sends data to jsbsim.  iterates fdm.  gets response from jsbsim.
 //development:  update state variable
 pub fn send_to_jsbsim(newcw: u8, newccw: u8)->bool{
     let runresult: bool;
     unsafe{
         runresult = fdm_run(fdm);
-        
+
         //indicator for development
         gyro_x = gyro_x + 1.0;
         gyro_y = gyro_y + 2.0;
@@ -83,15 +83,15 @@ pub fn wrapper_close(){
     println!("binder close");
 }
 
-//rust wrapper definitions using c abi  
+//rust wrapper definitions using c abi
 #[link(name="JSBSim")]
 extern "C" {
     //jsbsim constructor
     fn fdm_create()->*mut FDM;
-    
+
     //jsbsim destructor
     fn fdm_close(fdm: *mut FDM);
-    
+
     //functions
     fn fdm_run(fdm: *mut FDM)->bool;
     fn fdm_run_ic(fdm: *mut FDM)->bool;
