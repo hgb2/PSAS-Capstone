@@ -133,6 +133,7 @@ fn timestep(){
 }
 
 // Since time libraries can only be so precise, I use this to give a little bit of error
+// Not really dead code, but only used on tests
 #[allow(dead_code)]
 fn within(error : f64, value : f64, expected : f64) -> bool{
     if value < expected + error && value > expected - error{
