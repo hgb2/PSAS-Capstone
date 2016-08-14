@@ -149,6 +149,7 @@ fn test_new_pin() {
 }
 
 #[test]
+#[ignore]
 fn test_multiple_pins() {
     let mut p = MyPins::new();
     p.add_pin(0, Direction::In);
@@ -165,6 +166,7 @@ fn test_fail_on_get_pin_value() {
 }
 
 #[test]
+#[ignore]
 fn test_set_pin() {
     let mut p = MyPins::new();
     p.add_pin(42, Direction::In);
