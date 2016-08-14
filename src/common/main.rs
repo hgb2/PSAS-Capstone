@@ -99,8 +99,11 @@ fn main() {
     }
 }
 
+// This test takes awhile to run, use "cargo run -- --ignored" to run longer tests
 // Run as: cargo test -- --nocapture to see useful output about cycles
+// To run this test and get output, use 'cargo test -- --ignored --nocapture'
 #[test]
+#[ignore]
 fn timestep(){
     let Hz :f64 = 2.0;  // Define the HZ to be used
     let mut freq = 0;
