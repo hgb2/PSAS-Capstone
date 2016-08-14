@@ -58,9 +58,9 @@ pub fn new() -> MyPins {
 ///
 ///    `pin_number` -- the desired GPIO pin number
 ///
-///    `direction` -- `In` configures a pin as an input, 
-///                   `Out` configures a pin as an output, 
-///                   `High` configures pin as an output and sets its value to 1, and 
+///    `direction` -- `In` configures a pin as an input,
+///                   `Out` configures a pin as an output,
+///                   `High` configures pin as an output and sets its value to 1, and
 ///                   `Low` configures pin as an output and sets its value to 0.
 pub fn add_pin(&mut self, pin_number: u64, direction: Direction) {
     let initial_state = match direction {
@@ -74,7 +74,7 @@ pub fn add_pin(&mut self, pin_number: u64, direction: Direction) {
 
 /// Get the value of the a pin (0 or 1)
 ///
-/// For the current design, 0 is returned to keep on running and 
+/// For the current design, 0 is returned to keep on running and
 /// 1 is returned to exit the program gracefully.
 ///
 /// Inputs:

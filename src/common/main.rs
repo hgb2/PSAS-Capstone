@@ -69,7 +69,7 @@ fn main() {
             }
             Ok(_) => println!("{} {} {}", mem.gyro_x, mem.gyro_y, mem.gyro_z),
           }
-          
+
           match ctl.update(&mut mem) {
             Err(err) => {
                 println!("Control update error: {}", err);
@@ -82,7 +82,7 @@ fn main() {
                 break;
             }
           }
-          
+
           match data_fmt::send_packet(&socket, &mut mem){
             Err(val) => {
                 println!("Error inside Data Formatter: {}", val);
@@ -133,6 +133,7 @@ fn timestep(){
 }
 
 // Since time libraries can only be so precise, I use this to give a little bit of error
+#[allow(dead_code)]
 fn within(error : f64, value : f64, expected : f64) -> bool{
     if value < expected + error && value > expected - error{
         return true;

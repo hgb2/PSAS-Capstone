@@ -5,7 +5,7 @@
 
 //constructor
 JSBSim::FGFDMExec* fdm_create(){
-    return new JSBSim::FGFDMExec; 
+    return new JSBSim::FGFDMExec;
 }
 
 //destructor
@@ -14,7 +14,7 @@ void fdm_close(JSBSim::FGFDMExec *fdm){
     //delete fdm;
 }
 
-//functions 
+//functions
 bool fdm_run(JSBSim::FGFDMExec *fdm){
     return fdm->Run();
 }

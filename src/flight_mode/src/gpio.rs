@@ -1,4 +1,4 @@
-//! GPIO access under Linux using the rust-embedded sysfs_gpio library 
+//! GPIO access under Linux using the rust-embedded sysfs_gpio library
 //! (https://github.com/rust-embedded/rust-sysfs-gpio)
 //!
 //! The methods exposed by this module are centered around
@@ -59,16 +59,16 @@ pub fn new() -> MyPins {
 }
 
 
-/// Used to add GPIO pins to a MyPins object. Sets the direction of 
+/// Used to add GPIO pins to a MyPins object. Sets the direction of
 /// the pin and exports it.
 ///
 /// Inputs:
 ///
 ///    `pin_number` -- the desired GPIO pin number
 ///
-///    `direction` -- `In`   configures a pin as an input, 
-///                   `Out`  configures a pin as an output, 
-///                   `High` configures pin as an output and sets its value to 1, and 
+///    `direction` -- `In`   configures a pin as an input,
+///                   `Out`  configures a pin as an output,
+///                   `High` configures pin as an output and sets its value to 1, and
 ///                   `Low`  configures pin as an output and sets its value to 0.
 ///
 /// # Panics
