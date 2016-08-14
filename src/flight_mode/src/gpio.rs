@@ -7,7 +7,8 @@
 use sysfs_gpio;
 use std::vec::Vec;
 
-
+/// Direction is included to mimic sysfs_gpio::Direction,
+/// This is useful to keep dependencies under control
 pub enum Direction {
     In,
     Out,
