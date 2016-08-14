@@ -40,6 +40,8 @@ impl Drop for MyPins {
 
 impl MyPins {
 
+    /// Create a new MyPins object. MyPins can contain multiple GPIO pins
+    /// that are created with the `add_pin` method.
     pub fn new() -> MyPins {
         MyPins {
             pins: Vec::new(),
@@ -136,7 +138,38 @@ impl MyPins {
                 return Ok(());
             }
         }
-
         Err(format!("attempt to write to uninitialized gpio pin {}", pin_number))
     }
+}
+
+
+#[test]
+fn test_new_pin() {
+    let mut p = MyPins::new();
+    assert_eq!(p.pins.len(), 0);
+}
+
+#[test]
+fn test_multiple_pins() {
+    let mut p = MyPins::new();
+    p.add_pin(0, Direction::In);
+    p.add_pin(42, Direction::In);
+    p.add_pin(43, Direction::In);
+    assert_eq!(p.pins.len(), 3);
+}
+
+#[test]
+#[should_panic]
+fn test_fail_on_get_pin_value() {
+    let mut p = MyPins::new();
+    let v = p.get_value(42).unwrap();
+}
+
+#[test]
+fn test_set_pin() {
+    let mut p = MyPins::new();
+    p.add_pin(42, Direction::In);
+    p.set_value(42, 0);
+    let v = p.get_value(42).unwrap();
+    assert_eq!(v, 0);
 }
