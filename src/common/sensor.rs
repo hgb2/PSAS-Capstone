@@ -10,12 +10,9 @@ use libs::i2c::Myi2c;
 use SharedMemory;
 use std::io;
 
-
-
 pub struct SensorModule {
     pub i2c: Myi2c,
 }
-
 
 impl SensorModule {
 pub fn init() -> Result<SensorModule, io::Error> {
@@ -24,8 +21,6 @@ pub fn init() -> Result<SensorModule, io::Error> {
         Err(e) => return Err(e),
     }
 }
-
-
 
 ///////////////////////////////////////////////////////////////////////////////
 // Function Name: update

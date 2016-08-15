@@ -4,8 +4,6 @@ use i2cdev::core::*;
 use i2cdev::linux::*;
 use std::io;
 
-
-
 pub struct Myi2c {
     pub i2c: LinuxI2CDevice,
 }
@@ -16,7 +14,7 @@ impl Myi2c {
         let mut dev = try!(LinuxI2CDevice::new("/dev/i2c-6", 0x68));
 
         // Try and read from the WhoAmI register.
-        // This should return a 0x68 if this is a compatable device (i.e. MPU-6050 or the MPU-9150)
+        // This should return a 0x68 if this is a compatible device (i.e. MPU-6050 or the MPU-9150)
         let mut buf = [0u8; 1];
         try!(dev.write(&[0x75]));
         try!(dev.read(&mut buf));
@@ -57,5 +55,4 @@ impl Myi2c {
 
         Ok((gyro_x, gyro_y, gyro_z))
     }
-
 }
