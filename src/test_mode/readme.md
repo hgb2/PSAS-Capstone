@@ -26,6 +26,9 @@ make
 sudo make install
 ```
 
+**Note** for debugging, add -DCMAKE_CXX_FLAGS="-O0 -g"
+
+
 ###follow up:
 verify that the installer has placed libJSBSim.so in /usr/local/lib/
 
@@ -35,7 +38,6 @@ if you see an error loading libJSBSim.so*, make sure you add /usr/local/lib to L
 website:  http://jsbsim.sourceforge.net
 
 manual:   http://jsbsim.sourceforge.net/JSBSimReferenceManual.pdf
-
 
 
 ###Compiling JSBSim on Windows
@@ -63,4 +65,10 @@ c) Add another include directive pointing to the containing "bits/c++config.h". 
 6) Backup, and replace the version of libstdc++.a in the Rust compile toolchain installation. For example: C:\rust\lib\rustlib\x86_64-pc-windows-gnu\lib\libstdc++.a with the version from the TDM-GCC installation: For example: C:\dev\TDM-GCC-64\lib\gcc\x86_64-w64-mingw32\5.1.0\libstdc++.a
 
 7) run `cargo run` from the test directory.
+
+
+###Debugging the C++ Wrapper
+By adding the following line to src/CMakeLists.txt debug symbols can be enabled
+`SET(CMAKE_CXX_FLAGS "-O0 -g")`
+
 
