@@ -4,9 +4,7 @@
 
   name="Lambda-4S-5">
 
-  <use aircraft="lambda" initialize="kagoshima"/>
-
-  <!-- use aircraft="LV2" initialize="brothers"/-->
+  <use aircraft="LV2" initialize="brothers"/>
 
     
 

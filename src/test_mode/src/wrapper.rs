@@ -42,7 +42,7 @@ pub fn wrapper_init(){
         spresult = fdm_set_systems_path(fdm, jsbsim_systems_path.as_ptr());
 
         //load script prep
-        let script_name = std::ffi::CString::new("scripts/c1723.xml").unwrap();
+        let script_name = std::ffi::CString::new("run.xml").unwrap();
         let delta_t: f64 = 0.0;
         let init_file = std::ffi::CString::new("").unwrap();
         let lsresult: bool;
@@ -61,7 +61,10 @@ pub fn wrapper_init(){
 pub fn send_to_jsbsim(newcw: u8, newccw: u8)->bool{
     let runresult: bool;
     unsafe{
-        runresult = fdm_run(fdm);
+        
+        // This causes segfault
+        //runresult = fdm_run(fdm);
+        runresult = false;
 
         //indicator for development
         gyro_x = gyro_x + 1.0;
@@ -83,8 +86,10 @@ pub fn wrapper_close(){
     println!("binder close");
 }
 
+#[link(name = "stdc++")]
+#[link(name = "JSBSim")]
+#[link(name = "wrapper", kind = "static")]
 //rust wrapper definitions using c abi
-#[link(name="JSBSim")]
 extern "C" {
     //jsbsim constructor
     fn fdm_create()->*mut FDM;
