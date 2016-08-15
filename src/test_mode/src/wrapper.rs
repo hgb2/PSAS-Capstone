@@ -63,8 +63,7 @@ pub fn send_to_jsbsim(newcw: u8, newccw: u8)->bool{
     unsafe{
         
         // This causes segfault
-        //runresult = fdm_run(fdm);
-        runresult = false;
+        runresult = fdm_run(fdm);
 
         //indicator for development
         gyro_x = gyro_x + 1.0;
