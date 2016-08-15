@@ -174,11 +174,3 @@ fn test_set_pin() {
     let v = p.get_value(42).unwrap();
     assert_eq!(v, 0);
 }
-
-#[test]
-fn convert_dir_works() {
-    assert_eq!(convert_dir(Direction::In), sysfs_gpio::Direction::In);
-    assert_eq!(convert_dir(Direction::Out), sysfs_gpio::Direction::Out);
-    assert_eq!(convert_dir(Direction::High), sysfs_gpio::Direction::High);
-    assert_eq!(convert_dir(Direction::Low), sysfs_gpio::Direction::Low);
-}
