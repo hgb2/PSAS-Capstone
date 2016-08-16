@@ -499,3 +499,44 @@ Check in: 15 minutes
         . Bringing in PSAS help (nathan)
         . What to do if we can't get test mode working
 
+====================
+Monday 08/08
+====================
+
+Announcements: < 5 minutes
+    -> Coding is over
+        . Tweaking for gas prototype is what is left
+    -> Testing can still finish (Bart recommends we everyone still work on this if there is work to do)
+    -> Next week is our last scheduled Monday meeting before our presentation
+        . Lets make this an in person meeting
+            - Go over slides in progress
+            - Polish presentation
+            - Practice
+    
+Testing: 5 minutes
+    -> New unit tests written
+    -> More?
+
+Integration testing, JSBSim: 10 minutes
+    -> Would like a POC deliverable, extend deadline to Sunday
+        . Barts words: Rather have a good product and a bad presentation if it comes down to that
+    -> Monday is start of presentation prep, no more code after this
+        . Emergency code only
+
+Deliverables: < 5 minutes
+    -> Brian will learn how to deliver in team meeting today
+    -> Jamey and Theo are informed about our progress
+    
+Shortcommings: 10 minutes
+    -> What didn't we get done?
+        . JSBSim testing is still to be delivered
+        . No stretch goals completed
+
+Documentation: 5 minutes
+    -> Code?
+        . JSBSim
+    -> Install process?
+    
+Presentation prep: 5 mintues
+    -> Outline completed by Harrison
+    -> Fill in gaps next week
