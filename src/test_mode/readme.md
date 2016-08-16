@@ -13,7 +13,7 @@ test_mode / jsbsim / aircraft
 ###prep
 ```
 sudo apt-get update
-sudo apt-get install cmake      //install cmake
+sudo apt-get install cmake      #install cmake
 ```
 
 ###jsbsim:  compiling as a dynamic (.so) library
