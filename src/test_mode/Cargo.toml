@@ -5,8 +5,7 @@ authors = ["RCS team <us@pdx.com>"]
 build = "build.rs"
 
 [build-dependencies]
-#cmake = "0.1"      //previous
-gcc = "0.3"
+cmake = "0.1"
 
 [[bin]]
 name = "rcs_sw"
