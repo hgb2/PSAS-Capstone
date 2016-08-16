@@ -531,11 +531,18 @@ Shortcommings: 10 minutes
     -> What didn't we get done?
         . JSBSim testing is still to be delivered
         . No stretch goals completed
+    -> Details
+        . Test mode seg faults
+            - Reproducable output in test mode
+        . Never properly exited main loop
 
 Documentation: 5 minutes
     -> Code?
-        . JSBSim
+        . Document our JSBSim use
     -> Install process?
+        . Compile for non x86-64
+    -> Other
+        . Documentation about tuning for different hardware
     
 Presentation prep: 5 mintues
     -> Outline completed by Harrison
