@@ -27,6 +27,8 @@ extern "C" {
     bool fdm_set_aircraft_path(JSBSim::FGFDMExec *fdm, const char* aircraft_path);
     bool fdm_set_systems_path(JSBSim::FGFDMExec *fdm, const char* systems_path);
     void fdm_set_root_dir(JSBSim::FGFDMExec *fdm, const char* root_dir);
+    double fdm_get_property_double(JSBSim::FGFDMExec *fdm, const char* property);
+    void fdm_set_property_double(JSBSim::FGFDMExec *fdm, const char* property, double value);
 
 }           //end extern block
 #endif      //end #define WRAPPER_H

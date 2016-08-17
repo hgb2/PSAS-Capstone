@@ -49,3 +49,15 @@ void fdm_set_root_dir(JSBSim::FGFDMExec *fdm, const char* root_dir){
     fdm->SetRootDir(root_dir_cpp);
 }
 
+double fdm_get_property_double(JSBSim::FGFDMExec *fdm, const char* property)
+{
+    std::string property_cpp = property;
+    return fdm->GetPropertyValue(property_cpp);
+}
+
+void fdm_set_property_double(JSBSim::FGFDMExec *fdm, const char* property, double value)
+{
+    std::string property_cpp = property;
+    fdm->SetPropertyValue(property_cpp, value);
+}
+

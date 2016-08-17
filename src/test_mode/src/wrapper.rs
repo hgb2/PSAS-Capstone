@@ -8,12 +8,8 @@ use std;
 pub enum FDM{}
 static mut fdm: *mut FDM = 0 as *mut FDM;
 
-//state variables
-static mut cw: u8 = 0;                  //clockwise:  0=off.  1=on.
-static mut ccw: u8 = 0;                 //counter clockwise
-static mut gyro_x: f32 = 0.0;           //gyro readings
-static mut gyro_y: f32 = 0.0;
-static mut gyro_z: f32 = 0.0;
+//vars used for testing
+static mut counter: i32 = 0;
 
 //instantiates & initializes a flight dynamics model
 //sets the environmental variables to jsbsim defaults
@@ -41,60 +37,99 @@ pub fn wrapper_init(){
         let jsbsim_systems_path = std::ffi::CString::new("systems").unwrap();
         spresult = fdm_set_systems_path(fdm, jsbsim_systems_path.as_ptr());
 
+        //verify directory structure was set properly
+        if apresult == false || epresult == false || spresult == false {
+            panic!("unable to configure directory structure");
+        }
+        
         //load script prep
-        let script_name = std::ffi::CString::new("run.xml").unwrap();
+        let script_name = std::ffi::CString::new("/scripts/testleds.xml").unwrap();
         let delta_t: f64 = 0.0;
         let init_file = std::ffi::CString::new("").unwrap();
         let lsresult: bool;
 
         //load script
         lsresult = fdm_load_script(fdm, script_name.as_ptr(), delta_t, init_file.as_ptr());
+        
+        //verify script load
+        if lsresult == false{
+            panic!("unable to load script");
+        }
 
-        //run initial
+        //run initial conditions
         let icresult: bool;
         icresult = fdm_run_ic(fdm);
-    }
-}
-
-//sends data to jsbsim.  iterates fdm.  gets response from jsbsim.
-//development:  update state variable
-pub fn send_to_jsbsim(newcw: u8, newccw: u8)->bool{
-    let runresult: bool;
-    unsafe{
         
-        // This causes segfault
-        runresult = fdm_run(fdm);
-
-        //indicator for development
-        gyro_x = gyro_x + 1.0;
-        gyro_y = gyro_y + 2.0;
-        gyro_z = gyro_z + 3.0;
+        //verify initial conditions
+        if icresult == false{
+            panic!("unable to set initial conditions");
+        }
     }
-    return runresult;
 }
 
-//returns current state variable
-pub fn get_from_jsbsim()->(f32, f32, f32){
+//update fdm
+pub fn send_to_jsbsim(cw: u8, ccw: u8){
+
     unsafe{
-        return (gyro_x, gyro_y, gyro_z);
+       
+        //set cw & ccw values in jsbsim
+        let property_cw = std::ffi::CString::new("testmode/ledcw").unwrap();
+        fdm_set_property_double(fdm, property_cw.as_ptr(), cw as f64);
+        
+        let property_ccw = std::ffi::CString::new("testmode/ledccw").unwrap();
+        fdm_set_property_double(fdm, property_ccw.as_ptr(), ccw as f64);
     }
 }
 
-//development:  jsbsim destructor
-pub fn wrapper_close(){
-    println!("binder close");
+//iterates fdm & gets current sensor data 
+pub fn get_from_jsbsim()->(f32, f32, f32){
+
+    let runresult: bool;
+    
+    unsafe{
+        //iterate jsbsim & verify
+        runresult = fdm_run(fdm);
+        if runresult==false{
+            panic!("jsbsim did not iterate properly");
+        }
+        
+        //get sensor data
+        let gx: f64;
+        let gy: f64 = 0.0;
+        let gz: f64 = 0.0;
+        
+        let property_gyro = std::ffi::CString::new("testmode/gyro").unwrap();
+        gx = fdm_get_property_double(fdm, property_gyro.as_ptr());
+        
+        //temporary quit mechanism
+        counter += 1;
+        if counter > 500{
+            panic!("temporary quit mechanism");
+        }
+                
+        //return gyro readings
+        return (gx as f32, gy as f32, gz as f32);
+    }
 }
 
+//exit routine is currently not implemented
+pub fn wrapper_close(){
+    //fdm_close(fdm);
+}
+
+//link to wrapper & jsbsim
 #[link(name = "stdc++")]
 #[link(name = "JSBSim")]
 #[link(name = "wrapper", kind = "static")]
+
 //rust wrapper definitions using c abi
+//note that these must parallel the functions defined in wrapper.c
 extern "C" {
     //jsbsim constructor
     fn fdm_create()->*mut FDM;
 
     //jsbsim destructor
-    fn fdm_close(fdm: *mut FDM);
+    //fn fdm_close(fdm: *mut FDM);      //exit is not currently implemented
 
     //functions
     fn fdm_run(fdm: *mut FDM)->bool;
@@ -104,4 +139,6 @@ extern "C" {
     fn fdm_set_engine_path(fdm: *mut FDM, engine_path: *const libc::c_char)->bool;
     fn fdm_set_systems_path(fdm: *mut FDM, systems_path: *const libc::c_char)->bool;
     fn fdm_set_root_dir(fdm: *mut FDM, root_dir: *const libc::c_char);
+    fn fdm_get_property_double(fdm: *mut FDM, property: *const libc::c_char)->f64;
+    fn fdm_set_property_double(fdm: *mut FDM, property: *const libc::c_char, value: f64);
 }
