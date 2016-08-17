@@ -106,11 +106,11 @@ fn main() {
 #[ignore]
 fn timestep(){
     let Hz :f64 = 2.0;  // Define the HZ to be used
-    let mut freq = 0;
+    // let mut freq = 0; // unused for now
     let mut cycles : f64 = 0.0;
 
     let expected_timestep = 1.0/Hz; // Inverse of frequency
-    let mut running = true;
+    // let mut running = true; // unused for now
     let mut previous_time;
     let mut current_time = precise_time_s();
     let mut time_since_last : f64 = 0.0;
