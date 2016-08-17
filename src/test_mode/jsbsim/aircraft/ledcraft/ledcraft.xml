@@ -1,0 +1,94 @@
+<?xml version="1.0"?>
+<fdm_config name="ledcraft" version="2.0" release="ALPHA">
+    
+    <fileheader>
+        <author> PSAS-Capstone </author>
+        <filecreationdate> 2016-08-14 </filecreationdate>
+        <version> Version 0.1 </version>
+        <description>test board 01:  led craft</description>
+        <notes>
+            *for development only
+            *this file models an intel arduino board (127 x 72 x 12 mm)
+            *mounted on a circular plastic base (~6" diameter and ~4" high)
+            *this board does not have an engine or any means of propulsion
+            *testing the actual board requires manually spinning it 
+            *in a particular direction (clockwise or counterclockwise)
+            *to simulate a roll.  two led indicators are set to provide
+            *output from the flight navigator
+        </notes>
+    </fileheader>
+    
+    <metrics>
+        <wingarea       unit="FT2"> 2.355 </wingarea>
+        <wingspan       unit="FT"> 0.5 </wingspan>
+        <chord          unit="FT"> 0.5 </chord>
+    </metrics>
+    
+    <mass_balance>
+        <emptywt unit="LBS"> 1 </emptywt>
+    </mass_balance>
+    
+    <!--    define external forces                          -->
+    <external_reactions>
+        
+        <!--declare properties-->
+        <property value="0.0">testmode/spinrate</property>
+        <description>   model a manual spin </description>
+        
+        <force name="testforce" frame="BODY">
+            <description>model someone manually spinning the craft</description>
+            <function>
+                <sum>
+                    <property>testmode/spinrate</property>
+                </sum>
+            </function>
+        </force>
+
+    </external_reactions>
+    
+    <flight_control name="FGFCS" />
+    
+    <aerodynamics>
+        <axis name="ROLL">
+            <function name="testmode/testroll">
+                <description>simulates a static variable roll</description>
+                <sum>
+                    <value> 0.0 </value>
+                </sum>
+            </function>
+        </axis>
+    </aerodynamics>
+
+    <system name="testmode">
+        <property value="0">testmode/ledcw</property>
+        <property value="0">testmode/ledccw</property>
+        <channel name="indicators">
+            <sensor name="testmode/gyro">
+                <input> testmode/testroll </input>
+                <default value="0.0"/>
+            </sensor>
+        </channel>
+    </system>
+    
+    <!--    not used.  specified here for reference         -->
+    <ground_reactions/>
+    <buoyant_forces/>
+    <propulsion/>
+
+    <autopilot/>
+    <input/>
+    
+    <!--    save specified output as tab separated values
+            to jsbsim/testlogs/testlog.txt                  -->
+    <output name="/testlogs/testlog.txt" type="TABULAR" rate="1">
+        
+        <!--property sets           -->
+        
+        <!--property specific       -->
+        <property>testmode/sim_id</property>
+        <property>simulation/sim-time-sec</property>
+        <property>testmode/rolldata</property>
+        
+    </output>
+    
+</fdm_config>
