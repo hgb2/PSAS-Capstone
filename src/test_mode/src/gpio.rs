@@ -144,7 +144,7 @@ impl MyPins {
 
 #[test]
 fn test_new_pin() {
-    let mut p = MyPins::new();
+    let p = MyPins::new();
     assert_eq!(p.pins.len(), 0);
 }
 
@@ -162,7 +162,7 @@ fn test_multiple_pins() {
 #[should_panic]
 fn test_fail_on_get_pin_value() {
     let mut p = MyPins::new();
-    let v = p.get_value(42).unwrap();
+    p.get_value(42).unwrap();
 }
 
 #[test]

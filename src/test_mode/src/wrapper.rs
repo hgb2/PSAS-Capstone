@@ -61,7 +61,6 @@ pub fn wrapper_init(){
 pub fn send_to_jsbsim(newcw: u8, newccw: u8)->bool{
     let runresult: bool;
     unsafe{
-        
         // This causes segfault
         runresult = fdm_run(fdm);
 
