@@ -57,7 +57,7 @@ impl MyPins {
         }
     }
 
-    /// Used to add GPIO pins to a MyPins object. Sets the direction of 
+    /// Used to add GPIO pins to a MyPins object. Sets the direction of
     /// the pin and exports it.
     ///
     /// Inputs:
@@ -110,6 +110,10 @@ impl MyPins {
 
         if let Err(err) = pin.export() {
             panic!("error exporting gpio pin {}: {}", pin_number, err);
+        }
+
+        if let Err(err) = pin.set_direction(convert_dir(direction)) {
+            panic!("error setting gpio pin {} direction: {}", pin_number, err);
         }
 
         if let Err(err) = pin.set_direction(convert_dir(direction)) {
@@ -185,6 +189,18 @@ impl MyPins {
     }
 }
 
+        for pin in &self.pins {
+            if pin.get_pin_num() == pin_number {
+                match pin.get_value() {
+                    Ok(val) => return Ok(val),
+                    Err(err) => return Err(format!("bad read from gpio pin {}: {}",
+                                                    pin.get_pin_num(), err)),
+                }
+            }
+        }
+        Err(format!("attempt to read uninitialized gpio pin {}", pin_number))
+    }
+
 #[test]
 fn test_new_pin() {
     let mut p = MyPins::new();
@@ -206,6 +222,60 @@ fn test_multiple_pins() {
 fn test_fail_on_get_pin_value() {
     let mut p = MyPins::new();
     let v = p.get_value(42).unwrap();
+=======
+    /// Set the value of a pin
+    ///
+    /// This will set the value of the pin either high or low.
+    ///
+    /// Inputs:
+    ///
+    ///    `pin_number` -- the desired GPIO pin number
+    ///
+    ///    `value` -- A 0 value will set the pin low and any other value will
+    ///               set the pin high (1 is typical).
+    ///
+    /// # Errors
+    /// 1) Attempt to write to an uninitialized pin.
+    /// 2) Attempt to write to an input pin.
+    /// 3) Underlying library had a problem writing to the pin.
+    pub fn set_value(&mut self, pin_number: u64, value: u8) -> Result<(), String> {
+        for pin in &self.pins {
+            if pin.get_pin_num() == pin_number {
+                match pin.get_direction() {
+                    Ok(val) => if val == sysfs_gpio::Direction::In {
+                                   return Err(format!("attempt to write to gpio input pin {}",
+                                                       pin.get_pin_num()));
+                               },
+
+                    Err(err) => return Err(format!("can't read direction from gpio pin {}: {}",
+                                                    pin.get_pin_num(), err)),
+                }
+
+                if let Err(err) = pin.set_value(value) {
+                    return Err(format!("bad write to gpio pin {}: {}",
+                                        pin.get_pin_num(), err));
+                }
+                return Ok(());
+            }
+        }
+        Err(format!("attempt to write to uninitialized gpio pin {}", pin_number))
+    }
+
+}
+
+#[test]
+fn test_new_pin() {
+    let mut p = MyPins::new();
+    assert_eq!(p.pins.len(), 0);
+}
+
+#[test]
+fn test_multiple_pins() {
+    let mut p = MyPins::new();
+    p.add_pin(0, Direction::In);
+    p.add_pin(42, Direction::In);
+    p.add_pin(43, Direction::In);
+    assert_eq!(p.pins.len(), 3);
 }
 
 #[test]
@@ -225,3 +295,11 @@ fn convert_dir_works() {
     assert_eq!(convert_dir(Direction::High), sysfs_gpio::Direction::High);
     assert_eq!(convert_dir(Direction::Low), sysfs_gpio::Direction::Low);
 }
+
+#[test]
+#[should_panic]
+fn test_fail_on_get_pin_value() {
+    let mut p = MyPins::new();
+    let v = p.get_value(42).unwrap();
+}
+
