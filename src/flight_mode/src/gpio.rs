@@ -57,7 +57,6 @@ impl MyPins {
         }
     }
 
-
     /// Used to add GPIO pins to a MyPins object. Sets the direction of
     /// the pin and exports it.
     ///
@@ -119,7 +118,6 @@ impl MyPins {
         Err(format!("attempt to read uninitialized gpio pin {}", pin_number))
     }
 
-
     /// Set the value of a pin
     ///
     /// This will set the value of the pin either high or low.
@@ -157,4 +155,45 @@ impl MyPins {
         }
         Err(format!("attempt to write to uninitialized gpio pin {}", pin_number))
     }
+}
+
+#[test]
+fn test_new_pin() {
+    let p = MyPins::new();
+    assert_eq!(p.pins.len(), 0);
+}
+
+#[test]
+#[ignore]
+fn test_multiple_pins() {
+    let mut p = MyPins::new();
+    p.add_pin(0, Direction::In);
+    p.add_pin(42, Direction::In);
+    p.add_pin(43, Direction::In);
+    assert_eq!(p.pins.len(), 3);
+}
+
+#[test]
+#[should_panic]
+fn test_fail_on_get_pin_value() {
+    let mut p = MyPins::new();
+    p.get_value(42).unwrap();
+}
+
+#[test]
+#[ignore]
+fn test_set_pin() {
+    let mut p = MyPins::new();
+    p.add_pin(42, Direction::In);
+    p.set_value(42, 0).unwrap();
+    let v = p.get_value(42).unwrap();
+    assert_eq!(v, 0);
+}
+
+#[test]
+fn convert_dir_works() {
+    assert_eq!(convert_dir(Direction::In), sysfs_gpio::Direction::In);
+    assert_eq!(convert_dir(Direction::Out), sysfs_gpio::Direction::Out);
+    assert_eq!(convert_dir(Direction::High), sysfs_gpio::Direction::High);
+    assert_eq!(convert_dir(Direction::Low), sysfs_gpio::Direction::Low);
 }
