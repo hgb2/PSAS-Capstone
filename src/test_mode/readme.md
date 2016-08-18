@@ -6,6 +6,7 @@ test_mode / jsbsim / aircraft
                    / engine
                    / scripts
                    / systems
+                   / testlogs
 ```
 
 ##Compiling JSBSim on Linux
