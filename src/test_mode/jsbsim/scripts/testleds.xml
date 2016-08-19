@@ -7,38 +7,23 @@
     <use aircraft = "ledcraft" initialize="ledinit"/>
     
     <!--    specify events here                       -->
-    <run start = "0.0" end = "20" dt = "0.01">
+    <run start = "0.0" end = "10" dt = "0.2">
     
         <!--    initialization                        -->
-        <property> testmode/reporttime </property>
-        
-        <!--    print status to screen                -->
-        <event name="printstatus" persistent="true">
-            <description>output status to screen</description>
-            <condition>
-                simulation/sim-time-sec >= testmode/reporttime
-            </condition>
-            <set name="testmode/reporttime" value="0.1" type="delta"/>
-            <notify>
-                <property caption="sim time "> simulation/sim-time-sec </property>
-                <property caption="testroll "> testmode/testroll </property>
-                <property caption="gyro     "> testmode/gyro </property>
-                <property caption="ledcw    "> testmode/ledcw </property>
-                <property caption="ledccw   "> testmode/ledccw </property>
-            </notify>
-        </event>
-        
-        <!--    start with no spin                      -->
+        <property>testmode/endscript</property>
+  
+        <!--    start with no spin                    -->
         <event name="start">
             <description>start simulation with no spin</description>
             <condition> simulation/sim-time-sec >= 0.0 </condition>
+            <set name="testmode/endscript" value="0"/>
             <set name="testmode/testspin" value="0"/>
             <notify>
                 <property caption="sim time "> simulation/sim-time-sec </property>
-                <property caption="testroll "> testmode/testroll </property>
                 <property caption="gyro     "> testmode/gyro </property>
                 <property caption="ledcw    "> testmode/ledcw </property>
                 <property caption="ledccw   "> testmode/ledccw </property>
+                <property caption="endscript"> testmode/endscript </property>
             </notify>
         </event>
         
@@ -49,10 +34,10 @@
             <set name="testmode/testspin" value="5"/>
             <notify>
                 <property caption="sim time "> simulation/sim-time-sec </property>
-                <property caption="testroll "> testmode/testroll </property>
                 <property caption="gyro     "> testmode/gyro </property>
                 <property caption="ledcw    "> testmode/ledcw </property>
                 <property caption="ledccw   "> testmode/ledccw </property>
+                <property caption="endscript"> testmode/endscript </property>
             </notify>
         </event>
         
@@ -63,10 +48,10 @@
             <set name="testmode/testspin" value="0"/>
             <notify>
                 <property caption="sim time "> simulation/sim-time-sec </property>
-                <property caption="testroll "> testmode/testroll </property>
                 <property caption="gyro     "> testmode/gyro </property>
                 <property caption="ledcw    "> testmode/ledcw </property>
                 <property caption="ledccw   "> testmode/ledccw </property>
+                <property caption="endscript"> testmode/endscript </property>
             </notify>
         </event>
         
@@ -77,28 +62,32 @@
             <set name="testmode/testspin" value="-5"/>
             <notify>
                 <property caption="sim time "> simulation/sim-time-sec </property>
-                <property caption="testroll "> testmode/testroll </property>
                 <property caption="gyro     "> testmode/gyro </property>
                 <property caption="ledcw    "> testmode/ledcw </property>
                 <property caption="ledccw   "> testmode/ledccw </property>
+                <property caption="endscript"> testmode/endscript </property>
             </notify>
         </event>
         
-        <!--    pause & end         -->
+        <!--    pause                                  -->
         <event name="end">
             <description>start simulation with no spin</description>
             <condition> simulation/sim-time-sec >= 4.0 </condition>
             <set name="testmode/testspin" value="0"/>
             <notify>
                 <property caption="sim time "> simulation/sim-time-sec </property>
-                <property caption="testroll "> testmode/testroll </property>
                 <property caption="gyro     "> testmode/gyro </property>
                 <property caption="ledcw    "> testmode/ledcw </property>
                 <property caption="ledccw   "> testmode/ledccw </property>
+                <property caption="endscript"> testmode/endscript </property>
             </notify>
         </event>
-                 
         
-
+                <!--    end                                  -->
+        <event name="end script">
+            <description>start simulation with no spin</description>
+            <condition> simulation/sim-time-sec >= 5.0 </condition>
+            <set name="testmode/endscript" value="1"/>
+        </event>
     </run>
 </runscript>
