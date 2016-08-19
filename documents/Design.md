@@ -434,35 +434,140 @@ END FUNCTION
 #### JSBSim
 JSBSim is an open source C++ library.  It is used to simulate sensor outputs based on control inputs for flight simulations.
 
-In order to work with JSBSim from Rust, it is necessary to create a wrapper for JSBSim.  This wrapper is implemented in three files:  wrapper.cpp, wrapper.h, & wrapper.rs.  The wrapper.cpp file contains the native C++ calls to JSBSim wrapped in C functions.  The wrapper.h file contains the externed C headers for these wrapped functions.  The wrapper.rs file will contain the raw Rust calls to the C abi.
-
-The higher level calls that will be used to send data to, receive data from, & otherwise work with jsbsim will be located in the binder.rs file.  The very general pseudo code for these is listed below.
-
+In order to work with JSBSim from Rust, it is necessary to create a wrapper for JSBSim.  This wrapper is implemented in three files:  wrapper.cpp, wrapper.h, & wrapper.rs.  The wrapper.cpp file contains the native C++ calls to JSBSim wrapped in C functions.  The wrapper.h file contains the externed C headers for these wrapped functions.  The wrapper.rs file contain the raw Rust calls to the C abi as well as a set of basic functions to allow a Rust-based program to run a JSBSim Flight Dynamics Model and run it via script.
 ```
-INPUT:  binder_input                        //data from controller interface::write to binder
-OUTPUT: binder_output                       //data to sensor interface::get value from binder
+File Name:          wrapper.rs
+Purpose:            define a Rust-based front end for JSBSim
+Components:
+-wrapper_init()     instantiate and initialize a JSBSim Flight Dynamics Model
+-send_to_jsbsim()   update FDM with data from the controller interface
+-get_from_jsbsim()  iterate the flight dynamics model by one step
+                    provide property to allow scripts to end the simulation
+                    update the sensor interface with gyro data from jsbsim
+-wrapper_close()    close the FDM and reset fdm to null (not implemented)
+-extern block       provide rust-based front end for the c abi defined in wrapper.h & wrapper.cpp
 
-///this function initializes the JSBSim Binder
-FUNCTION Binder Init
-     INIT basic environmental variables
-     INSTANTIATE jsbsim exec                           //fgfdmexec
-     LOAD script                                       //loadscript
-     RUN startup loop (empty)                          //runic
-     RETURN pointer to jsbsim exec
+
+Function:           wrapper_init
+Purpose:            instantiate and initialize a JSBSim Flight Dynamics Model
+Inputs:             none
+Outputs:            none
+Side Effects:       fdm, a pointer with 'static lifetime is set to the instantiated FDM
+Notes:              this function must be called previous to any other functions
+
+FUNCTION wrapper_init
+     INSTANTIATE a new Flight Dynamics Model
+     SET base jsbsim scripts folder
+     SET jsbsim directory structure (aircraft, engine, systems) & verify
+     LOAD script & verify
+     RUN initial conditions & verify
 ENDFUNCTION
 
-///this is the primary work loop
-FUNCTION Binder Step (pointer to jsbsim exec, binder_input):
-     GET data from binder_input                        //this is the data from the controller interface
-     RUN jsbsim exec's run method                      //binder -> wrapper -> jsbsim
-                                                       //will need to know how data is to be blended
-                                                       // … between script & binder_input
-     GET output from jsbsim exec's run method          //jsbsim -> wrapper -> binder
-     Send data to binder_output                        //this will be sent to the sensor interface
+
+Function:           send_to_jsbsim
+Inputs:             cw: u8, ccw: u8
+Outputs:            none
+Side Effects:       none
+Purpose:            update FDM with data from the controller interface
+Notes:              this function will indicate to the fdm that the flight controller is engaging
+                    the controller interface i.e. firing thrusters
+
+FUNCTION send_to_jsbsim
+     SET the testmode/ledcw property in the JSBSim fdm to cw
+     SET the testmode/ledccw property in the JSBSim fdm to ccw
 ENDFUNCTION
 
-///this function closes out the JSBSim Binder
-FUNCTION Binder Close ((pointer to jsbsim exec)
-     CLOSE jsbsim                                      //will need to close this in jsbsim & rust
+
+Function:           get_from_jsbsim
+Inputs:             none
+Outputs:            gyro_x: f32, gyro_y: f32, gyro_z: f32
+Side Effects:       none
+Purpose:            iterate the flight dynamics model by one step
+                    provide a property to allow scripts to end the simulation
+                    update the sensor interface with gyro data from jsbsim
+
+FUNCTION get_from_jsbsim
+-RUN jsbsim exec's run method to iterate the flight dynamics model by one step
+-GET sensor data from the fdm
+-CHECK the endscript property & exit the application as indicated
+-SEND the gyro data from JSBSim to the sensor interface
+
+Function:           wrapper_close
+Inputs:             none
+Outputs:            none
+Side Effects:       closes the fdm & sets the fdm pointer to null
+Purpose:            provide a clean way to exit the simulation
+Notes:              this function is not currently implemented as no option to
+                         exit the application is currently provided
+
+FUNCTION wrapper_close
+     CLOSE the current fdm
+     SET the fdm pointer to null
 ENDFUNCTION
+
+
+Component:          extern block
+Purpose:            provide linkage to JSBSim as a shared object or dynamic link library
+                    provide linkage to wrapper.h & wrapper.cpp as a static library
+                    provide a basic set of functions to access JSBSim via the c abi defined
+                         in wrapper.h & wrapper.cpp
+Notes:              the functions in the extern block must parallel the c headers in wrapper.h
+                    see below for the current set of wrapper functions
+```
+```
+File Name:          wrapper.h
+Purpose:            provide a set of c function definitions to wrap the c++ calls used to 
+                         acess JSBSim
+Notes:              the functions definitions listed here must parallel the function implementations
+                         in wrapper.cpp
+                    see below for the current set of wrapper functions
+```
+```
+File Name:          wrapper.h
+Purpose:            implement the c abi based wrapper functions defined in wrapper.h and that 
+                         wrap teh c++ function calls to JSBSim
+Notes:              the functions implementations listed here must parallel the function
+                         definitions in wrapper.h
+                    the function calls to JSBSim must match the function interface defined by 
+                         JSBSim's FGFDMExec class
+                    see below for the current set of wrapper functions
+```
+```
+Wrapper Functions:
+
+JSBSim constructor
+Rust:     fn fdm_create()->*mut FDM;
+C ABI:    JSBSim::FGFDMExec* fdm_create();
+
+JSBSim destructor                                      //these are not implemented
+Rust:     fn fdm_close(fdm: *mut FDM);                 //definition provided for reference
+C ABI:    void fdm_close(JSBSim::FGFDMExec *fdm);      //definition provided for reference
+
+JSBSim functions                                       //from JSBSim::FGFDMExec
+Rust:     fn fdm_run(fdm: *mut FDM)->bool;
+C ABI:    bool fdm_run(JSBSim::FGFDMExec *fdm);
+
+Rust:     fn fdm_run_ic(fdm: *mut FDM)->bool;
+C ABI:    bool fdm_run_ic(JSBSim::FGFDMExec *fdm);
+
+Rust:     fn fdm_load_script(fdm: *mut FDM, script_name: *const libc::c_char, delta_t: f64, init_file: *const libc::c_char)->bool;
+C ABI:    bool fdm_load_script(JSBSim::FGFDMExec *fdm, const char* script_name, double delta_t, const char* init_file);
+
+Rust:     fn fdm_set_aircraft_path(fdm: *mut FDM, aircraft_path: *const libc::c_char)->bool;
+C ABI:    bool fdm_set_aircraft_path(JSBSim::FGFDMExec *fdm, const char* aircraft_path);
+
+Rust:     fn fdm_set_engine_path(fdm: *mut FDM, engine_path: *const libc::c_char)->bool;
+C ABI:    bool fdm_set_engine_path(JSBSim::FGFDMExec *fdm, const char* engine_path);
+
+Rust:     fn fdm_set_systems_path(fdm: *mut FDM, systems_path: *const libc::c_char)->bool;
+C ABI:    bool fdm_set_systems_path(JSBSim::FGFDMExec *fdm, const char* systems_path);
+
+Rust:     fn fdm_set_root_dir(fdm: *mut FDM, root_dir: *const libc::c_char);
+C ABI:    void fdm_set_root_dir(JSBSim::FGFDMExec *fdm, const char* root_dir);
+
+Rust:     fn fdm_get_property_double(fdm: *mut FDM, property: *const libc::c_char)->f64;
+C ABI:    double fdm_get_property_double(JSBSim::FGFDMExec *fdm, const char* property);
+
+Rust:     fn fdm_set_property_double(fdm: *mut FDM, property: *const libc::c_char, value: f64);
+C ABI:    void fdm_set_property_double(JSBSim::FGFDMExec *fdm, const char* property, double value);
 ```
