@@ -171,5 +171,3 @@ pub fn send_packet(socket: &UdpSocket, mem: &mut SharedMemory) -> Result<u8, io:
 
     Ok(0)
 }
-
-
