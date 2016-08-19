@@ -29,7 +29,6 @@ pub struct SharedMemory {
 }
 
 fn main() {
-    println!("main function\n");
 
     let mut mem = SharedMemory{gyro_x: 0.0, gyro_y: 0.0, gyro_z: 0.0,
                                cw_state: 0, ccw_state: 0, sequence_number: 0,
@@ -37,7 +36,7 @@ fn main() {
                                telemetry_buffer: Vec::with_capacity(1432)};
 
     // Timestep variables
-    let Hz :f64 = 100.0;  // Define the Hz to be used -- Using 2 Hz for testing
+    let Hz :f64 = 5.0;  // Define the Hz to be used
     let expected_timestep = 1.0/Hz; // Inverse of frequency
     let mut running = true;
     let mut previous_time;
@@ -46,10 +45,27 @@ fn main() {
 
     let mut sen = SensorModule::init().unwrap();
 
-    let mut ctl = Control::init();
+    // Calculate the bias of the gyroscope
+    // Average of 100 values sensor values
+    let mut gyro_x_bias = 0.0;
+    let mut gyro_y_bias = 0.0;
+    let mut gyro_z_bias = 0.0;
+    for x in 0..10000 {
+        sen.update(&mut mem);
+        gyro_x_bias += mem.gyro_x;
+        gyro_y_bias += mem.gyro_y;
+        gyro_z_bias += mem.gyro_z;
+    }
+    gyro_x_bias = gyro_x_bias/10000.0;
+    gyro_y_bias = gyro_y_bias/10000.0;
+    gyro_z_bias = gyro_z_bias/10000.0;
+
+
+
+    let mut ctl = Control::init(gyro_x_bias, gyro_y_bias, gyro_z_bias);
 
     let socket: UdpSocket;
-    match UdpSocket::bind(("127.0.0.1:1234")) {
+    match UdpSocket::bind(("0.0.0.0:0")) {
         Ok(sock) => { socket = sock; },
         Err(e) => { panic!(e) },
     }
@@ -61,14 +77,20 @@ fn main() {
         time_since_last = time_since_last + current_time-previous_time;
 
         while time_since_last >= expected_timestep {
-          match sen.update(&mut mem){ // Replace with sen.update(&mut mem); soon
+          match sen.update(&mut mem){
             Err(val) => {
                 println!("Sensor update error with code: {}", val);
                 running = false;
                 break;
             }
-            Ok(_) => println!("{} {} {}", mem.gyro_x, mem.gyro_y, mem.gyro_z),
+            Ok(_) => (),
           }
+
+          // Remove these after testing
+          println!("{0} gyro x {1} bias", mem.gyro_x , gyro_x_bias);
+          println!("{0} gyro y {1} bias", mem.gyro_y , gyro_y_bias);
+          println!("{0} gyro z {1} bias", mem.gyro_z , gyro_z_bias);
+          println!("\n");
 
           match ctl.update(&mut mem) {
             Err(err) => {
@@ -76,11 +98,7 @@ fn main() {
                 running = false;
                 break;
             }
-            Ok(val) => if val == control::SHUT_DOWN {
-                println!("Main received shut down signal from control module.");
-                running = false;
-                break;
-            }
+            Ok(val) => (),
           }
 
           match data_fmt::send_packet(&socket, &mut mem){
@@ -91,9 +109,9 @@ fn main() {
             }
             Ok(_) => (),
           }
+
           // Decrease by expected timestep
           time_since_last -= expected_timestep;
-          println!("\n"); // Remove this when done testing otherwise outputting to console is a bottleneck
         }
 
     }
