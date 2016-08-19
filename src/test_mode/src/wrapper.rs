@@ -1,6 +1,22 @@
-//wrapper.rs
+///////////////////////////////////////////////////////////////////////////////
 //
+//  File Name:          wrapper.rs
 //
+//  Purpose:            define a Rust-based front end for JSBSim
+//
+//  Components:
+//  -wrapper_init()     instantiate and initialize a JSBSim Flight Dynamics Model
+//  -send_to_jsbsim()   update FDM with data from the controller interface
+//  -get_from_jsbsim()  iterate the flight dynamics model by one step
+//                      provide property to allow scripts to end the simulation
+//                      update the sensor interface with gyro data from jsbsim
+//  -wrapper_close()    close the FDM and reset fdm to null (not implemented)
+//  -extern block       provide rust-based front end for the c abi defined
+//                          in wrapper.h & wrapper.cpp
+//
+///////////////////////////////////////////////////////////////////////////////
+
+
 extern crate libc;
 use std;
 
@@ -8,8 +24,21 @@ use std;
 pub enum FDM{}
 static mut fdm: *mut FDM = 0 as *mut FDM;
 
-//instantiates & initializes a flight dynamics model
-//sets the environmental variables to jsbsim defaults
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Function name:      wrapper_init
+//
+//  Purpose:            instantiate and initialize a JSBSim Flight Dynamics Model
+//
+//  Methodology:
+//  -create a new fdm
+//  -set base jsbsim scripts folder
+//  -set jsbsim directory structure (aircraft, engine, systems) & verify
+//  -load script & verify
+//  -run initial conditions & verify
+//                      
+///////////////////////////////////////////////////////////////////////////////
 pub fn wrapper_init(){
     unsafe{
         //create a new fdm
@@ -64,7 +93,19 @@ pub fn wrapper_init(){
     }
 }
 
-//update fdm
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Function name:      send_to_jsbsim
+//
+//  Purpose:            update FDM with data from the controller interface
+//
+//  Methodology:
+//  -update fdm property testmode/ledcw with controller outputs cw & ccw
+//  -this will indicate to the fdm that the flight controller is engaging
+//  -the controller interface i.e. firing thrusters
+//                        
+///////////////////////////////////////////////////////////////////////////////
 pub fn send_to_jsbsim(cw: u8, ccw: u8){
 
     unsafe{
@@ -78,7 +119,22 @@ pub fn send_to_jsbsim(cw: u8, ccw: u8){
     }
 }
 
-//iterates fdm & gets current sensor data 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Function name:      get_from_jsbsim
+//
+//  Purpose:            iterate the flight dynamics model by one step
+//                      update the sensor interface with gyro data from jsbsim
+//                      provide property to allow scripts to end the simulation
+//
+//  Methodology:
+//  -iterate the flight dynamics model by one step and verify
+//  -get sensor data
+//  -check endscript property & exit application as indicated
+//  -update the sensor interface with gyro data from jsbsim
+//                        
+///////////////////////////////////////////////////////////////////////////////
 pub fn get_from_jsbsim()->(f32, f32, f32){
 
     let runresult: bool;
@@ -102,9 +158,10 @@ pub fn get_from_jsbsim()->(f32, f32, f32){
         let endscript: f64;
         let property_endscript = std::ffi::CString::new("testmode/endscript").unwrap();
         endscript = fdm_get_property_double(fdm, property_endscript.as_ptr());
-        println!("endscript:\t{}", endscript);
+        
         
         if endscript > 0.0{
+            println!("endscript:\t{}", endscript);
             panic!("temporary quit mechanism");
         }
                 
@@ -113,18 +170,45 @@ pub fn get_from_jsbsim()->(f32, f32, f32){
     }
 }
 
-//exit routine is currently not implemented
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Function name:      wrapper_close
+//
+//  Purpose:            close the FDM and reset fdm to null (not implemented)
+//
+//  Methodology:
+//  -close FDM
+//  -set fdm to null
+//                        
+///////////////////////////////////////////////////////////////////////////////
 pub fn wrapper_close(){
     //fdm_close(fdm);
+    //fdm = 0 as *mut FDM;
 }
 
-//link to wrapper & jsbsim
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Section name:       extern block
+//
+//  Purpose:            provide rust-based front end for the c abi defined
+//                          in wrapper.h and wrapper.cpp
+//
+//  Methodology:
+//  -provide linkage to JSBSim as a shared object or dynamic link library
+//  -provide linkage to wrapper.h & wrapper.cpp as a static library
+//  -provide a basic set of functions to access JSBSim via the c abi defined
+//      in wrapper.h & wrapper.cpp
+//
+//  Notes:
+//  -the functions in the extern block must parallel the c headers in wrapper.h
+//                        
+///////////////////////////////////////////////////////////////////////////////
 #[link(name = "stdc++")]
 #[link(name = "JSBSim")]
 #[link(name = "wrapper", kind = "static")]
 
-//rust wrapper definitions using c abi
-//note that these must parallel the functions defined in wrapper.c
 extern "C" {
     //jsbsim constructor
     fn fdm_create()->*mut FDM;
