@@ -45,24 +45,8 @@ fn main() {
 
     let mut sen = SensorModule::init().unwrap();
 
-    // Calculate the bias of the gyroscope
-    // Average of 100 values sensor values
-    let mut gyro_x_bias = 0.0;
-    let mut gyro_y_bias = 0.0;
-    let mut gyro_z_bias = 0.0;
-    for x in 0..10000 {
-        sen.update(&mut mem);
-        gyro_x_bias += mem.gyro_x;
-        gyro_y_bias += mem.gyro_y;
-        gyro_z_bias += mem.gyro_z;
-    }
-    gyro_x_bias = gyro_x_bias/10000.0;
-    gyro_y_bias = gyro_y_bias/10000.0;
-    gyro_z_bias = gyro_z_bias/10000.0;
 
-
-
-    let mut ctl = Control::init(gyro_x_bias, gyro_y_bias, gyro_z_bias);
+    //let mut ctl = Control::init();
 
     let socket: UdpSocket;
     match UdpSocket::bind(("0.0.0.0:0")) {
@@ -87,11 +71,11 @@ fn main() {
           }
 
           // Remove these after testing
-          println!("{0} gyro x {1} bias", mem.gyro_x , gyro_x_bias);
-          println!("{0} gyro y {1} bias", mem.gyro_y , gyro_y_bias);
-          println!("{0} gyro z {1} bias", mem.gyro_z , gyro_z_bias);
+          println!("{} gyro x", mem.gyro_x);
+          println!("{} gyro y", mem.gyro_y);
+          println!("{} gyro z", mem.gyro_z);
           println!("\n");
-
+/*
           match ctl.update(&mut mem) {
             Err(err) => {
                 println!("Control update error: {}", err);
@@ -109,7 +93,7 @@ fn main() {
             }
             Ok(_) => (),
           }
-
+*/
           // Decrease by expected timestep
           time_since_last -= expected_timestep;
         }
