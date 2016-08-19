@@ -37,7 +37,7 @@ fn main() {
                                telemetry_buffer: Vec::with_capacity(1432)};
 
     // Timestep variables
-    let Hz :f64 = 100.0;  // Define the Hz to be used -- Using 2 Hz for testing
+    let Hz :f64 = 5.0;  // Define the Hz to be used -- Using 5 Hz for testing
     let expected_timestep = 1.0/Hz; // Inverse of frequency
     let mut running = true;
     let mut previous_time;
