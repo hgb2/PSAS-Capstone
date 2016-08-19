@@ -439,13 +439,13 @@ In order to work with JSBSim from Rust, it is necessary to create a wrapper for 
 File Name:          wrapper.rs
 Purpose:            define a Rust-based front end for JSBSim
 Components:
--wrapper_init()     instantiate and initialize a JSBSim Flight Dynamics Model
--send_to_jsbsim()   update FDM with data from the controller interface
--get_from_jsbsim()  iterate the flight dynamics model by one step
+wrapper_init()     instantiate and initialize a JSBSim Flight Dynamics Model
+send_to_jsbsim()   update FDM with data from the controller interface
+get_from_jsbsim()  iterate the flight dynamics model by one step
                     provide property to allow scripts to end the simulation
                     update the sensor interface with gyro data from jsbsim
--wrapper_close()    close the FDM and reset fdm to null (not implemented)
--extern block       provide rust-based front end for the c abi defined in wrapper.h & wrapper.cpp
+wrapper_close()    close the FDM and reset fdm to null (not implemented)
+extern block       provide rust-based front end for the c abi defined in wrapper.h & wrapper.cpp
 
 
 Function:           wrapper_init
