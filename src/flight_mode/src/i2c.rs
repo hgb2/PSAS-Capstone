@@ -6,12 +6,17 @@ use std::io;
 
 pub struct Myi2c {
     pub i2c: LinuxI2CDevice,
+    gyro_x_bias: f32,
+    gyro_y_bias: f32,
+    gyro_z_bias:f32,
 }
 
 impl Myi2c {
 
     pub fn init() -> Result<Myi2c, io::Error> {
-        let mut dev = try!(LinuxI2CDevice::new("/dev/i2c-6", 0x68));
+        // For the led board use "/dev/i2c-1"
+        //For the A20 board use "/dev/i2c-6"
+        let mut dev = try!(LinuxI2CDevice::new("/dev/i2c-1", 0x68));
 
         // Try and read from the WhoAmI register.
         // This should return a 0x68 if this is a compatible device (i.e. MPU-6050 or the MPU-9150)
@@ -32,7 +37,36 @@ impl Myi2c {
         // - Accel config: full scale range at +/- 2g
         try!(dev.write(&[0x19, 199, 0x06, 0x00, 0x00]));
 
-        return Ok(Myi2c{i2c: dev});
+
+
+        // Create a new Myi2c
+        let mut i2c = Myi2c{
+            i2c: dev,
+            gyro_x_bias: 0.0,
+            gyro_y_bias: 0.0,
+            gyro_z_bias: 0.0,
+        };
+
+
+        // Calculate the bias of the gyroscope
+        // Average of 10000 values sensor values
+        let mut gyro_x_bias = 0.0;
+        let mut gyro_y_bias = 0.0;
+        let mut gyro_z_bias = 0.0;
+
+        for x in 0..10000 {
+            let gyro = try!(i2c.get_gyro());
+            gyro_x_bias += gyro.0;
+            gyro_y_bias += gyro.1;
+            gyro_z_bias += gyro.2;
+        }
+        i2c.gyro_x_bias = gyro_x_bias/10000.0;
+        i2c.gyro_y_bias = gyro_y_bias/10000.0;
+        i2c.gyro_z_bias = gyro_z_bias/10000.0;
+
+
+
+        return Ok(i2c);
     }
 
     pub fn get_gyro(&mut self) -> Result<(f32, f32, f32), io::Error> {
@@ -48,9 +82,10 @@ impl Myi2c {
         let mut rdr = io::Cursor::new(buf);
 
         //divide by 131.0 degrees per second
-        let gyro_x = (try!(rdr.read_i16::<BigEndian>()) as f32) / 131.0;
-        let gyro_y = (try!(rdr.read_i16::<BigEndian>()) as f32) / 131.0;
-        let gyro_z = (try!(rdr.read_i16::<BigEndian>()) as f32) / 131.0;
+        // Subtracts off the bias caclulated in the init method 
+        let gyro_x = ((try!(rdr.read_i16::<BigEndian>()) as f32) / 131.0) - self.gyro_x_bias;
+        let gyro_y = ((try!(rdr.read_i16::<BigEndian>()) as f32) / 131.0) - self.gyro_y_bias;
+        let gyro_z = ((try!(rdr.read_i16::<BigEndian>()) as f32) / 131.0) - self.gyro_z_bias;
 
         Ok((gyro_x, gyro_y, gyro_z))
     }
