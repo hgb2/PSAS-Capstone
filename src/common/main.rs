@@ -61,7 +61,7 @@ fn main() {
         time_since_last = time_since_last + current_time-previous_time;
 
         while time_since_last >= expected_timestep {
-          match sen.update(&mut mem){ // Replace with sen.update(&mut mem); soon
+          match sen.update(&mut mem){
             Err(val) => {
                 println!("Sensor update error with code: {}", val);
                 running = false;
