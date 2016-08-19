@@ -8,9 +8,6 @@ use std;
 pub enum FDM{}
 static mut fdm: *mut FDM = 0 as *mut FDM;
 
-//vars used for testing
-static mut counter: i32 = 0;
-
 //instantiates & initializes a flight dynamics model
 //sets the environmental variables to jsbsim defaults
 pub fn wrapper_init(){
@@ -101,8 +98,12 @@ pub fn get_from_jsbsim()->(f32, f32, f32){
         gx = fdm_get_property_double(fdm, property_gyro.as_ptr());
         
         //temporary quit mechanism
-        counter += 1;
-        if counter > 500{
+        let endscript: f64;
+        let property_endscript = std::ffi::CString::new("testmode/endscript").unwrap();
+        endscript = fdm_get_property_double(fdm, property_endscript.as_ptr());
+        println!("endscript:\t{}", endscript);
+        
+        if endscript > 0.0{
             panic!("temporary quit mechanism");
         }
                 
