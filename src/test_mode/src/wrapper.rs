@@ -101,7 +101,8 @@ pub fn wrapper_init(){
 //  Purpose:            update FDM with data from the controller interface
 //
 //  Methodology:
-//  -update fdm property testmode/ledcw with controller outputs cw & ccw
+//  -update fdm property testmode/ledcw with controller output cw
+//  -update fdm property testmode/ledccw with controller output ccw
 //  -this will indicate to the fdm that the flight controller is engaging
 //  -the controller interface i.e. firing thrusters
 //                        
