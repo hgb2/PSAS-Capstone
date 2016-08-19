@@ -23,7 +23,6 @@
                 <property caption="gyro     "> testmode/gyro </property>
                 <property caption="ledcw    "> testmode/ledcw </property>
                 <property caption="ledccw   "> testmode/ledccw </property>
-                <property caption="endscript"> testmode/endscript </property>
             </notify>
         </event>
         
@@ -37,7 +36,6 @@
                 <property caption="gyro     "> testmode/gyro </property>
                 <property caption="ledcw    "> testmode/ledcw </property>
                 <property caption="ledccw   "> testmode/ledccw </property>
-                <property caption="endscript"> testmode/endscript </property>
             </notify>
         </event>
         
@@ -51,7 +49,6 @@
                 <property caption="gyro     "> testmode/gyro </property>
                 <property caption="ledcw    "> testmode/ledcw </property>
                 <property caption="ledccw   "> testmode/ledccw </property>
-                <property caption="endscript"> testmode/endscript </property>
             </notify>
         </event>
         
@@ -65,7 +62,6 @@
                 <property caption="gyro     "> testmode/gyro </property>
                 <property caption="ledcw    "> testmode/ledcw </property>
                 <property caption="ledccw   "> testmode/ledccw </property>
-                <property caption="endscript"> testmode/endscript </property>
             </notify>
         </event>
         
@@ -79,7 +75,6 @@
                 <property caption="gyro     "> testmode/gyro </property>
                 <property caption="ledcw    "> testmode/ledcw </property>
                 <property caption="ledccw   "> testmode/ledccw </property>
-                <property caption="endscript"> testmode/endscript </property>
             </notify>
         </event>
         
