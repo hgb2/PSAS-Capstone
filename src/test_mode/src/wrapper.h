@@ -1,6 +1,18 @@
-//wrapper.h
+///////////////////////////////////////////////////////////////////////////////
 //
+//  File Name:          wrapper.h
 //
+//  Purpose:            provide a set of c function headers to wrap the c++
+//                          calls used to access JSBSim
+//
+//  Components:
+//  -constructor        return a pointer to a newly created Flight Dynamics
+//                          Model
+//  -destructor         (not implemented)
+//  -functions          a set of basic function headers in c that are used by
+//                          the wrapper.cpp file to wrap c++ function calls
+//
+///////////////////////////////////////////////////////////////////////////////
 #ifndef WRAPPER_H
 #define WRAPPER_H
 
@@ -10,7 +22,7 @@
 #include "math/FGLocation.h"
 #include "input_output/FGGroundCallback.h"
 
-//c api
+//c abi
 extern "C" {
 
     //constructor
