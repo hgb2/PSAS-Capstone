@@ -16,13 +16,13 @@ test_mode / jsbsim / aircraft
 
 ##Compiling JSBSim on Linux
 
-###prep
+###Prep
 ```
 sudo apt-get update
 sudo apt-get install cmake      #install cmake
 ```
 
-###jsbsim:  compiling as a dynamic (.so) library
+###Compilation (as libJSBSim.so)
 ```
 wget -O jsbsim.tar.gz http://jsbsim.cvs.sourceforge.net/viewvc/jsbsim/?view=tar
 tar -xvf jsbsim.tar.gz
@@ -31,15 +31,11 @@ cmake -DBUILD_SHARED_LIBS=TRUE
 make
 sudo make install
 ```
-
-**Note** for debugging, add -DCMAKE_CXX_FLAGS="-O0 -g"
-
-
 ###follow up:
 verify that the installer has placed libJSBSim.so in /usr/local/lib/
 
 if you see an error loading libJSBSim.so*, make sure you add /usr/local/lib to LD_LIBRARY_PATH. 
-
+**Note** for debugging, add -DCMAKE_CXX_FLAGS="-O0 -g"
 ##Compiling JSBSim on Windows
 
 ###Downloads:
