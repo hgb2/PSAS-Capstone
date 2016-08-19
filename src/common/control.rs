@@ -17,21 +17,15 @@ const CCW: u64 = 42; // counter clockwise; Pin 12 on col gas jet?
 pub struct Control {
     state: bool,
     pins: MyPins,
-    gyro_x_bias: f32,
-    gyro_y_bias: f32,
-    gyro_z_bias:f32,
 }
 
 
 impl Control {
-    pub fn init(gyro_x_bias:f32, gyro_y_bias:f32, gyro_z_bias:f32) -> Control {
+    pub fn init() -> Control {
         // create a Control instance
         let mut ctl = Control {
             state: false,
             pins: MyPins::new(),
-            gyro_x_bias: gyro_x_bias,
-            gyro_y_bias: gyro_y_bias,
-            gyro_z_bias:gyro_z_bias,
         };
 
         // add the GPIO pins to it
@@ -57,8 +51,7 @@ impl Control {
     ///////////////////////////////////////////////////////////////////////////////
     pub fn update(&mut self, mem: &mut SharedMemory) -> Result<u8, String> {
 
-        let rate_x = mem.gyro_y - self.gyro_y_bias; // Offsetting the led edison board
-    	println!("gyro rate {}", rate_x);
+        let rate_x = mem.gyro_y;
 
         if rate_x >= 0.0 {
             // Spin is too fast counter-clockwise, so turn clockwise
