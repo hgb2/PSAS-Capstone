@@ -28,7 +28,7 @@
         
         <!--    set spin to +5                         -->
         <event name="spin">
-            <description>start simulation with no spin</description>
+            <description>set spin to +5</description>
             <condition> simulation/sim-time-sec >= 1.0 </condition>
             <set name="testmode/testspin" value="5"/>
             <notify>
@@ -41,7 +41,7 @@
         
         <!--    pause spin                              -->
         <event name="pause">
-            <description>start simulation with no spin</description>
+            <description>pause spin</description>
             <condition> simulation/sim-time-sec >= 2.0 </condition>
             <set name="testmode/testspin" value="0"/>
             <notify>
@@ -54,7 +54,7 @@
         
         <!--    set spin to -5                         -->
         <event name="negative spin">
-            <description>start simulation with no spin</description>
+            <description>set spin to -5</description>
             <condition> simulation/sim-time-sec >= 3.0 </condition>
             <set name="testmode/testspin" value="-5"/>
             <notify>
@@ -67,7 +67,7 @@
         
         <!--    pause                                  -->
         <event name="end">
-            <description>start simulation with no spin</description>
+            <description>end simulation with no spin</description>
             <condition> simulation/sim-time-sec >= 4.0 </condition>
             <set name="testmode/testspin" value="0"/>
             <notify>
@@ -80,11 +80,14 @@
         
                 <!--    end                                  -->
         <event name="end script">
-            <description>start simulation with no spin</description>
+            <description>signal wrapper to exit test mode</description>
             <condition> simulation/sim-time-sec >= 5.0 </condition>
             <set name="testmode/endscript" value="1"/>
             <notify>
                 <property caption="sim time "> simulation/sim-time-sec </property>
+                <property caption="gyro     "> testmode/gyro </property>
+                <property caption="ledcw    "> testmode/ledcw </property>
+                <property caption="ledccw   "> testmode/ledccw </property>
                 <property caption="endscript"> testmode/endscript </property>
             </notify>
         </event>
