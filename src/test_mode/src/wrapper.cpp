@@ -1,6 +1,19 @@
-//wrapper.cpp
+///////////////////////////////////////////////////////////////////////////////
 //
+//  File Name:          wrapper.cpp
 //
+//  Purpose:            implementation of the c abi based functions defined
+//                          in wrapper.h & that wrap c++ function calls to
+//                          JSBSim
+//
+//  Components:
+//  -constructor        return a pointer to a newly created Flight Dynamics
+//                          Model
+//  -destructor         (not implemented)
+//  -functions          provide a set of c function headers to wrap the c++
+//                          calls used to access JSBSim
+//
+///////////////////////////////////////////////////////////////////////////////
 #include "wrapper.h"
 
 //constructor
