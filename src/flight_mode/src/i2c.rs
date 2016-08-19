@@ -47,8 +47,7 @@ impl Myi2c {
 
         let mut rdr = io::Cursor::new(buf);
 
-        //114.3 degrees per second (/114.3 when sensitivity is set to 250 dps)
-        //Or this could be /131.0 degrees per second
+        //divide by 131.0 degrees per second
         let gyro_x = (try!(rdr.read_i16::<BigEndian>()) as f32) / 131.0;
         let gyro_y = (try!(rdr.read_i16::<BigEndian>()) as f32) / 131.0;
         let gyro_z = (try!(rdr.read_i16::<BigEndian>()) as f32) / 131.0;
