@@ -497,8 +497,7 @@ Inputs:             none
 Outputs:            none
 Side Effects:       closes the fdm & sets the fdm pointer to null
 Purpose:            provide a clean way to exit the simulation
-Notes:              this function is not currently implemented as no option to
-                         exit the application is currently provided
+Notes:              this function is not currently implemented
 
 FUNCTION wrapper_close
      CLOSE the current fdm
@@ -512,7 +511,6 @@ Purpose:            provide linkage to JSBSim as a shared object or dynamic link
                     provide a basic set of functions to access JSBSim via the c abi defined
                          in wrapper.h & wrapper.cpp
 Notes:              the functions in the extern block must parallel the c headers in wrapper.h
-                    see below for the current set of wrapper functions
 ```
 ```
 File Name:          wrapper.h
@@ -520,7 +518,6 @@ Purpose:            provide a set of c function definitions to wrap the c++ call
                          acess JSBSim
 Notes:              the functions definitions listed here must parallel the function implementations
                          in wrapper.cpp
-                    see below for the current set of wrapper functions
 ```
 ```
 File Name:          wrapper.h
@@ -530,44 +527,4 @@ Notes:              the functions implementations listed here must parallel the 
                          definitions in wrapper.h
                     the function calls to JSBSim must match the function interface defined by 
                          JSBSim's FGFDMExec class
-                    see below for the current set of wrapper functions
-```
-```
-Wrapper Functions:
-
-JSBSim constructor
-Rust:     fn fdm_create()->*mut FDM;
-C ABI:    JSBSim::FGFDMExec* fdm_create();
-
-JSBSim destructor                                      //these are not implemented
-Rust:     fn fdm_close(fdm: *mut FDM);                 //definition provided for reference
-C ABI:    void fdm_close(JSBSim::FGFDMExec *fdm);      //definition provided for reference
-
-JSBSim functions                                       //from JSBSim::FGFDMExec
-Rust:     fn fdm_run(fdm: *mut FDM)->bool;
-C ABI:    bool fdm_run(JSBSim::FGFDMExec *fdm);
-
-Rust:     fn fdm_run_ic(fdm: *mut FDM)->bool;
-C ABI:    bool fdm_run_ic(JSBSim::FGFDMExec *fdm);
-
-Rust:     fn fdm_load_script(fdm: *mut FDM, script_name: *const libc::c_char, delta_t: f64, init_file: *const libc::c_char)->bool;
-C ABI:    bool fdm_load_script(JSBSim::FGFDMExec *fdm, const char* script_name, double delta_t, const char* init_file);
-
-Rust:     fn fdm_set_aircraft_path(fdm: *mut FDM, aircraft_path: *const libc::c_char)->bool;
-C ABI:    bool fdm_set_aircraft_path(JSBSim::FGFDMExec *fdm, const char* aircraft_path);
-
-Rust:     fn fdm_set_engine_path(fdm: *mut FDM, engine_path: *const libc::c_char)->bool;
-C ABI:    bool fdm_set_engine_path(JSBSim::FGFDMExec *fdm, const char* engine_path);
-
-Rust:     fn fdm_set_systems_path(fdm: *mut FDM, systems_path: *const libc::c_char)->bool;
-C ABI:    bool fdm_set_systems_path(JSBSim::FGFDMExec *fdm, const char* systems_path);
-
-Rust:     fn fdm_set_root_dir(fdm: *mut FDM, root_dir: *const libc::c_char);
-C ABI:    void fdm_set_root_dir(JSBSim::FGFDMExec *fdm, const char* root_dir);
-
-Rust:     fn fdm_get_property_double(fdm: *mut FDM, property: *const libc::c_char)->f64;
-C ABI:    double fdm_get_property_double(JSBSim::FGFDMExec *fdm, const char* property);
-
-Rust:     fn fdm_set_property_double(fdm: *mut FDM, property: *const libc::c_char, value: f64);
-C ABI:    void fdm_set_property_double(JSBSim::FGFDMExec *fdm, const char* property, double value);
 ```
