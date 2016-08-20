@@ -1,11 +1,13 @@
 #Test Mode Notes
 
 ##JSBSim:
+
+###JSBSim Links:
 website:  http://jsbsim.sourceforge.net
 
 manual:   http://jsbsim.sourceforge.net/JSBSimReferenceManual.pdf
 
-##JSBSim Script Directory Structure
+###JSBSim Script Directory Structure
 ```
 test_mode / jsbsim / aircraft
                    / engine
@@ -68,46 +70,6 @@ c) Add another include directive pointing to the containing "bits/c++config.h". 
 ###Debugging the C++ Wrapper
 By adding the following line to src/CMakeLists.txt debug symbols can be enabled
 `SET(CMAKE_CXX_FLAGS "-O0 -g")`
-
-
-##Function Reference
-```
-JSBSim constructor
-Rust:     fn fdm_create()->*mut FDM;
-C ABI:    JSBSim::FGFDMExec* fdm_create();
-
-JSBSim destructor                                      //these are not implemented
-Rust:     fn fdm_close(fdm: *mut FDM);                 //definition provided for reference
-C ABI:    void fdm_close(JSBSim::FGFDMExec *fdm);      //definition provided for reference
-
-JSBSim functions                                       //from JSBSim::FGFDMExec
-Rust:     fn fdm_run(fdm: *mut FDM)->bool;
-C ABI:    bool fdm_run(JSBSim::FGFDMExec *fdm);
-
-Rust:     fn fdm_run_ic(fdm: *mut FDM)->bool;
-C ABI:    bool fdm_run_ic(JSBSim::FGFDMExec *fdm);
-
-Rust:     fn fdm_load_script(fdm: *mut FDM, script_name: *const libc::c_char, delta_t: f64, init_file: *const libc::c_char)->bool;
-C ABI:    bool fdm_load_script(JSBSim::FGFDMExec *fdm, const char* script_name, double delta_t, const char* init_file);
-
-Rust:     fn fdm_set_aircraft_path(fdm: *mut FDM, aircraft_path: *const libc::c_char)->bool;
-C ABI:    bool fdm_set_aircraft_path(JSBSim::FGFDMExec *fdm, const char* aircraft_path);
-
-Rust:     fn fdm_set_engine_path(fdm: *mut FDM, engine_path: *const libc::c_char)->bool;
-C ABI:    bool fdm_set_engine_path(JSBSim::FGFDMExec *fdm, const char* engine_path);
-
-Rust:     fn fdm_set_systems_path(fdm: *mut FDM, systems_path: *const libc::c_char)->bool;
-C ABI:    bool fdm_set_systems_path(JSBSim::FGFDMExec *fdm, const char* systems_path);
-
-Rust:     fn fdm_set_root_dir(fdm: *mut FDM, root_dir: *const libc::c_char);
-C ABI:    void fdm_set_root_dir(JSBSim::FGFDMExec *fdm, const char* root_dir);
-
-Rust:     fn fdm_get_property_double(fdm: *mut FDM, property: *const libc::c_char)->f64;
-C ABI:    double fdm_get_property_double(JSBSim::FGFDMExec *fdm, const char* property);
-
-Rust:     fn fdm_set_property_double(fdm: *mut FDM, property: *const libc::c_char, value: f64);
-C ABI:    void fdm_set_property_double(JSBSim::FGFDMExec *fdm, const char* property, double value);
-```
 
 
 
