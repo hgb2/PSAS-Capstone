@@ -110,6 +110,10 @@ pub fn wrapper_init(){
 pub fn send_to_jsbsim(cw: u8, ccw: u8){
 
     unsafe{
+<<<<<<< HEAD
+=======
+       
+>>>>>>> 20fd50b5582941dfa9ccb8032026341e806e3eaa
         //set cw & ccw values in jsbsim
         let property_cw = std::ffi::CString::new("testmode/ledcw").unwrap();
         fdm_set_property_double(fdm, property_cw.as_ptr(), cw as f64);
