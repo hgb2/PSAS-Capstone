@@ -46,7 +46,7 @@ fn main() {
     let mut sen = SensorModule::init().unwrap();
 
 
-    //let mut ctl = Control::init();
+    let mut ctl = Control::init();
 
     let socket: UdpSocket;
     match UdpSocket::bind(("0.0.0.0:0")) {
@@ -75,7 +75,7 @@ fn main() {
           println!("{} gyro y", mem.gyro_y);
           println!("{} gyro z", mem.gyro_z);
           println!("\n");
-/*
+
           match ctl.update(&mut mem) {
             Err(err) => {
                 println!("Control update error: {}", err);
@@ -93,7 +93,7 @@ fn main() {
             }
             Ok(_) => (),
           }
-*/
+
           // Decrease by expected timestep
           time_since_last -= expected_timestep;
         }
