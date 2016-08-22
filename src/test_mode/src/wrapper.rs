@@ -16,13 +16,10 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-
+//meta
 extern crate libc;
 use std;
-
-//type: FGFDMExec
-pub enum FDM{}
-static mut fdm: *mut FDM = 0 as *mut FDM;
+use std::ffi::CString;
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -40,57 +37,30 @@ static mut fdm: *mut FDM = 0 as *mut FDM;
 //                      
 ///////////////////////////////////////////////////////////////////////////////
 pub fn wrapper_init(){
+
+    //create a new instance of jsbsim
     unsafe{
-        //create a new fdm
-        fdm = fdm_create();
-
-        //set base jsbsim scripts folder
-        let jsbsim_root_dir = std::ffi::CString::new("jsbsim/").unwrap();
-        fdm_set_root_dir(fdm, jsbsim_root_dir.as_ptr());
-
-        //set aircraft folder
-        let apresult: bool;
-        let jsbsim_aircraft_path = std::ffi::CString::new("aircraft").unwrap();
-        apresult = fdm_set_aircraft_path(fdm, jsbsim_aircraft_path.as_ptr());
-
-        //set engine folder
-        let epresult: bool;
-        let jsbsim_engine_path = std::ffi::CString::new("engine").unwrap();
-        epresult = fdm_set_engine_path(fdm, jsbsim_engine_path.as_ptr());
-
-        //set systems folder
-        let spresult: bool;
-        let jsbsim_systems_path = std::ffi::CString::new("systems").unwrap();
-        spresult = fdm_set_systems_path(fdm, jsbsim_systems_path.as_ptr());
-
-        //verify directory structure was set properly
-        if apresult == false || epresult == false || spresult == false {
-            panic!("unable to configure directory structure");
-        }
-        
-        //load script prep
-        let script_name = std::ffi::CString::new("/scripts/testleds.xml").unwrap();
-        let delta_t: f64 = 0.0;
-        let init_file = std::ffi::CString::new("").unwrap();
-        let lsresult: bool;
-
-        //load script
-        lsresult = fdm_load_script(fdm, script_name.as_ptr(), delta_t, init_file.as_ptr());
-        
-        //verify script load
-        if lsresult == false{
-            panic!("unable to load script");
-        }
-
-        //run initial conditions
-        let icresult: bool;
-        icresult = fdm_run_ic(fdm);
-        
-        //verify initial conditions
-        if icresult == false{
-            panic!("unable to set initial conditions");
-        }
-    }
+        jsbsim = FDM::new() 
+    };
+    
+    //get a reference to the new fdm
+    let mut fdm = unsafe{&mut *jsbsim};    
+    
+    //set directory structure for jsbsim scripts
+    let root_dir = CString::new("jsbsim/").unwrap();
+    let aircraft_path = CString::new("aircraft").unwrap();
+    let engine_path = CString::new("engine").unwrap();
+    let systems_path = CString::new("systems").unwrap();
+    fdm.set_dirs(root_dir, aircraft_path, engine_path, systems_path);
+    
+    //load script
+    let script_name = std::ffi::CString::new("/scripts/testleds.xml").unwrap();
+    let delta_t: f64 = 0.0;
+    let init_file = std::ffi::CString::new("").unwrap();
+    fdm.set_script(script_name, delta_t, init_file);
+    
+    //run initial conditions
+    fdm.run_ic();
 }
 
 
@@ -109,14 +79,16 @@ pub fn wrapper_init(){
 ///////////////////////////////////////////////////////////////////////////////
 pub fn send_to_jsbsim(cw: u8, ccw: u8){
 
-    unsafe{
-        //set cw & ccw values in jsbsim
-        let property_cw = std::ffi::CString::new("testmode/ledcw").unwrap();
-        fdm_set_property_double(fdm, property_cw.as_ptr(), cw as f64);
-        
-        let property_ccw = std::ffi::CString::new("testmode/ledccw").unwrap();
-        fdm_set_property_double(fdm, property_ccw.as_ptr(), ccw as f64);
-    }
+    //get a reference to the fdm
+    let mut fdm = unsafe{&mut *jsbsim};
+    
+    //set cw value in jsbsim
+    let property_cw = CString::new("testmode/ledcw").unwrap();
+    fdm.set_property(property_cw, cw as f64);
+    
+    //set ccw value in jsbsim
+    let property_ccw = CString::new("testmode/ledccw").unwrap();
+    fdm.set_property(property_ccw, ccw as f64);
 }
 
 
@@ -136,38 +108,30 @@ pub fn send_to_jsbsim(cw: u8, ccw: u8){
 //                        
 ///////////////////////////////////////////////////////////////////////////////
 pub fn get_from_jsbsim()->(f32, f32, f32){
+    
+    //get a reference to the fdm
+    let mut fdm = unsafe{&mut *jsbsim};
 
     let runresult: bool;
     
-    unsafe{
-        //iterate jsbsim & verify
-        runresult = fdm_run(fdm);
-        if runresult==false{
-            panic!("jsbsim did not iterate properly");
-        }
-        
-        //get sensor data
-        let gx: f64;
-        let gy: f64 = 0.0;
-        let gz: f64 = 0.0;
-        
-        let property_gyro = std::ffi::CString::new("testmode/gyro").unwrap();
-        gx = fdm_get_property_double(fdm, property_gyro.as_ptr());
-        
-        //temporary quit mechanism
-        let endscript: f64;
-        let property_endscript = std::ffi::CString::new("testmode/endscript").unwrap();
-        endscript = fdm_get_property_double(fdm, property_endscript.as_ptr());
-        
-        
-        if endscript > 0.0{
-            println!("endscript:\t{}", endscript);
-            panic!("temporary quit mechanism");
-        }
-                
-        //return gyro readings
-        return (gx as f32, gy as f32, gz as f32);
+    //iterate jsbsim
+    runresult = fdm.run();
+    
+    //if the script has completed, exit
+    if runresult==false{
+        panic!("temporary quit mechanism");
     }
+        
+    //get sensor data
+    let gx: f64;
+    let gy: f64 = 0.0;
+    let gz: f64 = 0.0;
+        
+    let property_gyro = CString::new("testmode/gyro").unwrap();
+    gx = fdm.get_property(property_gyro);
+        
+    //return gyro readings
+    return (gx as f32, gy as f32, gz as f32);
 }
 
 
@@ -185,6 +149,104 @@ pub fn get_from_jsbsim()->(f32, f32, f32){
 pub fn wrapper_close(){
     //fdm_close(fdm);
     //fdm = 0 as *mut FDM;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Component Name:     Rust Wrappers
+//
+//  Purpose:            These wrap the c-abi based rust functions definitions
+//                          from the extern block (below) in more idiomatic
+//                          Rust.  These are the functions that should be used
+//                          in the wrapper functions (above).
+//
+//  function list:
+//
+///////////////////////////////////////////////////////////////////////////////
+pub enum FDM{}
+static mut jsbsim: *mut FDM = 0 as *mut FDM;
+
+impl FDM{
+    //creates a new instance of jsbsim & returns a pointer
+    unsafe fn new()->*mut FDM{
+        fdm_create()
+    }
+    
+    //sets the directory structure
+    fn set_dirs(&mut self, root_dir: CString, aircraft_path: CString, engine_path: CString, systems_path: CString){
+        unsafe{
+            //set base jsbsim scripts folder
+            fdm_set_root_dir(self, root_dir.as_ptr());
+
+            //set aircraft folder
+            let apresult: bool;
+            apresult = fdm_set_aircraft_path(self, aircraft_path.as_ptr());
+
+            //set engine folder
+            let epresult: bool;
+            epresult = fdm_set_engine_path(self, engine_path.as_ptr());
+
+            //set systems folder
+            let spresult: bool;
+            spresult = fdm_set_systems_path(self, systems_path.as_ptr());
+
+            //verify directory structure was set properly
+            if apresult == false || epresult == false || spresult == false {
+            panic!("unable to configure directory structure");
+            }
+        }
+    }
+    
+    //loads the script
+    fn set_script(&mut self, script_name: CString, delta_t: f64, init_file: CString){
+        unsafe{
+
+            let lsresult: bool;
+
+            //load script
+            lsresult = fdm_load_script(self, script_name.as_ptr(), delta_t, init_file.as_ptr());
+        
+            //verify script load
+            if lsresult == false{
+                panic!("unable to load script");
+            }
+        }
+    }
+    
+    //runs initial conditions
+    fn run_ic(&mut self){
+        //run initial conditions
+        let icresult: bool;
+        icresult = unsafe{
+            fdm_run_ic(self)
+        };
+        
+        //verify initial conditions
+        if icresult == false{
+            panic!("unable to set initial conditions");
+        }
+    }
+    
+    //gets the specified property
+    fn get_property(&mut self, property_name: CString)->f64{
+        unsafe{
+            return fdm_get_property_double(self, property_name.as_ptr());
+        }
+    }
+    
+    //sets the specified property
+    fn set_property(&mut self, property_name: CString, value: f64){
+        unsafe{
+            fdm_set_property_double(self, property_name.as_ptr(), value as f64);
+        }
+    }
+    
+    //iterates the fdm by one step
+    fn run(&mut self)->bool{
+        unsafe{
+            return fdm_run(self);
+        }
+    }
 }
 
 
