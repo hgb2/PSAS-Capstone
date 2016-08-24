@@ -44,7 +44,11 @@ pub fn wrapper_init(){
     };
     
     //get a reference to the new fdm
-    let mut fdm = unsafe{&mut *jsbsim};    
+    let mut fdm = unsafe{&mut *jsbsim};
+    
+    //set debug level.  values = {0, 1, 2, 4, 8, 16}
+    let debug_level: i32 = 0;
+    fdm.set_debug_level(debug_level);
     
     //set directory structure for jsbsim scripts
     let root_dir = CString::new("jsbsim/").unwrap();
@@ -119,7 +123,7 @@ pub fn get_from_jsbsim()->(f32, f32, f32){
     
     //if the script has completed, exit
     if runresult==false{
-        panic!("temporary quit mechanism");
+        unsafe {exit_sim = 1};
     }
         
     //get sensor data
@@ -151,6 +155,11 @@ pub fn wrapper_close(){
     //fdm = 0 as *mut FDM;
 }
 
+
+pub fn check_exit()->u8{
+    unsafe{exit_sim}
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Component Name:     Rust Wrappers
@@ -165,6 +174,7 @@ pub fn wrapper_close(){
 ///////////////////////////////////////////////////////////////////////////////
 pub enum FDM{}
 static mut jsbsim: *mut FDM = 0 as *mut FDM;
+static mut exit_sim: u8 = 0;
 
 impl FDM{
     //creates a new instance of jsbsim & returns a pointer
@@ -247,6 +257,30 @@ impl FDM{
             return fdm_run(self);
         }
     }
+    
+        //set debug level
+    fn set_debug_level(&mut self, level: i32){
+    
+        let debug;
+        match level{
+        0 | 1 | 2 | 4 | 8 | 16 => debug = level,
+        _ => debug = 1,
+        }
+        
+        unsafe{
+            fdm_set_debug_level(self, debug);
+        }
+    }    
+}
+
+
+impl Drop for FDM{
+    fn drop(&mut self){
+        unsafe{
+            fdm_close(self);
+            jsbsim = 0 as *mut FDM;
+        }
+    }
 }
 
 
@@ -276,7 +310,7 @@ extern "C" {
     fn fdm_create()->*mut FDM;
 
     //jsbsim destructor
-    //fn fdm_close(fdm: *mut FDM);      //exit is not currently implemented
+    fn fdm_close(fdm: *mut FDM);      //exit is not currently implemented
 
     //functions
     fn fdm_run(fdm: *mut FDM)->bool;
@@ -288,4 +322,5 @@ extern "C" {
     fn fdm_set_root_dir(fdm: *mut FDM, root_dir: *const libc::c_char);
     fn fdm_get_property_double(fdm: *mut FDM, property: *const libc::c_char)->f64;
     fn fdm_set_property_double(fdm: *mut FDM, property: *const libc::c_char, value: f64);
+    fn fdm_set_debug_level(fdm: *mut FDM, level: i32);
 }

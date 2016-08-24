@@ -74,3 +74,7 @@ void fdm_set_property_double(JSBSim::FGFDMExec *fdm, const char* property, doubl
     fdm->SetPropertyValue(property_cpp, value);
 }
 
+void fdm_set_debug_level(JSBSim::FGFDMExec *fdm, int level)
+{
+    fdm->SetDebugLevel(level);
+}
