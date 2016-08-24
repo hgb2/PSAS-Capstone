@@ -35,7 +35,7 @@ pub fn init() -> Result<SensorModule, io::Error> {
 //
 ///////////////////////////////////////////////////////////////////////////////
 pub fn update(&mut self, mem: &mut SharedMemory) -> Result<(), io::Error> {
-    println!("sensor update");
+    //println!("sensor update");
 
     let gyro = try!(self.i2c.get_gyro());
     mem.gyro_x = gyro.0;

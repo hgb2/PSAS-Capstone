@@ -67,7 +67,7 @@ fn main() {
                 running = false;
                 break;
             }
-            Ok(_) => println!("{} {} {}", mem.gyro_x, mem.gyro_y, mem.gyro_z),
+            Ok(_) => (), //println!("{} {} {}", mem.gyro_x, mem.gyro_y, mem.gyro_z),
           }
 
           match ctl.update(&mut mem) {
@@ -93,7 +93,7 @@ fn main() {
           }
           // Decrease by expected timestep
           time_since_last -= expected_timestep;
-          println!("\n"); // Remove this when done testing otherwise outputting to console is a bottleneck
+          //println!("\n"); // Remove this when done testing otherwise outputting to console is a bottleneck
         }
 
     }
