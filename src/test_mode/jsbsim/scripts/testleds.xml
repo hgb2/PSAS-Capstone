@@ -1,0 +1,95 @@
+<?xml version="1.0"?>
+
+<runscript name="testleds">
+
+    <!--    development script to test led functions  -->
+    <!--    specify aircraft & init files here        -->
+    <use aircraft = "ledcraft" initialize="ledinit"/>
+    
+    <!--    specify events here                       -->
+    <run start = "0.0" end = "10" dt = "0.2">
+    
+        <!--    initialization                        -->
+        <property>testmode/endscript</property>
+  
+        <!--    start with no spin                    -->
+        <event name="start">
+            <description>start simulation with no spin</description>
+            <condition> simulation/sim-time-sec >= 0.0 </condition>
+            <set name="testmode/endscript" value="0"/>
+            <set name="testmode/testspin" value="0"/>
+            <notify>
+                <property caption="sim time "> simulation/sim-time-sec </property>
+                <property caption="gyro     "> testmode/gyro </property>
+                <property caption="ledcw    "> testmode/ledcw </property>
+                <property caption="ledccw   "> testmode/ledccw </property>
+            </notify>
+        </event>
+        
+        <!--    set spin to +5                         -->
+        <event name="spin">
+            <description>set spin to +5</description>
+            <condition> simulation/sim-time-sec >= 1.0 </condition>
+            <set name="testmode/testspin" value="5"/>
+            <notify>
+                <property caption="sim time "> simulation/sim-time-sec </property>
+                <property caption="gyro     "> testmode/gyro </property>
+                <property caption="ledcw    "> testmode/ledcw </property>
+                <property caption="ledccw   "> testmode/ledccw </property>
+            </notify>
+        </event>
+        
+        <!--    pause spin                              -->
+        <event name="pause">
+            <description>pause spin</description>
+            <condition> simulation/sim-time-sec >= 2.0 </condition>
+            <set name="testmode/testspin" value="0"/>
+            <notify>
+                <property caption="sim time "> simulation/sim-time-sec </property>
+                <property caption="gyro     "> testmode/gyro </property>
+                <property caption="ledcw    "> testmode/ledcw </property>
+                <property caption="ledccw   "> testmode/ledccw </property>
+            </notify>
+        </event>
+        
+        <!--    set spin to -5                         -->
+        <event name="negative spin">
+            <description>set spin to -5</description>
+            <condition> simulation/sim-time-sec >= 3.0 </condition>
+            <set name="testmode/testspin" value="-5"/>
+            <notify>
+                <property caption="sim time "> simulation/sim-time-sec </property>
+                <property caption="gyro     "> testmode/gyro </property>
+                <property caption="ledcw    "> testmode/ledcw </property>
+                <property caption="ledccw   "> testmode/ledccw </property>
+            </notify>
+        </event>
+        
+        <!--    pause                                  -->
+        <event name="end">
+            <description>end simulation with no spin</description>
+            <condition> simulation/sim-time-sec >= 4.0 </condition>
+            <set name="testmode/testspin" value="0"/>
+            <notify>
+                <property caption="sim time "> simulation/sim-time-sec </property>
+                <property caption="gyro     "> testmode/gyro </property>
+                <property caption="ledcw    "> testmode/ledcw </property>
+                <property caption="ledccw   "> testmode/ledccw </property>
+            </notify>
+        </event>
+        
+                <!--    end                                  -->
+        <event name="end script">
+            <description>signal wrapper to exit test mode</description>
+            <condition> simulation/sim-time-sec >= 5.0 </condition>
+            <set name="testmode/endscript" value="1"/>
+            <notify>
+                <property caption="sim time "> simulation/sim-time-sec </property>
+                <property caption="gyro     "> testmode/gyro </property>
+                <property caption="ledcw    "> testmode/ledcw </property>
+                <property caption="ledccw   "> testmode/ledccw </property>
+                <property caption="endscript"> testmode/endscript </property>
+            </notify>
+        </event>
+    </run>
+</runscript>

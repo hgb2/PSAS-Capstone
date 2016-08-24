@@ -1,0 +1,23 @@
+<?xml version = "1.0"?>
+
+<initialize name = "ledinit">
+    
+    <!--    launch site:  pdx           -->
+    <latitude   unit="DEG">     45.0    </latitude>
+    <longitude  unit="DEG">     122.0   </longitude>
+    <elevation  unit="FT">      50.0    </elevation>   
+    
+    <!--    orientation = star bound    -->
+    <phi        unit="DEG">     0.0     </phi>
+    <theta      unit="DEG">     90.0    </theta>
+    <psi        unit="DEG">     0.0     </psi>    
+    
+    <!--    launch from ground          -->
+    <altitude   unit="FT">      0.0     </altitude>    
+    
+    <!--    initial speed (per axis)    -->
+    <ubody      unit="FT/SEC">  0.0     </ubody>
+    <vbody      unit="FT/SEC">  0.0     </vbody>
+    <wbody      unit="FT/SEC">  0.0     </wbody>
+    
+</initialize>

@@ -62,7 +62,8 @@ impl Control {
             return Ok(stop_pin);
         }
 
-        let rate_x = mem.gyro_y - 0.41; // Offsetting the led edison board
+        //let rate_x = mem.gyro_y - 0.41; // Offsetting the led edison board
+        let rate_x = mem.gyro_x;
     	println!("gyro rate {}", rate_x);
 
         const ACTIVATION_THRESHOLD: f32 = 0.175;
