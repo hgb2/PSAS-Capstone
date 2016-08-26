@@ -99,9 +99,9 @@ fn as_message(mem: &mut SharedMemory, buffer: &mut [u8; SIZE_OF_MESSAGE]) -> Res
 
 
 try!(message.write_u16::<BigEndian>(0));
-   try!(message.write_i16::<BigEndian>(f32::floor(mem.gyro_x) as i16));
-   try!(message.write_i16::<BigEndian>(f32::floor(mem.gyro_y) as i16));
-   try!(message.write_i16::<BigEndian>(f32::floor(mem.gyro_z) as i16));
+   try!(message.write_i16::<BigEndian>(f32::ceil(mem.gyro_z.mul_add(100.0_f32, 0.0_f32)) as i16));
+   try!(message.write_i16::<BigEndian>(f32::ceil(mem.gyro_y.mul_add(100.0_f32, 0.0_f32)) as i16));
+   try!(message.write_i16::<BigEndian>(f32::ceil(mem.gyro_x.mul_add(100.0_f32, 0.0_f32)) as i16));
    try!(message.write_i16::<BigEndian>(0));
    try!(message.write_i16::<BigEndian>(0));
    try!(message.write_i16::<BigEndian>(0));
