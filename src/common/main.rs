@@ -29,7 +29,6 @@ pub struct SharedMemory {
 }
 
 fn main() {
-    println!("main function\n");
 
     let mut mem = SharedMemory{gyro_x: 0.0, gyro_y: 0.0, gyro_z: 0.0,
                                cw_state: 0, ccw_state: 0, sequence_number: 0,
@@ -37,7 +36,9 @@ fn main() {
                                telemetry_buffer: Vec::with_capacity(1432)};
 
     // Timestep variables
-    let Hz :f64 = 5.0;  // Define the Hz to be used -- Using 5 Hz for testing
+
+    let Hz :f64 = 5.0;  // Define the Hz to be used
+
     let expected_timestep = 1.0/Hz; // Inverse of frequency
     let mut running = true;
     let mut previous_time;
@@ -45,6 +46,7 @@ fn main() {
     let mut time_since_last : f64 = 0.0;
 
     let mut sen = SensorModule::init().unwrap();
+
 
     let mut ctl = Control::init();
 
@@ -67,8 +69,14 @@ fn main() {
                 running = false;
                 break;
             }
-            Ok(_) => println!("{} {} {}", mem.gyro_x, mem.gyro_y, mem.gyro_z),
+            Ok(_) => (),
           }
+
+          // Remove these after testing
+          println!("{} gyro x", mem.gyro_x);
+          println!("{} gyro y", mem.gyro_y);
+          println!("{} gyro z", mem.gyro_z);
+          println!("\n");
 
           match ctl.update(&mut mem) {
             Err(err) => {
@@ -76,11 +84,7 @@ fn main() {
                 running = false;
                 break;
             }
-            Ok(val) => if val == control::SHUT_DOWN {
-                println!("Main received shut down signal from control module.");
-                running = false;
-                break;
-            }
+            Ok(val) => (),
           }
 
           match data_fmt::send_packet(&socket, &mut mem){
@@ -91,9 +95,9 @@ fn main() {
             }
             Ok(_) => (),
           }
+
           // Decrease by expected timestep
           time_since_last -= expected_timestep;
-          println!("\n"); // Remove this when done testing otherwise outputting to console is a bottleneck
         }
 
     }

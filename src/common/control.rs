@@ -11,11 +11,7 @@ use SharedMemory;
 
 const CW: u64 = 43; // clockwise; Pin 11 on cold gas jet?
 const CCW: u64 = 42; // counter clockwise; Pin 12 on col gas jet?
-const ESTOP: u64 = 0;
 
-
-// shut down value for the ESTOP pin
-pub const SHUT_DOWN: u8 = 1;
 
 
 pub struct Control {
@@ -35,8 +31,6 @@ impl Control {
         // add the GPIO pins to it
         ctl.pins.add_pin(CW, Direction::Low);
         ctl.pins.add_pin(CCW, Direction::Low);
-        ctl.pins.add_pin(ESTOP, Direction::In);
-
         // return to caller
         ctl
     }
@@ -56,35 +50,24 @@ impl Control {
     //
     ///////////////////////////////////////////////////////////////////////////////
     pub fn update(&mut self, mem: &mut SharedMemory) -> Result<u8, String> {
-        let stop_pin = try!(self.pins.get_value(ESTOP));
 
-        if false && stop_pin == SHUT_DOWN { // TODO: revisit why false && is here
-            return Ok(stop_pin);
-        }
+        let rate_x = mem.gyro_y;
 
-        let rate_x = mem.gyro_y - 0.41; // Offsetting the led edison board
-    	println!("gyro rate {}", rate_x);
-
-        const ACTIVATION_THRESHOLD: f32 = 0.175;
-
-        if rate_x >= ACTIVATION_THRESHOLD {
+        if rate_x >= 0.0 {
             // Spin is too fast counter-clockwise, so turn clockwise
             self.state_update(rate_x);
             let value = self.state as u8;
             try!(self.write_pin(CW, value, mem));
+            try!(self.write_pin(CCW, 0, mem));
         }
-        else if rate_x <= -ACTIVATION_THRESHOLD {
+        else if rate_x < 0.0 {
             // Spin is too fast clockwise, so turn counter-clockwise
             self.state_update(rate_x);
             let value = self.state as u8;
             try!(self.write_pin(CCW, value, mem));
-        }
-        else {
-            // no spin case
-            // turn off both gpio pins and update their state
             try!(self.write_pin(CW, 0, mem));
-            try!(self.write_pin(CCW, 0, mem));
         }
+
 
         return Ok(0);
 
