@@ -22,11 +22,15 @@ use std::net::UdpSocket;
 use SharedMemory;
 
 
-const P_LIMIT: usize = 1432;                            // MAX size of packet: Default(1432) During testing reduce to 26
+//const P_LIMIT: usize = 26;                            // MAX size of packet: Default(1432) During testing reduce to 26
 const HEADER_SIZE: usize = 12;                          // PSAS header size (bytes)
-const SIZE_OF_MESSAGE: usize = 14;                      // Shared memory/message size (bytes)
-const RCSS_NAME: [u8;4] = [82, 67, 83, 83];             // ASCII name for PSAS message format (RCSS)
+//const SIZE_OF_MESSAGE: usize = 14;                      // Shared memory/message size (bytes)
+//const RCSS_NAME: [u8;4] = [82, 67, 83, 83];             // ASCII name for PSAS message format (RCSS)
 const PSAS_TELEMETRY_UDP_PORT: u16 = 35001;             // UDP packet target port
+
+const P_LIMIT: usize = 36;
+const SIZE_OF_MESSAGE: usize = 24;
+const RCSS_NAME: [u8;4] = [65, 68, 73, 83]; // rust-fc [65, 68, 73, 83] dec
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -85,12 +89,27 @@ fn as_message(mem: &mut SharedMemory, buffer: &mut [u8; SIZE_OF_MESSAGE]) -> Res
     let mut message = Cursor::<&mut [u8]>::new(buffer);
 
     // Write RCSS message
+    /*
     try!(message.write_f32::<BigEndian>(mem.gyro_x));
     try!(message.write_f32::<BigEndian>(mem.gyro_y));
     try!(message.write_f32::<BigEndian>(mem.gyro_z));
     try!(message.write_u8(mem.cw_state));
     try!(message.write_u8(mem.ccw_state));
+*/
 
+
+try!(message.write_u16::<BigEndian>(0));
+   try!(message.write_i16::<BigEndian>(f32::floor(mem.gyro_x) as i16));
+   try!(message.write_i16::<BigEndian>(f32::floor(mem.gyro_y) as i16));
+   try!(message.write_i16::<BigEndian>(f32::floor(mem.gyro_z) as i16));
+   try!(message.write_i16::<BigEndian>(0));
+   try!(message.write_i16::<BigEndian>(0));
+   try!(message.write_i16::<BigEndian>(0));
+   try!(message.write_i16::<BigEndian>(0));
+   try!(message.write_i16::<BigEndian>(0));
+   try!(message.write_i16::<BigEndian>(0));
+   try!(message.write_i16::<BigEndian>(0));
+   try!(message.write_u16::<BigEndian>(0));
     Ok(0)
 }
 
@@ -111,7 +130,7 @@ fn as_message(mem: &mut SharedMemory, buffer: &mut [u8; SIZE_OF_MESSAGE]) -> Res
 fn flush_telemetry(socket: &UdpSocket, mem: &mut SharedMemory) -> Result<u8, io::Error> {
 
     // Address for UDP packet target
-    let telemetry_addr: SocketAddrV4 = SocketAddrV4::new(Ipv4Addr::new(127, 0, 0, 1), PSAS_TELEMETRY_UDP_PORT);
+    let telemetry_addr: SocketAddrV4 = SocketAddrV4::new(Ipv4Addr::new(192, 168, 2, 12), PSAS_TELEMETRY_UDP_PORT);
 
     //send UDP packet to UDP packet target
     try!(socket.send_to(&mem.telemetry_buffer, telemetry_addr));
@@ -171,5 +190,3 @@ pub fn send_packet(socket: &UdpSocket, mem: &mut SharedMemory) -> Result<u8, io:
 
     Ok(0)
 }
-
-

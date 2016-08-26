@@ -49,7 +49,7 @@ fn main() {
     let mut ctl = Control::init();
 
     let socket: UdpSocket;
-    match UdpSocket::bind(("127.0.0.1:1234")) {
+    match UdpSocket::bind(("0.0.0.0:0")) {
         Ok(sock) => { socket = sock; },
         Err(e) => { panic!(e) },
     }
@@ -105,7 +105,7 @@ fn main() {
 #[test]
 #[ignore]
 fn timestep(){
-    let Hz :f64 = 2.0;  // Define the HZ to be used
+    let Hz :f64 = 5.0;  // Define the HZ to be used
     // let mut freq = 0; // unused for now
     let mut cycles : f64 = 0.0;
 
