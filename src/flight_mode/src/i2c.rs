@@ -14,9 +14,9 @@ pub struct Myi2c {
 impl Myi2c {
 
     pub fn init() -> Result<Myi2c, io::Error> {
-        // For the led board use "/dev/i2c-1"
-        //For the A20 board use "/dev/i2c-6"
-        let mut dev = try!(LinuxI2CDevice::new("/dev/i2c-1", 0x68));
+        // For the led board use "/dev/i2c-6"
+        //For the A20 board use "/dev/i2c-1"
+        let mut dev = try!(LinuxI2CDevice::new("/dev/i2c-6", 0x68));
 
         // Try and read from the WhoAmI register.
         // This should return a 0x68 if this is a compatible device (i.e. MPU-6050 or the MPU-9150)
@@ -82,7 +82,7 @@ impl Myi2c {
         let mut rdr = io::Cursor::new(buf);
 
         //divide by 131.0 degrees per second
-        // Subtracts off the bias caclulated in the init method 
+        // Subtracts off the bias caclulated in the init method
         let gyro_x = ((try!(rdr.read_i16::<BigEndian>()) as f32) / 131.0) - self.gyro_x_bias;
         let gyro_y = ((try!(rdr.read_i16::<BigEndian>()) as f32) / 131.0) - self.gyro_y_bias;
         let gyro_z = ((try!(rdr.read_i16::<BigEndian>()) as f32) / 131.0) - self.gyro_z_bias;
