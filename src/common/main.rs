@@ -29,7 +29,9 @@ pub struct SharedMemory {
 }
 
 fn main() {
-    println!("main function\n");
+    println!("\n\nPSAS Reaction Control System");
+    println!("Version 1.1 Presentation");
+    println!("PSAS-Capstone:  Spring-Summer, 2016");
 
     let mut mem = SharedMemory{gyro_x: 0.0, gyro_y: 0.0, gyro_z: 0.0,
                                cw_state: 0, ccw_state: 0, sequence_number: 0,
