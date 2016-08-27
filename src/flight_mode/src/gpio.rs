@@ -109,7 +109,12 @@ impl MyPins {
         for pin in &self.pins {
             if pin.get_pin_num() == pin_number {
                 match pin.get_value() {
-                    Ok(val) => return Ok(val),
+                    //Ok(val) => return Ok(val),
+                    // For the current design, get_value is only called to read the ESTOP
+                    // pin. However, there isn't an emergency pin on the new hardware.
+                    // In order to do a graceful shutdown in test_mode, we'll leave this
+                    // here and always return 0 so it doesn't shut down in flight_mode.
+                    Ok(val) => return Ok(0),
                     Err(err) => return Err(format!("bad read from gpio pin {}: {}",
                                                     pin.get_pin_num(), err)),
                 }

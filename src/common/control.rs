@@ -58,13 +58,13 @@ impl Control {
     pub fn update(&mut self, mem: &mut SharedMemory) -> Result<u8, String> {
         let stop_pin = try!(self.pins.get_value(ESTOP));
 
-        if false && stop_pin == SHUT_DOWN { // TODO: revisit why false && is here
+        if stop_pin == SHUT_DOWN {
             return Ok(stop_pin);
         }
 
         //let rate_x = mem.gyro_y - 0.41; // Offsetting the led edison board
         let rate_x = mem.gyro_x;
-    	println!("gyro rate {}", rate_x);
+    	//println!("gyro rate {}", rate_x);
 
         const ACTIVATION_THRESHOLD: f32 = 0.175;
 
@@ -87,7 +87,7 @@ impl Control {
             try!(self.write_pin(CCW, 0, mem));
         }
 
-        return Ok(0);
+        return Ok(stop_pin);
 
     }
 

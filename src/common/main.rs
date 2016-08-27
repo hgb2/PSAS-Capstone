@@ -29,7 +29,9 @@ pub struct SharedMemory {
 }
 
 fn main() {
-    println!("main function\n");
+    println!("\n\nPSAS Reaction Control System");
+    println!("Version 1.1 Presentation");
+    println!("PSAS-Capstone:  Spring-Summer, 2016");
 
     let mut mem = SharedMemory{gyro_x: 0.0, gyro_y: 0.0, gyro_z: 0.0,
                                cw_state: 0, ccw_state: 0, sequence_number: 0,
@@ -67,7 +69,7 @@ fn main() {
                 running = false;
                 break;
             }
-            Ok(_) => println!("{} {} {}", mem.gyro_x, mem.gyro_y, mem.gyro_z),
+            Ok(_) => (), //println!("{} {} {}", mem.gyro_x, mem.gyro_y, mem.gyro_z),
           }
 
           match ctl.update(&mut mem) {
@@ -93,7 +95,7 @@ fn main() {
           }
           // Decrease by expected timestep
           time_since_last -= expected_timestep;
-          println!("\n"); // Remove this when done testing otherwise outputting to console is a bottleneck
+          //println!("\n"); // Remove this when done testing otherwise outputting to console is a bottleneck
         }
 
     }

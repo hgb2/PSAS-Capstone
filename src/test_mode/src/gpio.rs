@@ -87,11 +87,13 @@ impl MyPins {
         for pin in &self.pins {
             if pin.num == pin_number {
                 //println!("get_value found pin: {}", pin.num);
-
+                
                 // In the current design, this is only called for the ESTOP
                 // pin. Return 0 to keep running. Return 1 to allow
                 // the program to exit gracefully.
-                return Ok(pin.state);
+                
+                //return Ok(pin.state);
+                return Ok(wrapper::check_exit());
             }
         }
         Err(format!("attempt to read uninitialized gpio pin {}", pin_number))

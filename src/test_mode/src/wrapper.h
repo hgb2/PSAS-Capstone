@@ -41,6 +41,7 @@ extern "C" {
     void fdm_set_root_dir(JSBSim::FGFDMExec *fdm, const char* root_dir);
     double fdm_get_property_double(JSBSim::FGFDMExec *fdm, const char* property);
     void fdm_set_property_double(JSBSim::FGFDMExec *fdm, const char* property, double value);
+    void fdm_set_debug_level(JSBSim::FGFDMExec *fdm, int level);
 
 }           //end extern block
 #endif      //end #define WRAPPER_H
