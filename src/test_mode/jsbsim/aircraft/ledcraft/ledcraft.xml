@@ -42,7 +42,7 @@
     <external_reactions>
         
         <!--declare properties-->
-        <property value="0.0">testmode/testspin</property>
+        <property>testmode/testspin</property>
         <description>   model a manual spin </description>
         
         <force name="testforce" frame="BODY">
@@ -52,7 +52,7 @@
                     <property>testmode/testspin</property>
                 </sum>
             </function>
-            <location unit="FT">
+            <location unit="IN">
                 <x> 0 </x>
                 <y> 0 </y>
                 <z> 0 </z>
@@ -71,6 +71,18 @@
     
     <!--    specify aerodynamics                            -->
     <aerodynamics>
+        
+        <axis name="X">
+        </axis>
+        <axis name="Y">
+        </axis>
+        <axis name="Z">
+        </axis>
+        <axis name="PITCH">
+        </axis>
+        <axis name="YAW">
+        </axis>
+        
         <axis name="ROLL">
             <function name="testmode/testroll">
                 <description>simulates a static roll</description>
@@ -97,13 +109,15 @@
             to jsbsim/testlogs/testlog.txt                  -->
     <output name="testlogs/testlog.txt" type="TABULAR" rate="1">
         
-        <!--property sets           -->
-        
         <!--property specific       -->
         <property>testmode/testroll</property>
         <property>testmode/gyro</property>
         <property>testmode/ledcw</property>
         <property>testmode/ledccw</property>
+        
+        <!--property sets           -->
+        
+
         
     </output>
     
