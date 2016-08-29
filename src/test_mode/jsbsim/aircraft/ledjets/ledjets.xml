@@ -1,1 +1,145 @@
+<?xml version="1.0"?>
+<fdm_config name="ledjets" version="2.0" release="ALPHA">
+    
+    <fileheader>
+        <author> PSAS-Capstone </author>
+        <filecreationdate> 2016-08-14 </filecreationdate>
+        <version> Version 0.1 </version>
+        <description>led board</description>
+        <notes>
+            for development only
+            
+            this file models an intel arduino board (127 x 72 x 12 mm)
+            mounted on a circular plastic base (~6" diameter and ~4" high)
+            this board does not have an engine or any means of propulsion
+            testing the actual board requires manually spinning it 
+            in a particular direction (clockwise or counterclockwise)
+            to simulate a roll.  two led indicators are set to provide
+            output from the flight navigator.  
+            
+            this file adds virtual (massless) cold gas jets with a
+            constant thrust value (when on) to provide the model with 
+            roll control.  
+        </notes>
+    </fileheader>
+    
+    <metrics>
+        <wingarea       unit="FT2"> 2.355 </wingarea>
+        <wingspan       unit="FT"> 0.5 </wingspan>
+        <chord          unit="FT"> 0.5 </chord>
+    </metrics>
+    
+    <mass_balance>
+        <emptywt unit="LBS"> 1 </emptywt>
+        <!--weight of cold gas jet fuel-->
+        <!--weight of cold gas jet hardware-->
+    </mass_balance>
+    
+    <ground_reactions>
+        <contact type="STRUCTURE" name = "accidental_drop">
+            <location unit = "IN">
+                <x> 0.0 </x>
+                <y> 0.0 </y>
+                <z> 0.0 </z>
+            </location>
+        </contact>
+    </ground_reactions>
+    
+    <!--    define external forces                          -->
+    <external_reactions>
+        
+        <!--declare properties-->
+        <property>testmode/testspin</property>
+        <description>   model a manual spin </description>
+        
+        <force name="testforce" frame="BODY">
+            <description>model someone manually spinning the craft</description>
+            <function>
+                <sum>
+                    <property>testmode/testspin</property>
+                </sum>
+            </function>
+            <location unit="IN">
+                <x> 0 </x>
+                <y> 0 </y>
+                <z> 0 </z>
+            </location>
+            <direction>
+                <x> 1 </x>
+                <y> 0 </y>
+                <z> 0 </z>
+            </direction>
+        </force>
 
+    </external_reactions>
+    
+    <!--    specify flight control system                   -->
+    <flight_control name="FGFCS" />
+    
+    <!--    specify aerodynamics                            -->
+    <aerodynamics>
+
+        <axis name="X">
+        </axis>
+        <axis name="Y">
+        </axis>
+        <axis name="Z">
+        </axis>
+        <axis name="PITCH">
+        </axis>
+        <axis name="YAW">
+        </axis>
+        
+        <axis name="ROLL">
+            <function name="testmode/testroll">
+                <description>simulates a static roll</description>
+                <sum>
+                    <!--aero properties excluded for now    -->
+                    <property>testmode/testspin</property>
+                    <value>0.00</value>
+                    <property>testmode/testjets</property>
+                </sum>
+            </function>
+        </axis>
+    </aerodynamics>
+
+    <system name="testmode">
+
+        <!-- set up leds -->
+        <property value="0">testmode/ledcw</property>
+        <property value="0">testmode/ledccw</property>
+        
+        <!-- set up virtual jets -->
+        <property value="0">testmode/testjets</property>    
+        
+        <!-- set up virtual thrust (constant)-->
+        <property value="-4">testmode/thrustcw</property>
+        <property value="4">testmode/thrustccw</property>
+        
+        <!-- set up gyro as sum of testspin & virtual jet thrust-->
+        <channel name="indicators">
+            <sensor name="testmode/gyro">
+                <input> testmode/testroll </input>
+                <default value="0.0"/>
+            </sensor>
+        </channel>
+
+    </system>
+   
+    <!--    save specified output as tab separated values
+            to jsbsim/testlogs/testlog.txt                  -->
+    <output name="testlogs/testlog.txt" type="TABULAR" rate="1">
+        
+        <!--property specific       -->
+        <property>testmode/testroll</property>
+        <property>testmode/gyro</property>
+        <property>testmode/ledcw</property>
+        <property>testmode/ledccw</property>
+        
+        <!--property sets           -->
+        
+
+        
+    </output>
+    
+</fdm_config>
