@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 
-<runscript name="testleds">
+<runscript name="testjets">
 
     <!--    development script to test led functions  -->
     <!--    specify aircraft & init files here        -->
-    <use aircraft = "ledcraft" initialize="ledinit"/>
+    <use aircraft = "ledjets" initialize="ledinit"/>
     
     <!--    specify events here                       -->
     <run start = "0.0" end = "20" dt = "0.2">
@@ -13,7 +13,7 @@
   
         <!--    start with no spin                    -->
         <event name="start" continuous="true">
-            <description>start simulation with no spin</description>
+            <description>basic spin test in both directions</description>
             <condition> simulation/sim-time-sec ge 0.0 </condition>
             <set name="testmode/testspin">
                 <function>
@@ -44,8 +44,22 @@
                     </table>
                 </function>
             </set>
+            <set name="testmode/testjets" type="delta">
+                <function>
+                    <sum>
+                        <product>
+                            <property>testmode/ledcw</property>
+                            <property>testmode/thrustcw</property>
+                        </product>
+                        <product>
+                            <property>testmode/ledccw</property>
+                            <property>testmode/thrustccw</property>
+                        </product>
+                    </sum>
+                </function>
+                
+            </set>
             <notify/>
-        </event>
-        
+        </event>        
     </run>
 </runscript>
