@@ -58,7 +58,7 @@ pub fn wrapper_init(){
     fdm.set_dirs(root_dir, aircraft_path, engine_path, systems_path);
     
     //load script
-    let script_name = std::ffi::CString::new("/scripts/testleds.xml").unwrap();
+    let script_name = std::ffi::CString::new("/scripts/testjets.xml").unwrap();
     let delta_t: f64 = 0.0;
     let init_file = std::ffi::CString::new("").unwrap();
     fdm.set_script(script_name, delta_t, init_file);
@@ -125,17 +125,113 @@ pub fn get_from_jsbsim()->(f32, f32, f32){
     if runresult==false{
         unsafe {exit_sim = 1};
     }
-        
-    //get sensor data
-    let gx: f64;
+    
+    //get data from fdm.  
+    let property_gyro = CString::new("testmode/gyro").unwrap();
+    let gx: f64 = fdm.get_property(property_gyro);
     let gy: f64 = 0.0;
     let gz: f64 = 0.0;
-        
-    let property_gyro = CString::new("testmode/gyro").unwrap();
-    gx = fdm.get_property(property_gyro);
-        
+    
+    //pretty print
+    wrapper_print(gx as i32);
+    
     //return gyro readings
     return (gx as f32, gy as f32, gz as f32);
+}
+
+//pretty print for presentation
+fn wrapper_print(gx: i32){
+
+    //get a reference to the fdm
+    let mut fdm = unsafe{&mut *jsbsim};
+    
+    //pretty print prep
+    let property_sim_time = CString::new("simulation/sim-time-sec").unwrap();
+    let sim_time:f64 = fdm.get_property(property_sim_time);
+    
+    let property_testspin = CString::new("testmode/testspin").unwrap();
+    let testspin: f64 = fdm.get_property(property_testspin);
+    let testspin: i32 = testspin as i32;
+    
+    let property_ledcw = CString::new("testmode/ledcw").unwrap();
+    let ledcw: f64 = fdm.get_property(property_ledcw);
+    let ledcw: i32 = ledcw as i32;
+    
+    let property_ledccw = CString::new("testmode/ledccw").unwrap();
+    let ledccw: f64 = fdm.get_property(property_ledccw);
+    let ledccw: i32 = ledccw as i32;
+    
+    let property_testjets = CString::new("testmode/testjets").unwrap();
+    let testjets: f64 = fdm.get_property(property_testjets);
+    let testjets: i32 = testjets as i32;
+
+    //set up symbols
+    let symbol_cw = vec![0xe2, 0x86, 0xbb];
+    let print_cw = std::str::from_utf8(&symbol_cw).unwrap();
+    let symbol_ccw = vec![0xe2, 0x86, 0xba];
+    let print_ccw = std::str::from_utf8(&symbol_ccw).unwrap();
+    
+    //fun with variables
+    unsafe { print_counter += 1; }
+    let local_count = unsafe {print_counter};
+        
+    //set up headers
+    if local_count == 1 {
+        println!("time:\ttest spin:\t\tgyro_x:\t\t\tledcraft:");
+    }
+    
+    //set up data rows
+    if local_count % 1 == 0 {
+    
+        //set up sim_time
+        print!("{:0.1}\t", sim_time);
+        
+        //print external force (from jsbsim)
+        print_record(testspin);
+        print!("\t");
+        
+        //print gyro_x reading (from jsbsim)
+        print_record(gx);
+        print!("\t");
+        
+        //print led cw reading (from flight nav)
+        if ledcw == 1{
+            print!("{:02}", &print_cw);
+        } 
+        
+        //print cold gas jet thrust (from jsbsim)
+        print_record(testjets);
+        
+        //print led ccw reading (from flight nav)
+        if ledccw == 1{
+            print!("{:02}", &print_ccw);
+        }
+
+        //close out line
+        println!("");
+    }
+}
+
+fn print_record(data: i32)
+{
+
+    if data < 0 {
+        for _x in data..0 {
+            print!("x");
+        }
+    }
+    
+    print!("\t|");
+    
+    if data > 0 {
+        print!(" ");
+        for _x in 0..data {
+            print!("x");
+        }
+        print!("\t");
+    } else {
+        print!("\t");
+    }
 }
 
 
@@ -151,8 +247,7 @@ pub fn get_from_jsbsim()->(f32, f32, f32){
 //                        
 ///////////////////////////////////////////////////////////////////////////////
 pub fn wrapper_close(){
-    //fdm_close(fdm);
-    //fdm = 0 as *mut FDM;
+    //implemented as drop
 }
 
 
@@ -173,8 +268,9 @@ pub fn check_exit()->u8{
 //
 ///////////////////////////////////////////////////////////////////////////////
 pub enum FDM{}
-static mut jsbsim: *mut FDM = 0 as *mut FDM;
-static mut exit_sim: u8 = 0;
+static mut jsbsim: *mut FDM = 0 as *mut FDM;    
+static mut exit_sim: u8 = 0;                    //used to implement exit
+static mut print_counter: i32 = 0;              //used to format pretty print
 
 impl FDM{
     //creates a new instance of jsbsim & returns a pointer
@@ -258,7 +354,7 @@ impl FDM{
         }
     }
     
-        //set debug level
+    //set debug level
     fn set_debug_level(&mut self, level: i32){
     
         let debug;
